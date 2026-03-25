@@ -10,7 +10,7 @@ const user = computed(() => (page.props.auth as any)?.user ?? null);
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 antialiased">
+    <div class="flex min-h-screen flex-col bg-gray-50 antialiased">
         <!-- Navigation -->
         <header class="sticky top-0 z-50 border-b border-gray-200/80 bg-white/95 backdrop-blur-sm">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -74,7 +74,7 @@ const user = computed(() => (page.props.auth as any)?.user ?? null);
         </div>
 
         <!-- Page Content -->
-        <main>
+        <main class="flex-1">
             <slot />
         </main>
 

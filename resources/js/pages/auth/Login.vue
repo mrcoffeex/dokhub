@@ -44,19 +44,19 @@ defineProps<{
             <!-- Hero text -->
             <div class="relative">
                 <h1 class="text-4xl font-bold leading-tight text-white">
-                    Your health,<br />
-                    <span class="text-violet-200">simplified.</span>
+                    Your practice,<br />
+                    <span class="text-violet-200">streamlined.</span>
                 </h1>
                 <p class="mt-4 text-base leading-relaxed text-violet-200">
-                    Connect with top doctors, manage appointments, and take control of your healthcare journey — all in one place.
+                    Manage your appointments, patients, and schedule — all from one powerful dashboard built for healthcare professionals.
                 </p>
 
                 <!-- Feature list -->
                 <ul class="mt-8 space-y-3">
                     <li v-for="feature in [
-                        'Book appointments in seconds',
-                        'Access verified specialist doctors',
-                        'Manage your schedule easily',
+                        'View and manage patient appointments',
+                        'Write and track prescriptions easily',
+                        'Stay on top of your daily schedule',
                     ]" :key="feature" class="flex items-center gap-3 text-sm text-violet-100">
                         <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/20">
                             <svg class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -134,7 +134,7 @@ defineProps<{
                                 <label for="password" class="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
                                 <a
                                     v-if="canResetPassword"
-                                    :href="request()"
+                                    :href="request.url()"
                                     :tabindex="5"
                                     class="text-xs font-medium text-violet-600 transition-colors hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
                                 >

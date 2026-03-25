@@ -25,6 +25,17 @@ class AppointmentController extends Controller
             'reason'           => ['nullable', 'string', 'max:500'],
         ]);
 
+        // Check patient doesn't already have a booking with this doctor on the same date
+        $alreadyBooked = Appointment::where('doctor_id', $doctor->id)
+            ->where('appointment_date', $validated['appointment_date'])
+            ->where('patient_email', $validated['patient_email'])
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+
+        if ($alreadyBooked) {
+            return back()->withErrors(['appointment_date' => 'You already have an appointment with this doctor on this date. Only one booking per day is allowed.']);
+        }
+
         // Check slot isn't already taken
         $conflict = Appointment::where('doctor_id', $doctor->id)
             ->where('appointment_date', $validated['appointment_date'])
@@ -44,7 +55,16 @@ class AppointmentController extends Controller
             'confirmed_at' => now(),
         ]);
 
-        Mail::to($appointment->patient_email)->send(new AppointmentConfirmation($appointment));
+        try {
+            Mail::to($appointment->patient_email)
+                ->send(new AppointmentConfirmation($appointment));
+        } catch (\Exception $e) {
+            // Mail failure should not block the booking confirmation
+            \Illuminate\Support\Facades\Log::error('Appointment confirmation mail failed', [
+                'appointment_id' => $appointment->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return Inertia::render('Booking/Success', [
             'appointment' => $appointment->load('doctor'),

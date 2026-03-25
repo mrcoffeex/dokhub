@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\DoctorReviewController;
 use App\Http\Controllers\DoctorAppointmentsController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DoctorDashboardController;
+use App\Http\Controllers\DoctorDiagnosisController;
+use App\Http\Controllers\DoctorPatientsController;
+use App\Http\Controllers\DoctorPrescriptionsController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\DoctorScheduleController;
 use App\Http\Controllers\DoctorRegistrationController;
@@ -29,6 +33,7 @@ Route::prefix('doctors')->name('doctors.')->group(function () {
     Route::get('/', [DoctorController::class, 'index'])->name('index');
     Route::get('/{doctor}', [DoctorController::class, 'show'])->name('show');
     Route::post('/{doctor}/book', [AppointmentController::class, 'store'])->name('book');
+    Route::post('/{doctor}/reviews', [DoctorReviewController::class, 'store'])->name('reviews.store');
 });
 
 // Appointment lookup
@@ -50,10 +55,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('doctor-dashboard', DoctorDashboardController::class)->name('doctor.dashboard');
     Route::get('doctor/appointments', [DoctorAppointmentsController::class, 'index'])->name('doctor.appointments');
+    Route::patch('doctor/appointments/{appointment}/status', [DoctorAppointmentsController::class, 'updateStatus'])->name('doctor.appointments.update-status');
     Route::get('doctor/profile', [DoctorProfileController::class, 'edit'])->name('doctor.profile.edit');
     Route::patch('doctor/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
     Route::get('doctor/schedule', [DoctorScheduleController::class, 'edit'])->name('doctor.schedule.edit');
     Route::patch('doctor/schedule', [DoctorScheduleController::class, 'update'])->name('doctor.schedule.update');
+
+    // Patients
+    Route::get('doctor/patients', [DoctorPatientsController::class, 'index'])->name('doctor.patients');
+    Route::get('doctor/patients/{patient}', [DoctorPatientsController::class, 'show'])->name('doctor.patients.show');
+    Route::patch('doctor/patients/{patient}', [DoctorPatientsController::class, 'update'])->name('doctor.patients.update');
+
+    // Diagnoses
+    Route::post('doctor/patients/{patient}/diagnoses', [DoctorDiagnosisController::class, 'store'])->name('doctor.diagnoses.store');
+    Route::put('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'update'])->name('doctor.diagnoses.update');
+    Route::delete('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'destroy'])->name('doctor.diagnoses.destroy');
+
+    // Prescriptions
+    Route::get('doctor/patients/{patient}/prescriptions/create', [DoctorPrescriptionsController::class, 'create'])->name('doctor.prescriptions.create');
+    Route::post('doctor/patients/{patient}/prescriptions', [DoctorPrescriptionsController::class, 'store'])->name('doctor.prescriptions.store');
+    Route::get('doctor/prescriptions/{prescription}', [DoctorPrescriptionsController::class, 'show'])->name('doctor.prescriptions.show');
 });
 
 // Admin routes

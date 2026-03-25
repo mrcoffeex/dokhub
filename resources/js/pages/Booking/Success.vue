@@ -8,7 +8,8 @@ const props = defineProps<{
 }>();
 
 function formatDate(dateStr: string) {
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+    const datePart = dateStr.substring(0, 10); // handles both "YYYY-MM-DD" and ISO datetime strings
+    return new Date(datePart + 'T00:00:00').toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',

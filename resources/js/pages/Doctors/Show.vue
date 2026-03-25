@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import GuestLayout from '@/layouts/GuestLayout.vue';
-import type { Doctor } from '@/types';
+import type { Doctor, DoctorReview, ReviewStats } from '@/types';
+
+const IS_PRODUCTION = import.meta.env.PROD;
+const HCAPTCHA_SITEKEY = import.meta.env.VITE_HCAPTCHA_SITEKEY as string;
 
 const props = defineProps<{
     doctor: Doctor;
     bookedSlots: Record<string, string[]>;
+    reviews: DoctorReview[];
+    reviewStats: ReviewStats;
 }>();
+
+const page = usePage();
+const reviewSuccess = computed(() => (page.props.flash as any)?.review_success ?? null);
 
 // --- Calendar state ---
 const today = new Date();
@@ -130,7 +139,63 @@ function goToStep2() {
 }
 
 function submitBooking() {
-    form.post(`/doctors/${props.doctor.id}/book`);
+    form.post(`/doctors/${props.doctor.slug}/book`);
+}
+
+// --- Review form ---
+const showReviewForm = ref(false);
+const hoverRating = ref(0);
+const hcaptchaRef = ref<InstanceType<typeof VueHcaptcha> | null>(null);
+const reviewForm = useForm({
+    patient_name:   '',
+    patient_email:  '',
+    rating:         0,
+    comment:        '',
+    hcaptcha_token: '',
+});
+
+function onCaptchaVerified(token: string) {
+    reviewForm.hcaptcha_token = token;
+}
+
+function onCaptchaExpired() {
+    reviewForm.hcaptcha_token = '';
+}
+
+function submitReview() {
+    if (IS_PRODUCTION && !reviewForm.hcaptcha_token) {
+        hcaptchaRef.value?.execute();
+        return;
+    }
+    reviewForm.post(`/doctors/${props.doctor.slug}/reviews`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            reviewForm.reset();
+            hoverRating.value = 0;
+            hcaptchaRef.value?.reset();
+            showReviewForm.value = false;
+        },
+        onError: () => {
+            // Reset captcha on any error so user can retry
+            hcaptchaRef.value?.reset();
+            reviewForm.hcaptcha_token = '';
+        },
+    });
+}
+
+function starLabel(n: number): string {
+    return ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][n] ?? '';
+}
+
+function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
+    if (rating >= pos) return 'full';
+    if (rating >= pos - 0.5) return 'half';
+    return 'empty';
+}
+
+function ratingBarWidth(star: number): string {
+    if (!props.reviewStats.total) return '0%';
+    return Math.round(((props.reviewStats.counts[star] ?? 0) / props.reviewStats.total) * 100) + '%';
 }
 </script>
 
@@ -159,6 +224,19 @@ function submitBooking() {
                                 <span class="mt-1 inline-block rounded-full bg-violet-100 px-3 py-0.5 text-sm font-medium text-violet-700">
                                     {{ doctor.specialization }}
                                 </span>
+                                <!-- Inline rating summary -->
+                                <div v-if="reviewStats.total > 0" class="mt-2 flex items-center gap-1.5">
+                                    <div class="flex gap-0.5">
+                                        <template v-for="s in 5" :key="s">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" :fill="reviewStats.average >= s ? '#FBBF24' : (reviewStats.average >= s - 0.5 ? 'url(#hg_header)' : '#E5E7EB')">
+                                                <defs><linearGradient id="hg_header" x1="0" x2="1" y1="0" y2="0"><stop offset="50%" stop-color="#FBBF24"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs>
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                        </template>
+                                    </div>
+                                    <span class="text-xs font-bold text-gray-800">{{ reviewStats.average }}</span>
+                                    <span class="text-xs text-gray-400">({{ reviewStats.total }})</span>
+                                </div>
                             </div>
                         </div>
 
@@ -203,6 +281,163 @@ function submitBooking() {
                             <div v-for="s in doctor.schedules.filter(s => s.is_active)" :key="s.id" class="flex items-center justify-between text-sm">
                                 <span class="text-gray-700">{{ ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][s.day_of_week] }}</span>
                                 <span class="font-medium text-gray-900">{{ formatTime(s.start_time) }} – {{ formatTime(s.end_time) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ─── Reviews ─── -->
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-gray-900">Patient Reviews</h3>
+                            <span class="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-semibold text-violet-700">{{ reviewStats.total }}</span>
+                        </div>
+
+                        <!-- Aggregate row -->
+                        <div v-if="reviewStats.total > 0" class="mt-4">
+                            <div class="flex items-end gap-3">
+                                <span class="text-5xl font-extrabold leading-none text-gray-900">{{ reviewStats.average }}</span>
+                                <div class="pb-1">
+                                    <div class="flex gap-0.5">
+                                        <template v-for="s in 5" :key="s">
+                                            <svg v-if="starType(reviewStats.average, s) === 'full'" class="h-5 w-5" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg v-else-if="starType(reviewStats.average, s) === 'half'" class="h-5 w-5" viewBox="0 0 24 24">
+                                                <defs><linearGradient id="hg_agg" x1="0" x2="1" y1="0" y2="0"><stop offset="50%" stop-color="#FBBF24"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs>
+                                                <path fill="url(#hg_agg)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                            <svg v-else class="h-5 w-5" viewBox="0 0 24 24" fill="#E5E7EB"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </template>
+                                    </div>
+                                    <p class="mt-0.5 text-xs text-gray-500">{{ reviewStats.total }} review{{ reviewStats.total !== 1 ? 's' : '' }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Bar breakdown -->
+                            <div class="mt-4 space-y-1.5">
+                                <div v-for="star in [5,4,3,2,1]" :key="star" class="flex items-center gap-2">
+                                    <span class="w-3 text-right text-xs font-semibold text-gray-500">{{ star }}</span>
+                                    <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+                                        <div class="h-full rounded-full bg-amber-400 transition-all duration-500" :style="{ width: ratingBarWidth(star) }"></div>
+                                    </div>
+                                    <span class="w-6 text-right text-xs text-gray-400">{{ reviewStats.counts[star] ?? 0 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p v-else class="mt-3 text-sm text-gray-400">No reviews yet. Be the first!</p>
+
+                        <!-- Write a review CTA -->
+                        <button
+                            @click="showReviewForm = !showReviewForm"
+                            class="mt-5 w-full rounded-xl border border-violet-200 bg-violet-50 py-2.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-100"
+                        >
+                            {{ showReviewForm ? 'Cancel' : '✏ Write a Review' }}
+                        </button>
+
+                        <!-- Review form -->
+                        <form v-if="showReviewForm" @submit.prevent="submitReview" class="mt-4 space-y-4">
+                            <!-- Success flash -->
+                            <div v-if="reviewSuccess" class="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                {{ reviewSuccess }}
+                            </div>
+
+                            <!-- Rate-limit error -->
+                            <div v-if="reviewForm.errors.rate_limit" class="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                                {{ reviewForm.errors.rate_limit }}
+                            </div>
+
+                            <!-- Star picker -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Your Rating <span class="text-red-500">*</span></label>
+                                <div class="mt-2 flex items-center gap-1">
+                                    <button
+                                        v-for="s in 5"
+                                        :key="s"
+                                        type="button"
+                                        @click="reviewForm.rating = s"
+                                        @mouseenter="hoverRating = s"
+                                        @mouseleave="hoverRating = 0"
+                                        class="transition-transform hover:scale-110"
+                                    >
+                                        <svg class="h-8 w-8" viewBox="0 0 24 24" :fill="(hoverRating || reviewForm.rating) >= s ? '#FBBF24' : '#E5E7EB'">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                    </button>
+                                    <span v-if="hoverRating || reviewForm.rating" class="ml-2 text-sm font-medium text-gray-600">
+                                        {{ starLabel(hoverRating || reviewForm.rating) }}
+                                    </span>
+                                </div>
+                                <p v-if="reviewForm.errors.rating" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.rating }}</p>
+                            </div>
+
+                            <div class="grid gap-3 sm:grid-cols-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Your Name <span class="text-red-500">*</span></label>
+                                    <input v-model="reviewForm.patient_name" type="text" placeholder="Jane Smith" required
+                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        :class="{ 'border-red-400': reviewForm.errors.patient_name }" />
+                                    <p v-if="reviewForm.errors.patient_name" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_name }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+                                    <input v-model="reviewForm.patient_email" type="email" placeholder="you@example.com" required
+                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        :class="{ 'border-red-400': reviewForm.errors.patient_email }" />
+                                    <p v-if="reviewForm.errors.patient_email" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_email }}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Comment <span class="text-gray-400">(Optional)</span></label>
+                                <textarea v-model="reviewForm.comment" rows="3" placeholder="Share your experience..."
+                                    class="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
+                            </div>
+
+                            <!-- hCaptcha widget (production only) -->
+                            <div v-if="IS_PRODUCTION">
+                                <VueHcaptcha
+                                    ref="hcaptchaRef"
+                                    :sitekey="HCAPTCHA_SITEKEY"
+                                    theme="light"
+                                    @verify="onCaptchaVerified"
+                                    @expired="onCaptchaExpired"
+                                    @error="onCaptchaExpired"
+                                />
+                                <p v-if="reviewForm.errors.hcaptcha_token" class="mt-1 text-xs text-red-500">
+                                    {{ reviewForm.errors.hcaptcha_token }}
+                                </p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                :disabled="reviewForm.processing || reviewForm.rating === 0 || (IS_PRODUCTION && !reviewForm.hcaptcha_token)"
+                                class="w-full rounded-xl bg-violet-600 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                            >
+                                {{ reviewForm.processing ? 'Submitting...' : 'Submit Review' }}
+                            </button>
+                        </form>
+
+                        <!-- Review list -->
+                        <div v-if="reviews.length" class="mt-5 space-y-4">
+                            <div class="border-t border-gray-100 pt-4 text-xs font-semibold uppercase tracking-wider text-gray-400">Recent Reviews</div>
+                            <div v-for="review in reviews" :key="review.id" class="rounded-xl bg-gray-50 p-4">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">{{ review.patient_name }}</p>
+                                        <p class="text-xs text-gray-400">
+                                            {{ new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
+                                        </p>
+                                    </div>
+                                    <div class="flex shrink-0 gap-0.5">
+                                        <template v-for="s in 5" :key="s">
+                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" :fill="review.rating >= s ? '#FBBF24' : '#E5E7EB'">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                        </template>
+                                    </div>
+                                </div>
+                                <p v-if="review.comment" class="mt-2 text-sm leading-relaxed text-gray-600">{{ review.comment }}</p>
                             </div>
                         </div>
                     </div>
@@ -379,6 +614,11 @@ function submitBooking() {
                                         class="mt-1.5 w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
                                     />
                                 </div>
+                            </div>
+
+                            <!-- Error if already booked on this date -->
+                            <div v-if="form.errors.appointment_date" class="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                                {{ form.errors.appointment_date }}
                             </div>
 
                             <!-- Error if slot was taken -->

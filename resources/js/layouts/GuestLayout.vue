@@ -34,7 +34,7 @@ const user = computed(() => (page.props.auth as any)?.user ?? null);
                         <Link v-if="isAdmin" href="/admin" class="text-sm font-medium text-violet-600 hover:text-violet-700">
                             Admin Panel
                         </Link>
-                        <Link href="/dashboard" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                        <Link v-else href="/dashboard" class="text-sm font-medium text-gray-600 hover:text-gray-900">
                             Dashboard
                         </Link>
                     </template>

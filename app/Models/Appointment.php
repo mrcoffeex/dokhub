@@ -28,8 +28,8 @@ class Appointment extends Model
     protected function casts(): array
     {
         return [
-            'appointment_date' => 'date',
-            'confirmed_at' => 'datetime',
+            'appointment_date' => 'date:Y-m-d',
+            'confirmed_at'     => 'datetime',
         ];
     }
 
@@ -40,9 +40,16 @@ class Appointment extends Model
 
     public static function generateReference(): string
     {
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $year = now()->year;
-        $count = static::whereYear('created_at', $year)->count() + 1;
-        return 'APT-' . $year . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+
+        do {
+            $part1 = substr(str_shuffle(str_repeat($chars, 4)), 0, 4);
+            $part2 = substr(str_shuffle(str_repeat($chars, 4)), 0, 4);
+            $reference = $year . '-' . $part1 . '-' . $part2;
+        } while (static::where('reference', $reference)->exists());
+
+        return $reference;
     }
 
     public function isPending(): bool

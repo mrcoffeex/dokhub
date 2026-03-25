@@ -64,9 +64,24 @@ class DoctorController extends Controller
             ->groupBy(fn($a) => $a->appointment_date->toDateString())
             ->map(fn($slots) => $slots->pluck('appointment_time')->map(fn($t) => substr($t, 0, 5)));
 
+        $reviews = $doctor->reviews()
+            ->approved()
+            ->latest()
+            ->get(['id', 'patient_name', 'rating', 'comment', 'created_at']);
+
+        $reviewStats = [
+            'average' => round((float) ($reviews->avg('rating') ?? 0), 1),
+            'total'   => $reviews->count(),
+            'counts'  => collect([5, 4, 3, 2, 1])
+                ->mapWithKeys(fn($s) => [$s => $reviews->where('rating', $s)->count()])
+                ->all(),
+        ];
+
         return Inertia::render('Doctors/Show', [
-            'doctor' => $doctor->append('avatar_url'),
+            'doctor'      => $doctor->append('avatar_url'),
             'bookedSlots' => $bookedSlots,
+            'reviews'     => $reviews,
+            'reviewStats' => $reviewStats,
         ]);
     }
 }

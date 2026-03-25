@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Doctor, Appointment } from '@/types';
 import { ref, watch } from 'vue';
@@ -66,6 +66,44 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
 };
 
 const hasActiveFilters = () => search.value || status.value !== 'all' || date.value;
+
+// ---- Status update ----
+const cancelModal = ref(false);
+const cancellingId = ref<number | null>(null);
+const cancelForm = useForm({ status: 'cancelled' as const, cancellation_reason: '' });
+
+function updateStatus(appt: Appointment, newStatus: 'confirmed' | 'completed' | 'cancelled') {
+    if (newStatus === 'cancelled') {
+        cancellingId.value = appt.id;
+        cancelForm.reset();
+        cancelModal.value = true;
+        return;
+    }
+    router.patch(`/doctor/appointments/${appt.id}/status`, { status: newStatus }, {
+        preserveScroll: true,
+    });
+}
+
+function submitCancel() {
+    if (!cancellingId.value) return;
+    cancelForm.patch(`/doctor/appointments/${cancellingId.value}/status`, {
+        preserveScroll: true,
+        onSuccess: () => { cancelModal.value = false; cancellingId.value = null; },
+    });
+}
+
+const actionConfig: Record<string, { next: { label: string; status: 'confirmed' | 'completed' | 'cancelled'; cls: string }[] }> = {
+    pending:   { next: [
+        { label: 'Confirm',    status: 'confirmed', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800' },
+        { label: 'Cancel',    status: 'cancelled', cls: 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800' },
+    ]},
+    confirmed: { next: [
+        { label: 'Complete',  status: 'completed', cls: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100 dark:bg-sky-900/20 dark:text-sky-300 dark:border-sky-800' },
+        { label: 'Cancel',   status: 'cancelled', cls: 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800' },
+    ]},
+    completed: { next: [] },
+    cancelled: { next: [] },
+};
 </script>
 
 <template>
@@ -132,6 +170,7 @@ const hasActiveFilters = () => search.value || status.value !== 'all' || date.va
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-600">Date & Time</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-600">Reason</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-600">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-600">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
@@ -162,6 +201,20 @@ const hasActiveFilters = () => search.value || status.value !== 'all' || date.va
                                 >
                                     {{ statusConfig[appt.status]?.label }}
                                 </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-1.5">
+                                    <button
+                                        v-for="action in actionConfig[appt.status]?.next"
+                                        :key="action.status"
+                                        @click="updateStatus(appt, action.status)"
+                                        class="rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors"
+                                        :class="action.cls"
+                                    >
+                                        {{ action.label }}
+                                    </button>
+                                    <span v-if="!actionConfig[appt.status]?.next?.length" class="text-xs text-gray-300 dark:text-gray-700">—</span>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="!appointments.data.length">
@@ -203,5 +256,36 @@ const hasActiveFilters = () => search.value || status.value !== 'all' || date.va
                 </div>
             </div>
         </div>
+
+        <!-- Cancel modal -->
+        <Teleport to="body">
+            <div v-if="cancelModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                <div class="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-900">
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1">Cancel Appointment</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Please provide a reason for cancellation (optional).</p>
+                    <textarea
+                        v-model="cancelForm.cancellation_reason"
+                        rows="3"
+                        placeholder="Reason for cancellation…"
+                        class="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                    />
+                    <div class="mt-4 flex gap-3">
+                        <button
+                            @click="submitCancel"
+                            :disabled="cancelForm.processing"
+                            class="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+                        >
+                            Confirm Cancellation
+                        </button>
+                        <button
+                            @click="cancelModal = false"
+                            class="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                        >
+                            Go Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Teleport>
     </DoctorLayout>
 </template>

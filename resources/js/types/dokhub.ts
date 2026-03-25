@@ -10,11 +10,12 @@ export type DoctorSchedule = {
 
 export type Doctor = {
     id: number;
+    user_id: number | null;
     name: string;
     slug: string;
     email: string;
     phone: string | null;
-    specialization: string;
+    specialization: string[];
     qualification: string | null;
     bio: string | null;
     avatar: string | null;
@@ -23,9 +24,13 @@ export type Doctor = {
     consultation_fee: string;
     status: 'pending' | 'approved' | 'suspended';
     location: string | null;
+    latitude: number | null;
+    longitude: number | null;
     languages: string[] | null;
     schedules?: DoctorSchedule[];
     appointments_count?: number;
+    reviews_count?: number;
+    review_avg_rating?: number | null;
     created_at: string;
     updated_at: string;
 };

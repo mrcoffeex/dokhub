@@ -26,21 +26,21 @@ function formatTime(timeStr: string) {
 </script>
 
 <template>
-    <Head title="Appointment Confirmed" />
+    <Head title="Appointment Requested" />
     <GuestLayout>
         <div class="mx-auto max-w-2xl px-4 py-20 sm:px-6 lg:px-8">
-            <!-- Success icon -->
+            <!-- Pending icon -->
             <div class="mb-8 flex justify-center">
-                <div class="flex h-20 w-20 items-center justify-center rounded-full bg-green-100 ring-8 ring-green-50">
-                    <svg class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <div class="flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 ring-8 ring-amber-50">
+                    <svg class="h-10 w-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
             </div>
 
             <div class="text-center">
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Appointment Confirmed!</h1>
-                <p class="mt-3 text-gray-600">A confirmation has been sent to <span class="font-semibold text-gray-800">{{ appointment.patient_email }}</span></p>
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Appointment Requested!</h1>
+                <p class="mt-3 text-gray-600">Your booking is <span class="font-semibold text-amber-600">pending confirmation</span> by the doctor. We'll notify <span class="font-semibold text-gray-800">{{ appointment.patient_email }}</span> once confirmed.</p>
             </div>
 
             <!-- Reference badge -->
@@ -83,18 +83,18 @@ function formatTime(timeStr: string) {
                 </div>
             </div>
 
-            <!-- Info box -->
+            <!-- Status banner -->
             <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
                 <div class="flex gap-3">
                     <svg class="h-5 w-5 shrink-0 text-amber-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div class="text-sm text-amber-800">
-                        <p class="font-semibold">Before your appointment</p>
+                        <p class="font-semibold">What happens next?</p>
                         <ul class="mt-1 list-disc pl-4 space-y-0.5 text-amber-700">
-                            <li>Bring a valid photo ID</li>
-                            <li>Arrive 10 minutes early</li>
-                            <li>Cancel at least 24 hours in advance if needed</li>
+                            <li>The doctor will review and confirm your appointment</li>
+                            <li>You'll receive a confirmation email once approved</li>
+                            <li>Use your reference number to track your booking status</li>
                         </ul>
                     </div>
                 </div>

@@ -16,7 +16,7 @@ const form = ref({
     name: '',
     email: '',
     phone: '',
-    specialization: '',
+    specialization: [] as string[],
     qualification: '',
     bio: '',
     experience_years: '',
@@ -31,16 +31,15 @@ const processing = ref(false);
 const errors = ref<Record<string, string>>({});
 
 const specializations = [
-    'General Practice',
-    'Cardiology',
-    'Dermatology',
-    'Pediatrics',
-    'Orthopedics',
-    'Neurology',
-    'Psychiatry',
-    'Radiology',
-    'Oncology',
-    'Gastroenterology',
+    'Allergy & Immunology', 'Anesthesiology', 'Cardiology', 'Colorectal Surgery',
+    'Critical Care Medicine', 'Dermatology', 'Emergency Medicine', 'Endocrinology',
+    'Family Medicine', 'Gastroenterology', 'General Surgery', 'Geriatrics',
+    'Hematology', 'Infectious Disease', 'Internal Medicine', 'Nephrology',
+    'Neurology', 'Neurosurgery', 'Obstetrics & Gynecology', 'Oncology',
+    'Ophthalmology', 'Orthopedic Surgery', 'Otolaryngology (ENT)', 'Pathology',
+    'Pediatrics', 'Physical Medicine & Rehabilitation', 'Plastic Surgery',
+    'Psychiatry', 'Pulmonology', 'Radiology', 'Rheumatology', 'Thoracic Surgery',
+    'Urology', 'Vascular Surgery',
 ];
 
 async function handleSubmit() {
@@ -140,15 +139,27 @@ async function handleSubmit() {
                         <div class="grid grid-cols-2 gap-4">
                             <div class="grid gap-2.5">
                                 <Label for="specialization" class="text-sm font-semibold text-gray-700">Specialization</Label>
-                                <select
-                                    id="specialization"
-                                    v-model="form.specialization"
-                                    required
-                                    class="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                <div
+                                    class="max-h-40 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3"
+                                    :class="{ 'border-red-400': errors.specialization }"
                                 >
-                                    <option value="">Select specialization</option>
-                                    <option v-for="spec in specializations" :key="spec" :value="spec">{{ spec }}</option>
-                                </select>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <button
+                                            v-for="spec in specializations" :key="spec"
+                                            type="button"
+                                            @click="form.specialization.includes(spec) ? form.specialization = form.specialization.filter(x => x !== spec) : form.specialization.push(spec)"
+                                            class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"
+                                            :class="form.specialization.includes(spec)
+                                                ? 'border-violet-500 bg-violet-600 text-white'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-600'"
+                                        >
+                                            {{ spec }}
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-400">
+                                    {{ form.specialization.length ? form.specialization.length + ' selected' : 'Select one or more' }}
+                                </p>
                                 <InputError :message="errors.specialization" class="text-xs" />
                             </div>
                             <div class="grid gap-2.5">

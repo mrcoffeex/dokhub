@@ -42,8 +42,8 @@ Route::post('/my-appointment', [AppointmentController::class, 'lookup'])->name('
 
 // Authenticated user dashboard (redirects based on role)
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        $user = auth()->user();
+    Route::get('dashboard', function (Request $request) {
+        $user = $request->user();
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
@@ -56,8 +56,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('doctor-dashboard', DoctorDashboardController::class)->name('doctor.dashboard');
     Route::get('doctor/appointments', [DoctorAppointmentsController::class, 'index'])->name('doctor.appointments');
     Route::patch('doctor/appointments/{appointment}/status', [DoctorAppointmentsController::class, 'updateStatus'])->name('doctor.appointments.update-status');
+    Route::post('doctor/appointments/{appointment}/add-patient', [DoctorAppointmentsController::class, 'addPatient'])->name('doctor.appointments.add-patient');
     Route::get('doctor/profile', [DoctorProfileController::class, 'edit'])->name('doctor.profile.edit');
     Route::patch('doctor/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
+    Route::post('doctor/profile/avatar', [DoctorProfileController::class, 'uploadAvatar'])->name('doctor.profile.avatar');
+    Route::delete('doctor/profile/avatar', [DoctorProfileController::class, 'deleteAvatar'])->name('doctor.profile.avatar.delete');
     Route::get('doctor/schedule', [DoctorScheduleController::class, 'edit'])->name('doctor.schedule.edit');
     Route::patch('doctor/schedule', [DoctorScheduleController::class, 'update'])->name('doctor.schedule.update');
 
@@ -92,6 +95,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
             Route::put('/{doctor}', [Admin\DoctorController::class, 'update'])->name('update');
             Route::patch('/{doctor}/approve', [Admin\DoctorController::class, 'approve'])->name('approve');
             Route::patch('/{doctor}/suspend', [Admin\DoctorController::class, 'suspend'])->name('suspend');
+            Route::post('/{doctor}/create-user-account', [Admin\DoctorController::class, 'createUserAccount'])->name('createUserAccount');
             Route::delete('/{doctor}', [Admin\DoctorController::class, 'destroy'])->name('destroy');
         });
 
@@ -99,6 +103,8 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
             Route::get('/', [Admin\AppointmentController::class, 'index'])->name('index');
             Route::patch('/{appointment}/status', [Admin\AppointmentController::class, 'updateStatus'])->name('update-status');
         });
+
+        Route::get('/spam-detection', [Admin\SpamDetectionController::class, 'index'])->name('spam-detection');
 
         Route::get('/settings', function (Request $request) {
             return Inertia::render('Admin/Settings', [

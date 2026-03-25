@@ -162,15 +162,78 @@ function print() {
 </template>
 
 <style>
+/* Half A4 = A5 portrait (148 × 210 mm) */
+@page {
+    size: 148mm 210mm;
+    margin: 5mm 7mm;
+}
+
 @media print {
     .print\:hidden { display: none !important; }
     aside, header, nav { display: none !important; }
     .pl-64 { padding-left: 0 !important; }
+
+    body {
+        background: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
     #rx-print-area {
         border: none !important;
         box-shadow: none !important;
+        border-radius: 0 !important;
         max-width: 100% !important;
+        width: 100% !important;
+        font-size: 8.5pt !important;
     }
-    body { background: white !important; }
+
+    /* ── Letterhead ─────────────────────────────────────────── */
+    #rx-print-area > div:first-child {
+        padding: 4mm 5mm !important;
+    }
+    #rx-print-area > div:first-child  .gap-3   { gap: 2mm !important; }
+    #rx-print-area > div:first-child  .mb-3    { margin-bottom: 1.5mm !important; }
+    #rx-print-area > div:first-child  .mt-2    { margin-top: 1mm !important; }
+    #rx-print-area > div:first-child  h1       { font-size: 12pt !important; line-height: 1.2 !important; }
+    #rx-print-area > div:first-child  .text-xl { font-size: 10pt !important; }
+    #rx-print-area > div:first-child  .text-lg { font-size: 9.5pt !important; }
+    #rx-print-area > div:first-child  .text-2xl { font-size: 12pt !important; }
+    #rx-print-area > div:first-child  .h-10,
+    #rx-print-area > div:first-child  .w-10   { height: 26px !important; width: 26px !important; }
+    #rx-print-area > div:first-child  .h-6,
+    #rx-print-area > div:first-child  .w-6    { height: 15px !important; width: 15px !important; }
+    #rx-print-area > div:first-child  .rounded-lg { border-radius: 5px !important; }
+
+    /* ── Patient info band ──────────────────────────────────── */
+    #rx-print-area > div:nth-child(2) {
+        padding: 2.5mm 5mm !important;
+        gap: 3mm !important;
+        column-gap: 3mm !important;
+    }
+
+    /* ── ℞ + medications ────────────────────────────────────── */
+    #rx-print-area > div:nth-child(3) {
+        padding: 3mm 5mm !important;
+    }
+    #rx-print-area > div:nth-child(3) .mb-5   { margin-bottom: 2mm !important; }
+    #rx-print-area > div:nth-child(3) .text-4xl { font-size: 17pt !important; }
+    #rx-print-area > div:nth-child(3) table   { font-size: 7.5pt !important; }
+    #rx-print-area > div:nth-child(3) table th,
+    #rx-print-area > div:nth-child(3) table td {
+        padding-top: 1.5mm !important;
+        padding-bottom: 1.5mm !important;
+        padding-right: 2mm !important;
+    }
+    #rx-print-area > div:nth-child(3) .mt-6   { margin-top: 3mm !important; }
+    #rx-print-area > div:nth-child(3) .p-4    { padding: 2.5mm !important; }
+
+    /* ── Signature footer ───────────────────────────────────── */
+    #rx-print-area > div:last-child {
+        padding: 3mm 5mm !important;
+    }
+    #rx-print-area > div:last-child .h-12  { height: 18px !important; }
+    #rx-print-area > div:last-child .w-36  { width: 80px !important; }
+    #rx-print-area > div:last-child .mb-1  { margin-bottom: 1mm !important; }
 }
 </style>

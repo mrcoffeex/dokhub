@@ -139,32 +139,79 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                     <form v-if="editingInfo" @submit.prevent="submitInfo" class="border-b border-gray-100 p-4 dark:border-gray-800 space-y-3">
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Phone</label>
-                            <input v-model="infoForm.phone" type="tel" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-100" />
+                            <input
+                                v-model="infoForm.phone"
+                                type="tel"
+                                :class="infoForm.errors.phone
+                                    ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="infoForm.errors.phone" class="mt-1 text-xs text-red-500">{{ infoForm.errors.phone }}</p>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Gender</label>
-                            <select v-model="infoForm.gender" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400">
+                            <select
+                                v-model="infoForm.gender"
+                                :class="infoForm.errors.gender
+                                    ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            >
                                 <option value="">— Select —</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
                                 <option value="other">Other</option>
                             </select>
+                            <p v-if="infoForm.errors.gender" class="mt-1 text-xs text-red-500">{{ infoForm.errors.gender }}</p>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Date of Birth</label>
-                            <input v-model="infoForm.date_of_birth" type="date" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                            <input
+                                v-model="infoForm.date_of_birth"
+                                type="date"
+                                :class="infoForm.errors.date_of_birth
+                                    ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="infoForm.errors.date_of_birth" class="mt-1 text-xs text-red-500">{{ infoForm.errors.date_of_birth }}</p>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Allergies</label>
-                            <textarea v-model="infoForm.allergies" rows="2" class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                            <textarea
+                                v-model="infoForm.allergies"
+                                rows="2"
+                                :class="infoForm.errors.allergies
+                                    ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="infoForm.errors.allergies" class="mt-1 text-xs text-red-500">{{ infoForm.errors.allergies }}</p>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Medical History</label>
-                            <textarea v-model="infoForm.medical_history" rows="3" class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                            <textarea
+                                v-model="infoForm.medical_history"
+                                rows="3"
+                                :class="infoForm.errors.medical_history
+                                    ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="infoForm.errors.medical_history" class="mt-1 text-xs text-red-500">{{ infoForm.errors.medical_history }}</p>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Internal Notes</label>
-                            <textarea v-model="infoForm.notes" rows="2" class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                            <textarea
+                                v-model="infoForm.notes"
+                                rows="2"
+                                :class="infoForm.errors.notes
+                                    ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="infoForm.errors.notes" class="mt-1 text-xs text-red-500">{{ infoForm.errors.notes }}</p>
                         </div>
                         <button type="submit" :disabled="infoForm.processing" class="w-full rounded-xl bg-violet-600 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50">
                             Save Changes
@@ -301,36 +348,87 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                         <h3 class="text-sm font-semibold text-violet-800 dark:text-violet-200">{{ editingDiagId ? 'Edit Diagnosis' : 'New Diagnosis' }}</h3>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Diagnosis Title <span class="text-red-500">*</span></label>
-                            <input v-model="diagForm.title" type="text" required placeholder="e.g. Type 2 Diabetes, Acute Pharyngitis…" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-100" />
+                            <input
+                                v-model="diagForm.title"
+                                type="text"
+                                required
+                                placeholder="e.g. Type 2 Diabetes, Acute Pharyngitis…"
+                                :class="diagForm.errors.title
+                                    ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
                             <p v-if="diagForm.errors.title" class="mt-1 text-xs text-red-500">{{ diagForm.errors.title }}</p>
                         </div>
                         <div class="grid gap-3 sm:grid-cols-2">
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Symptoms</label>
-                                <textarea v-model="diagForm.symptoms" rows="3" placeholder="Describe symptoms…" class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                                <textarea
+                                    v-model="diagForm.symptoms"
+                                    rows="3"
+                                    placeholder="Describe symptoms…"
+                                    :class="diagForm.errors.symptoms
+                                        ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                                />
+                                <p v-if="diagForm.errors.symptoms" class="mt-1 text-xs text-red-500">{{ diagForm.errors.symptoms }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Clinical Notes</label>
-                                <textarea v-model="diagForm.description" rows="3" placeholder="Detailed clinical notes…" class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                                <textarea
+                                    v-model="diagForm.description"
+                                    rows="3"
+                                    placeholder="Detailed clinical notes…"
+                                    :class="diagForm.errors.description
+                                        ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                                />
+                                <p v-if="diagForm.errors.description" class="mt-1 text-xs text-red-500">{{ diagForm.errors.description }}</p>
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Treatment Plan</label>
-                            <textarea v-model="diagForm.treatment" rows="2" placeholder="Treatment plan, medications, lifestyle advice…" class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                            <textarea
+                                v-model="diagForm.treatment"
+                                rows="2"
+                                placeholder="Treatment plan, medications, lifestyle advice…"
+                                :class="diagForm.errors.treatment
+                                    ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="diagForm.errors.treatment" class="mt-1 text-xs text-red-500">{{ diagForm.errors.treatment }}</p>
                         </div>
                         <div class="grid gap-3 sm:grid-cols-2">
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Follow-up Date</label>
-                                <input v-model="diagForm.follow_up_date" type="date" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400" />
+                                <input
+                                    v-model="diagForm.follow_up_date"
+                                    type="date"
+                                    :class="diagForm.errors.follow_up_date
+                                        ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                                />
+                                <p v-if="diagForm.errors.follow_up_date" class="mt-1 text-xs text-red-500">{{ diagForm.errors.follow_up_date }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Linked Appointment</label>
-                                <select v-model="diagForm.appointment_id" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 outline-none focus:border-violet-400">
+                                <select
+                                    v-model="diagForm.appointment_id"
+                                    :class="diagForm.errors.appointment_id
+                                        ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                                >
                                     <option :value="null">— None —</option>
                                     <option v-for="a in confirmedAppts" :key="a.id" :value="a.id">
                                         {{ a.reference }} — {{ formatDate(a.appointment_date) }}
                                     </option>
                                 </select>
+                                <p v-if="diagForm.errors.appointment_id" class="mt-1 text-xs text-red-500">{{ diagForm.errors.appointment_id }}</p>
                             </div>
                         </div>
                         <div class="flex gap-2">

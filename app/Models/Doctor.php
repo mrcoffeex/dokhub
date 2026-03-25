@@ -26,8 +26,12 @@ class Doctor extends Model
         'consultation_fee',
         'status',
         'location',
+        'latitude',
+        'longitude',
         'languages',
     ];
+
+    protected $appends = ['avatar_url'];
 
     public function getRouteKeyName(): string
     {
@@ -65,8 +69,11 @@ class Doctor extends Model
     protected function casts(): array
     {
         return [
-            'languages' => 'array',
+            'specialization'   => 'array',
+            'languages'        => 'array',
             'consultation_fee' => 'decimal:2',
+            'latitude'         => 'float',
+            'longitude'        => 'float',
         ];
     }
 

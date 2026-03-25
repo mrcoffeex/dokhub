@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -12,19 +13,21 @@ class DoctorController extends Controller
     public function index(Request $request): Response
     {
         $query = Doctor::approved()
-            ->withCount(['appointments' => fn($q) => $q->whereIn('status', ['confirmed', 'completed'])]);
+            ->withCount(['appointments' => fn($q) => $q->whereIn('status', ['confirmed', 'completed'])])
+            ->withCount(['reviews as reviews_count' => fn($q) => $q->where('is_approved', true)])
+            ->withAvg(['reviews as review_avg_rating' => fn($q) => $q->where('is_approved', true)], 'rating');
 
         if ($request->filled('search')) {
             $term = $request->search;
             $query->where(fn($q) => $q
                 ->where('name', 'ilike', "%{$term}%")
-                ->orWhere('specialization', 'ilike', "%{$term}%")
+                ->orWhereRaw("specialization::text ilike ?", ["%{$term}%"])
                 ->orWhere('location', 'ilike', "%{$term}%")
             );
         }
 
         if ($request->filled('specialization')) {
-            $query->where('specialization', $request->specialization);
+            $query->whereJsonContains('specialization', $request->specialization);
         }
 
         // Sorting
@@ -38,10 +41,12 @@ class DoctorController extends Controller
 
         $doctors = $query->paginate(12)->withQueryString();
 
-        $specializations = Doctor::approved()
-            ->distinct()
-            ->orderBy('specialization')
-            ->pluck('specialization');
+        $specializations = DB::table('doctors')
+            ->where('status', 'approved')
+            ->whereNotNull('specialization')
+            ->selectRaw('DISTINCT json_array_elements_text(specialization) as spec')
+            ->orderBy('spec')
+            ->pluck('spec');
 
         return Inertia::render('Doctors/Index', [
             'doctors' => $doctors,

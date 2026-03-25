@@ -25,6 +25,15 @@ class AppointmentController extends Controller
             'reason'           => ['nullable', 'string', 'max:500'],
         ]);
 
+        // Check visitor hasn't exceeded 5 bookings today (across all doctors)
+        $dailyBookings = Appointment::where('patient_email', $validated['patient_email'])
+            ->whereDate('created_at', today())
+            ->count();
+
+        if ($dailyBookings >= 5) {
+            return back()->withErrors(['patient_email' => 'You have reached the maximum of 5 bookings per day. Please try again tomorrow.']);
+        }
+
         // Check patient doesn't already have a booking with this doctor on the same date
         $alreadyBooked = Appointment::where('doctor_id', $doctor->id)
             ->where('appointment_date', $validated['appointment_date'])
@@ -51,19 +60,20 @@ class AppointmentController extends Controller
             ...$validated,
             'doctor_id' => $doctor->id,
             'reference' => Appointment::generateReference(),
-            'status'    => 'confirmed',
-            'confirmed_at' => now(),
+            'status'    => 'pending',
         ]);
 
-        try {
-            Mail::to($appointment->patient_email)
-                ->send(new AppointmentConfirmation($appointment));
-        } catch (\Exception $e) {
-            // Mail failure should not block the booking confirmation
-            \Illuminate\Support\Facades\Log::error('Appointment confirmation mail failed', [
-                'appointment_id' => $appointment->id,
-                'error' => $e->getMessage(),
-            ]);
+        if (app()->isProduction()) {
+            try {
+                Mail::to($appointment->patient_email)
+                    ->send(new AppointmentConfirmation($appointment));
+            } catch (\Exception $e) {
+                // Mail failure should not block the booking confirmation
+                \Illuminate\Support\Facades\Log::error('Appointment confirmation mail failed', [
+                    'appointment_id' => $appointment->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return Inertia::render('Booking/Success', [

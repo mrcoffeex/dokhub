@@ -29,11 +29,6 @@ function clearDate() {
     applyFilters();
 }
 
-function updateStatus(appointment: Appointment, newStatus: string) {
-    const reason = newStatus === 'cancelled' ? prompt('Cancellation reason (optional):') ?? undefined : undefined;
-    router.patch(`/admin/appointments/${appointment.id}/status`, { status: newStatus, cancellation_reason: reason }, { preserveScroll: true });
-}
-
 function formatDate(dateStr: string) {
     return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
@@ -135,7 +130,6 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                             <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Doctor</th>
                             <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Date & Time</th>
                             <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Status</th>
-                            <th class="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
@@ -164,7 +158,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                                     <div>
                                         <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Dr. {{ apt.doctor?.name }}</p>
                                         <span class="inline-block rounded-md bg-violet-50 px-1.5 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">
-                                            {{ apt.doctor?.specialization }}
+                                            {{ Array.isArray(apt.doctor?.specialization) ? apt.doctor.specialization.join(', ') : apt.doctor?.specialization }}
                                         </span>
                                     </div>
                                 </div>
@@ -187,54 +181,12 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                                 </span>
                             </td>
 
-                            <!-- Actions -->
-                            <td class="px-5 py-4">
-                                <div class="flex items-center justify-end gap-1">
-                                    <!-- Confirm -->
-                                    <button
-                                        v-if="apt.status === 'pending'"
-                                        @click="updateStatus(apt, 'confirmed')"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-all hover:bg-emerald-100 hover:shadow-sm active:scale-95 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/40"
-                                    >
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Confirm
-                                    </button>
-                                    <!-- Complete -->
-                                    <button
-                                        v-if="apt.status === 'confirmed'"
-                                        @click="updateStatus(apt, 'completed')"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 transition-all hover:bg-sky-100 hover:shadow-sm active:scale-95 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:bg-sky-900/40"
-                                    >
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Complete
-                                    </button>
-                                    <!-- Cancel -->
-                                    <button
-                                        v-if="apt.status !== 'cancelled' && apt.status !== 'completed'"
-                                        @click="updateStatus(apt, 'cancelled')"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 hover:shadow-sm active:scale-95 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
-                                    >
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        Cancel
-                                    </button>
-                                    <!-- Already finalised -->
-                                    <span
-                                        v-if="apt.status === 'cancelled' || apt.status === 'completed'"
-                                        class="text-xs text-gray-300 dark:text-gray-600"
-                                    >—</span>
-                                </div>
-                            </td>
+
                         </tr>
 
                         <!-- Empty state -->
                         <tr v-if="!appointments.data.length">
-                            <td colspan="6" class="px-6 py-20 text-center">
+                            <td colspan="5" class="px-6 py-20 text-center">
                                 <div class="mx-auto flex w-fit flex-col items-center gap-3">
                                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800">
                                         <svg class="h-7 w-7 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -66,21 +66,23 @@ class DoctorAppointmentsController extends Controller
             'cancellation_reason' => $validated['cancellation_reason'] ?? null,
         ]);
 
-        // Auto-register patient when appointment is confirmed or completed
-        if (
-            in_array($validated['status'], ['confirmed', 'completed']) &&
-            ! in_array($previousStatus, ['confirmed', 'completed'])
-        ) {
-            Patient::firstOrCreate(
-                ['doctor_id' => $doctor->id, 'email' => $appointment->patient_email],
-                [
-                    'name'         => $appointment->patient_name,
-                    'phone'        => $appointment->patient_phone,
-                    'first_seen_at' => $appointment->appointment_date,
-                ]
-            );
-        }
-
         return back()->with('success', 'Appointment status updated.');
+    }
+
+    public function addPatient(Request $request, Appointment $appointment)
+    {
+        $doctor = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        abort_unless($appointment->doctor_id === $doctor->id, 403);
+
+        Patient::firstOrCreate(
+            ['doctor_id' => $doctor->id, 'email' => $appointment->patient_email],
+            [
+                'name'          => $appointment->patient_name,
+                'phone'         => $appointment->patient_phone,
+                'first_seen_at' => $appointment->appointment_date,
+            ]
+        );
+
+        return back()->with('success', $appointment->patient_name . ' has been added to your patients.');
     }
 }

@@ -27,14 +27,14 @@
 <div class="container">
     <div class="header">
         <p style="font-size:13px;opacity:0.7;margin:0 0 8px;">DOKHUB HEALTHCARE</p>
-        <h1>You're all set!</h1>
-        <p>Your appointment has been successfully booked.</p>
+        <h1>Request Received!</h1>
+        <p>Your appointment request has been submitted and is awaiting confirmation.</p>
     </div>
     <div class="body">
-        <div class="badge">✓ Appointment Confirmed</div>
+        <div class="badge" style="background:#fffbeb;color:#92400e;border-color:#fde68a;">⏳ Pending Confirmation</div>
 
         <p style="color:#475569;font-size:15px;margin:0 0 24px;">
-            Hi <strong>{{ $appointment->patient_name }}</strong>, here are your appointment details:
+            Hi <strong>{{ $appointment->patient_name }}</strong>, your appointment request has been received. The doctor will confirm it shortly.
         </p>
 
         <div class="detail-card">

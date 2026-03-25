@@ -3,6 +3,7 @@ import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Doctor, PaginatedData } from '@/types';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     doctors: PaginatedData<Doctor>;
@@ -24,19 +25,47 @@ function applyFilters() {
 }
 
 function approve(doctor: Doctor) {
-    router.patch(`/admin/doctors/${doctor.id}/approve`, {}, { preserveScroll: true });
+    router.patch(`/admin/doctors/${doctor.slug}/approve`, {}, { preserveScroll: true });
 }
 
 function suspend(doctor: Doctor) {
     if (confirm(`Suspend Dr. ${doctor.name}? They will no longer appear on the platform.`)) {
-        router.patch(`/admin/doctors/${doctor.id}/suspend`, {}, { preserveScroll: true });
+        router.patch(`/admin/doctors/${doctor.slug}/suspend`, {}, { preserveScroll: true });
     }
 }
 
 function destroy(doctor: Doctor) {
     if (confirm(`Permanently delete Dr. ${doctor.name}? This cannot be undone.`)) {
-        router.delete(`/admin/doctors/${doctor.id}`, { preserveScroll: true });
+        router.delete(`/admin/doctors/${doctor.slug}`, { preserveScroll: true });
     }
+}
+
+// Create user account modal
+const accountModalDoctor = ref<Doctor | null>(null);
+const accountForm = useForm({ password: '', password_confirmation: '' });
+
+function openAccountModal(doctor: Doctor) {
+    accountModalDoctor.value = doctor;
+    accountForm.reset();
+}
+
+function closeAccountModal() {
+    accountModalDoctor.value = null;
+    accountForm.reset();
+}
+
+function submitCreateAccount() {
+    if (!accountModalDoctor.value) return;
+    accountForm.post(`/admin/doctors/${accountModalDoctor.value.slug}/create-user-account`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            toast.success(`User account created for Dr. ${accountModalDoctor.value!.name}.`);
+            closeAccountModal();
+        },
+        onError: () => {
+            toast.error('Failed to create user account.');
+        },
+    });
 }
 
 const statusLabels: Record<string, { bg: string; text: string; dot: string; label: string }> = {
@@ -102,65 +131,72 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
         <!-- Table -->
         <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <div class="overflow-x-auto">
-                <table class="w-full">
+                <table class="w-full min-w-[720px]">
                     <thead>
                         <tr class="border-b border-gray-100 bg-gray-50/60 dark:border-gray-800 dark:bg-gray-800/40">
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Doctor</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Specialization</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Location</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Appointments</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Status</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Actions</th>
+                            <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Doctor</th>
+                            <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Specialization</th>
+                            <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Location</th>
+                            <th class="px-5 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Appts</th>
+                            <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Status</th>
+                            <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
                         <tr v-for="doctor in doctors.data" :key="doctor.id" class="group transition-colors hover:bg-gray-50/70 dark:hover:bg-gray-800/40">
                             <!-- Doctor -->
-                            <td class="px-6 py-4">
+                            <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <!-- Avatar with initials fallback -->
+                                    <!-- Avatar: fallback behind, img on top -->
                                     <div class="relative h-10 w-10 shrink-0">
+                                        <div class="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white select-none">
+                                            {{ doctor.name?.charAt(0)?.toUpperCase() }}
+                                        </div>
                                         <img
                                             v-if="doctor.avatar_url"
                                             :src="doctor.avatar_url"
                                             :alt="doctor.name"
-                                            class="h-10 w-10 rounded-xl object-cover ring-1 ring-gray-100 dark:ring-gray-700"
+                                            class="absolute inset-0 h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-900"
                                             @error="($event.target as HTMLImageElement).style.display = 'none'"
                                         />
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white">
-                                            {{ doctor.name?.charAt(0)?.toUpperCase() }}
-                                        </div>
                                     </div>
+                                    <!-- Name + email -->
                                     <div class="min-w-0">
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Dr. {{ doctor.name }}</p>
-                                        <p class="truncate text-xs text-gray-400 dark:text-gray-500">{{ doctor.email }}</p>
+                                        <p class="text-sm font-semibold leading-tight text-gray-900 dark:text-gray-100">Dr. {{ doctor.name }}</p>
+                                        <p class="mt-0.5 truncate text-xs text-gray-400 dark:text-gray-500">{{ doctor.email }}</p>
                                     </div>
                                 </div>
                             </td>
                             <!-- Specialization -->
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center rounded-lg bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 dark:bg-violet-900/20 dark:text-violet-300">
-                                    {{ doctor.specialization }}
-                                </span>
+                            <td class="px-5 py-3.5">
+                                <template v-if="doctor.specialization?.length">
+                                    <span class="inline-flex items-center rounded-lg bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 dark:bg-violet-900/20 dark:text-violet-300">
+                                        {{ doctor.specialization[0] }}
+                                    </span>
+                                    <span v-if="doctor.specialization.length > 1" class="ml-1 inline-flex items-center rounded-lg bg-gray-100 px-1.5 py-1 text-xs font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                                        +{{ doctor.specialization.length - 1 }}
+                                    </span>
+                                </template>
+                                <span v-else class="text-gray-400">—</span>
                             </td>
                             <!-- Location -->
-                            <td class="px-6 py-4">
+                            <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
                                     <svg v-if="doctor.location" class="h-3.5 w-3.5 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    {{ doctor.location ?? '—' }}
+                                    <span class="truncate max-w-[140px]">{{ doctor.location ?? '—' }}</span>
                                 </div>
                             </td>
                             <!-- Appointments count -->
-                            <td class="px-6 py-4 text-center">
+                            <td class="px-5 py-3.5 text-center">
                                 <span class="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-lg bg-gray-100 px-2 text-sm font-bold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                                     {{ doctor.appointments_count ?? 0 }}
                                 </span>
                             </td>
                             <!-- Status -->
-                            <td class="px-6 py-4">
+                            <td class="px-5 py-3.5">
                                 <span
                                     class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
                                     :class="[statusLabels[doctor.status]?.bg, statusLabels[doctor.status]?.text]"
@@ -170,14 +206,14 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                 </span>
                             </td>
                             <!-- Actions -->
-                            <td class="px-6 py-4">
-                                <div class="flex items-center justify-end gap-1">
+                            <td class="px-5 py-3.5">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <!-- Approve -->
                                     <button
                                         v-if="doctor.status !== 'approved'"
                                         @click="approve(doctor)"
                                         title="Approve"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-all hover:bg-emerald-100 hover:shadow-sm active:scale-95 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/40"
+                                        class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 active:scale-95 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/40"
                                     >
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
@@ -189,34 +225,43 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                         v-if="doctor.status === 'approved'"
                                         @click="suspend(doctor)"
                                         title="Suspend"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 transition-all hover:bg-amber-100 hover:shadow-sm active:scale-95 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
+                                        class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-100 active:scale-95 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
                                     >
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                         Suspend
                                     </button>
-                                    <!-- Edit -->
+                                    <!-- Edit (icon only) -->
                                     <Link
-                                        :href="`/admin/doctors/${doctor.id}/edit`"
+                                        :href="`/admin/doctors/${doctor.slug}/edit`"
                                         title="Edit"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-600 transition-all hover:bg-gray-100 hover:shadow-sm active:scale-95 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 active:scale-95 dark:hover:bg-gray-800 dark:hover:text-gray-300"
                                     >
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
-                                        Edit
                                     </Link>
-                                    <!-- Delete -->
+                                    <!-- Delete (icon only) -->
                                     <button
                                         @click="destroy(doctor)"
                                         title="Delete"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 hover:shadow-sm active:scale-95 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-50 hover:text-red-600 active:scale-95 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                                     >
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
-                                        Delete
+                                    </button>
+                                    <!-- Create user account (icon only, only when no user) -->
+                                    <button
+                                        v-if="!doctor.user_id"
+                                        @click="openAccountModal(doctor)"
+                                        title="Create user account"
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-violet-50 hover:text-violet-600 active:scale-95 dark:hover:bg-violet-900/20 dark:hover:text-violet-400"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                        </svg>
                                     </button>
                                 </div>
                             </td>
@@ -270,4 +315,73 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
             </div>
         </div>
     </AdminLayout>
+
+    <!-- Create User Account Modal -->
+    <Teleport to="body">
+        <Transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0"
+            leave-active-class="transition ease-in duration-150"
+            leave-to-class="opacity-0"
+        >
+            <div v-if="accountModalDoctor" class="fixed inset-0 z-50 flex items-center justify-center p-4" @click.self="closeAccountModal">
+                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+                <div class="relative w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+                    <div class="mb-5">
+                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Create User Account</h2>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                            Set a login password for <span class="font-semibold text-gray-700 dark:text-gray-200">Dr. {{ accountModalDoctor.name }}</span>
+                            <span class="block text-xs mt-0.5">({{ accountModalDoctor.email }})</span>
+                        </p>
+                    </div>
+
+                    <form @submit.prevent="submitCreateAccount" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password <span class="text-red-500">*</span></label>
+                            <input
+                                v-model="accountForm.password"
+                                type="password"
+                                autocomplete="new-password"
+                                required
+                                minlength="8"
+                                class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                :class="{ 'border-red-400': accountForm.errors.password }"
+                            />
+                            <p v-if="accountForm.errors.password" class="mt-1 text-xs text-red-500">{{ accountForm.errors.password }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password <span class="text-red-500">*</span></label>
+                            <input
+                                v-model="accountForm.password_confirmation"
+                                type="password"
+                                autocomplete="new-password"
+                                required
+                                class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                :class="{ 'border-red-400': accountForm.errors.password_confirmation }"
+                            />
+                            <p v-if="accountForm.errors.password_confirmation" class="mt-1 text-xs text-red-500">{{ accountForm.errors.password_confirmation }}</p>
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-2">
+                            <button
+                                type="button"
+                                @click="closeAccountModal"
+                                class="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                :disabled="accountForm.processing"
+                                class="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-60"
+                            >
+                                <span v-if="accountForm.processing">Creating…</span>
+                                <span v-else>Create Account</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </Transition>
+    </Teleport>
 </template>

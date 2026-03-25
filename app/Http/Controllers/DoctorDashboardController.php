@@ -23,10 +23,11 @@ class DoctorDashboardController extends Controller
                 ->limit(20)
                 ->get(),
             'stats' => [
-                'total_appointments' => Appointment::where('doctor_id', $doctor->id)->count(),
-                'pending_appointments' => Appointment::where('doctor_id', $doctor->id)->where('status', 'pending')->count(),
+                'total_appointments'     => Appointment::where('doctor_id', $doctor->id)->count(),
+                'pending_appointments'   => Appointment::where('doctor_id', $doctor->id)->where('status', 'pending')->count(),
                 'confirmed_appointments' => Appointment::where('doctor_id', $doctor->id)->where('status', 'confirmed')->count(),
                 'completed_appointments' => Appointment::where('doctor_id', $doctor->id)->where('status', 'completed')->count(),
+                'cancelled_appointments' => Appointment::where('doctor_id', $doctor->id)->where('status', 'cancelled')->count(),
             ],
         ]);
     }

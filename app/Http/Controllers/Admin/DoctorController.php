@@ -25,7 +25,7 @@ class DoctorController extends Controller
             $term = $request->search;
             $query->where(fn($q) => $q
                 ->where('name', 'ilike', "%{$term}%")
-                ->orWhere('specialization', 'ilike', "%{$term}%")
+                ->orWhereRaw("specialization::text ilike ?", ["%{$term}%"])
                 ->orWhere('email', 'ilike', "%{$term}%")
             );
         }
@@ -47,7 +47,8 @@ class DoctorController extends Controller
             'name'               => ['required', 'string', 'max:100'],
             'email'              => ['required', 'email', 'unique:users,email', 'unique:doctors,email'],
             'phone'              => ['nullable', 'string', 'max:25'],
-            'specialization'     => ['required', 'string', 'max:100'],
+            'specialization'     => ['required', 'array', 'min:1'],
+            'specialization.*'   => ['string', 'max:100'],
             'qualification'      => ['nullable', 'string', 'max:200'],
             'bio'                => ['nullable', 'string', 'max:1000'],
             'experience_years'   => ['nullable', 'integer', 'min:0', 'max:60'],
@@ -101,7 +102,8 @@ class DoctorController extends Controller
                 $userId ? 'unique:users,email,' . $userId : 'unique:users,email',
             ],
             'phone'              => ['nullable', 'string', 'max:25'],
-            'specialization'     => ['required', 'string', 'max:100'],
+            'specialization'     => ['required', 'array', 'min:1'],
+            'specialization.*'   => ['string', 'max:100'],
             'qualification'      => ['nullable', 'string', 'max:200'],
             'bio'                => ['nullable', 'string', 'max:1000'],
             'experience_years'   => ['nullable', 'integer', 'min:0', 'max:60'],
@@ -135,7 +137,7 @@ class DoctorController extends Controller
             }
         }
 
-        return redirect()->route('admin.doctors.index')->with('success', 'Doctor updated successfully.');
+        return back()->with('success', 'Doctor updated successfully.');
     }
 
     public function approve(Doctor $doctor)
@@ -154,5 +156,32 @@ class DoctorController extends Controller
     {
         $doctor->delete();
         return redirect()->route('admin.doctors.index')->with('success', 'Doctor removed.');
+    }
+
+    public function createUserAccount(Request $request, Doctor $doctor)
+    {
+        if ($doctor->user_id) {
+            return back()->with('error', 'This doctor already has a user account.');
+        }
+
+        if (User::where('email', $doctor->email)->exists()) {
+            return back()->with('error', 'A user account with this email already exists.');
+        }
+
+        $validated = $request->validate([
+            'password'              => ['required', 'string', 'min:8', 'confirmed'],
+            'password_confirmation' => ['required'],
+        ]);
+
+        $user = User::create([
+            'name'     => $doctor->name,
+            'email'    => $doctor->email,
+            'password' => Hash::make($validated['password']),
+            'role'     => 'doctor',
+        ]);
+
+        $doctor->update(['user_id' => $user->id]);
+
+        return back()->with('success', "User account created for Dr. {$doctor->name}.");
     }
 }

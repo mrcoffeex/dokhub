@@ -134,18 +134,9 @@ function getGradient(name: string) {
     return avatarGradients[(name.charCodeAt(0) ?? 0) % avatarGradients.length];
 }
 
-// Deterministic per-doctor star rating (seeded from doctor id)
-const doctorRatings = computed(() => {
-    const map = new Map<number, { rating: number; count: number }>();
-    for (const d of props.doctors.data) {
-        const seed = (Math.imul(d.id, 2654435761) >>> 0);
-        const rating = Math.round((4.0 + (seed % 11) * 0.09) * 10) / 10;
-        const base = d.appointments_count ?? 0;
-        const count = base > 0 ? base + 8 + (seed % 40) : 18 + (seed % 140);
-        map.set(d.id, { rating, count });
-    }
-    return map;
-});
+function doctorRating(doctor: Doctor): number {
+    return Math.round((doctor.review_avg_rating ?? 0) * 10) / 10;
+}
 
 function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
     if (rating >= pos) return 'full';
@@ -359,7 +350,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                     class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-violet-200"
                 >
                     <!-- Per-specialty color accent bar -->
-                    <div class="h-1 w-full bg-gradient-to-r" :class="getSpecAccent(doctor.specialization)"></div>
+                    <div class="h-1 w-full bg-gradient-to-r" :class="getSpecAccent(doctor.specialization?.[0] ?? '')"></div>
 
                     <div class="flex flex-1 flex-col p-5">
                         <!-- Doctor header -->
@@ -392,35 +383,43 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                                 <h3 class="truncate font-bold text-gray-900 transition-colors group-hover:text-violet-700">
                                     Dr. {{ doctor.name }}
                                 </h3>
-                                <span class="mt-1 inline-block rounded-lg px-2 py-0.5 text-xs font-semibold" :class="getSpecBadge(doctor.specialization)">
-                                    {{ doctor.specialization }}
-                                </span>
+                                <div class="mt-1 flex flex-wrap items-center gap-1">
+                                    <span class="inline-block rounded-lg px-2 py-0.5 text-xs font-semibold" :class="getSpecBadge(doctor.specialization?.[0] ?? '')">
+                                        {{ doctor.specialization?.[0] ?? '—' }}
+                                    </span>
+                                    <span v-if="doctor.specialization?.length > 1" class="inline-block rounded-lg bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-500">
+                                        +{{ doctor.specialization.length - 1 }}
+                                    </span>
+                                </div>
                                 <!-- Star rating row -->
                                 <div class="mt-2 flex items-center gap-1.5">
-                                    <div class="flex items-center gap-0.5">
-                                        <template v-for="s in 5" :key="s">
-                                            <!-- Full star -->
-                                            <svg v-if="starType(doctorRatings.get(doctor.id)!.rating, s) === 'full'" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#FBBF24">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                            </svg>
-                                            <!-- Half star -->
-                                            <svg v-else-if="starType(doctorRatings.get(doctor.id)!.rating, s) === 'half'" class="h-3.5 w-3.5" viewBox="0 0 24 24">
-                                                <defs>
-                                                    <linearGradient :id="`hg_${doctor.id}_${s}`" x1="0" x2="1" y1="0" y2="0">
-                                                        <stop offset="50%" stop-color="#FBBF24" />
-                                                        <stop offset="50%" stop-color="#E5E7EB" />
-                                                    </linearGradient>
-                                                </defs>
-                                                <path :fill="`url(#hg_${doctor.id}_${s})`" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                            </svg>
-                                            <!-- Empty star -->
-                                            <svg v-else class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#E5E7EB">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                            </svg>
-                                        </template>
-                                    </div>
-                                    <span class="text-xs font-bold text-gray-800">{{ doctorRatings.get(doctor.id)!.rating }}</span>
-                                    <span class="text-xs text-gray-400">({{ doctorRatings.get(doctor.id)!.count }} reviews)</span>
+                                    <template v-if="(doctor.reviews_count ?? 0) > 0">
+                                        <div class="flex items-center gap-0.5">
+                                            <template v-for="s in 5" :key="s">
+                                                <!-- Full star -->
+                                                <svg v-if="starType(doctorRating(doctor), s) === 'full'" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#FBBF24">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                </svg>
+                                                <!-- Half star -->
+                                                <svg v-else-if="starType(doctorRating(doctor), s) === 'half'" class="h-3.5 w-3.5" viewBox="0 0 24 24">
+                                                    <defs>
+                                                        <linearGradient :id="`hg_${doctor.id}_${s}`" x1="0" x2="1" y1="0" y2="0">
+                                                            <stop offset="50%" stop-color="#FBBF24" />
+                                                            <stop offset="50%" stop-color="#E5E7EB" />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path :fill="`url(#hg_${doctor.id}_${s})`" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                </svg>
+                                                <!-- Empty star -->
+                                                <svg v-else class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#E5E7EB">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                </svg>
+                                            </template>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-800">{{ doctorRating(doctor) }}</span>
+                                        <span class="text-xs text-gray-400">({{ doctor.reviews_count }} reviews)</span>
+                                    </template>
+                                    <span v-else class="text-xs text-gray-400">No reviews yet</span>
                                 </div>
                             </div>
                         </div>

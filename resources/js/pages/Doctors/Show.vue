@@ -3,6 +3,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import GuestLayout from '@/layouts/GuestLayout.vue';
+import ClinicMapView from '@/components/ClinicMapView.vue';
 import type { Doctor, DoctorReview, ReviewStats } from '@/types';
 
 const IS_PRODUCTION = import.meta.env.PROD;
@@ -17,6 +18,7 @@ const props = defineProps<{
 
 const page = usePage();
 const reviewSuccess = computed(() => (page.props.flash as any)?.review_success ?? null);
+const rateLimitError = computed(() => (page.props.errors as Record<string, string>)?.rate_limit ?? null);
 
 // --- Calendar state ---
 const today = new Date();
@@ -221,9 +223,11 @@ function ratingBarWidth(star: number): string {
                             <img :src="doctor.avatar_url" :alt="doctor.name" class="h-20 w-20 rounded-2xl object-cover ring-2 ring-gray-100" />
                             <div>
                                 <h1 class="text-xl font-bold text-gray-900">Dr. {{ doctor.name }}</h1>
-                                <span class="mt-1 inline-block rounded-full bg-violet-100 px-3 py-0.5 text-sm font-medium text-violet-700">
-                                    {{ doctor.specialization }}
-                                </span>
+                                <div class="mt-1 flex flex-wrap gap-1">
+                                    <span v-for="s in doctor.specialization" :key="s" class="inline-block rounded-full bg-violet-100 px-3 py-0.5 text-sm font-medium text-violet-700">
+                                        {{ s }}
+                                    </span>
+                                </div>
                                 <!-- Inline rating summary -->
                                 <div v-if="reviewStats.total > 0" class="mt-2 flex items-center gap-1.5">
                                     <div class="flex gap-0.5">
@@ -274,6 +278,26 @@ function ratingBarWidth(star: number): string {
                         <p class="mt-2 text-sm leading-6 text-gray-600">{{ doctor.bio }}</p>
                     </div>
 
+                    <!-- Clinic map -->
+                    <div v-if="doctor.latitude && doctor.longitude" class="rounded-2xl border border-gray-100 bg-white shadow-sm">
+                        <div class="border-b border-gray-100 px-4 py-3">
+                            <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                                <svg class="h-4 w-4 text-violet-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                </svg>
+                                Clinic Location
+                            </h3>
+                        </div>
+                        <div class="p-3">
+                            <ClinicMapView
+                                :lat="doctor.latitude"
+                                :lng="doctor.longitude"
+                                :doctor-name="doctor.name"
+                                :address="doctor.location"
+                            />
+                        </div>
+                    </div>
+
                     <!-- Schedule overview -->
                     <div v-if="doctor.schedules && doctor.schedules.length" class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
                         <h3 class="font-semibold text-gray-900">Weekly Schedule</h3>
@@ -285,166 +309,10 @@ function ratingBarWidth(star: number): string {
                         </div>
                     </div>
 
-                    <!-- ─── Reviews ─── -->
-                    <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-900">Patient Reviews</h3>
-                            <span class="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-semibold text-violet-700">{{ reviewStats.total }}</span>
-                        </div>
-
-                        <!-- Aggregate row -->
-                        <div v-if="reviewStats.total > 0" class="mt-4">
-                            <div class="flex items-end gap-3">
-                                <span class="text-5xl font-extrabold leading-none text-gray-900">{{ reviewStats.average }}</span>
-                                <div class="pb-1">
-                                    <div class="flex gap-0.5">
-                                        <template v-for="s in 5" :key="s">
-                                            <svg v-if="starType(reviewStats.average, s) === 'full'" class="h-5 w-5" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                            <svg v-else-if="starType(reviewStats.average, s) === 'half'" class="h-5 w-5" viewBox="0 0 24 24">
-                                                <defs><linearGradient id="hg_agg" x1="0" x2="1" y1="0" y2="0"><stop offset="50%" stop-color="#FBBF24"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs>
-                                                <path fill="url(#hg_agg)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                            </svg>
-                                            <svg v-else class="h-5 w-5" viewBox="0 0 24 24" fill="#E5E7EB"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                        </template>
-                                    </div>
-                                    <p class="mt-0.5 text-xs text-gray-500">{{ reviewStats.total }} review{{ reviewStats.total !== 1 ? 's' : '' }}</p>
-                                </div>
-                            </div>
-
-                            <!-- Bar breakdown -->
-                            <div class="mt-4 space-y-1.5">
-                                <div v-for="star in [5,4,3,2,1]" :key="star" class="flex items-center gap-2">
-                                    <span class="w-3 text-right text-xs font-semibold text-gray-500">{{ star }}</span>
-                                    <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                    <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
-                                        <div class="h-full rounded-full bg-amber-400 transition-all duration-500" :style="{ width: ratingBarWidth(star) }"></div>
-                                    </div>
-                                    <span class="w-6 text-right text-xs text-gray-400">{{ reviewStats.counts[star] ?? 0 }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p v-else class="mt-3 text-sm text-gray-400">No reviews yet. Be the first!</p>
-
-                        <!-- Write a review CTA -->
-                        <button
-                            @click="showReviewForm = !showReviewForm"
-                            class="mt-5 w-full rounded-xl border border-violet-200 bg-violet-50 py-2.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-100"
-                        >
-                            {{ showReviewForm ? 'Cancel' : '✏ Write a Review' }}
-                        </button>
-
-                        <!-- Review form -->
-                        <form v-if="showReviewForm" @submit.prevent="submitReview" class="mt-4 space-y-4">
-                            <!-- Success flash -->
-                            <div v-if="reviewSuccess" class="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
-                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                {{ reviewSuccess }}
-                            </div>
-
-                            <!-- Rate-limit error -->
-                            <div v-if="reviewForm.errors.rate_limit" class="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-                                {{ reviewForm.errors.rate_limit }}
-                            </div>
-
-                            <!-- Star picker -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Your Rating <span class="text-red-500">*</span></label>
-                                <div class="mt-2 flex items-center gap-1">
-                                    <button
-                                        v-for="s in 5"
-                                        :key="s"
-                                        type="button"
-                                        @click="reviewForm.rating = s"
-                                        @mouseenter="hoverRating = s"
-                                        @mouseleave="hoverRating = 0"
-                                        class="transition-transform hover:scale-110"
-                                    >
-                                        <svg class="h-8 w-8" viewBox="0 0 24 24" :fill="(hoverRating || reviewForm.rating) >= s ? '#FBBF24' : '#E5E7EB'">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                        </svg>
-                                    </button>
-                                    <span v-if="hoverRating || reviewForm.rating" class="ml-2 text-sm font-medium text-gray-600">
-                                        {{ starLabel(hoverRating || reviewForm.rating) }}
-                                    </span>
-                                </div>
-                                <p v-if="reviewForm.errors.rating" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.rating }}</p>
-                            </div>
-
-                            <div class="grid gap-3 sm:grid-cols-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Your Name <span class="text-red-500">*</span></label>
-                                    <input v-model="reviewForm.patient_name" type="text" placeholder="Jane Smith" required
-                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
-                                        :class="{ 'border-red-400': reviewForm.errors.patient_name }" />
-                                    <p v-if="reviewForm.errors.patient_name" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_name }}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
-                                    <input v-model="reviewForm.patient_email" type="email" placeholder="you@example.com" required
-                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
-                                        :class="{ 'border-red-400': reviewForm.errors.patient_email }" />
-                                    <p v-if="reviewForm.errors.patient_email" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_email }}</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Comment <span class="text-gray-400">(Optional)</span></label>
-                                <textarea v-model="reviewForm.comment" rows="3" placeholder="Share your experience..."
-                                    class="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
-                            </div>
-
-                            <!-- hCaptcha widget (production only) -->
-                            <div v-if="IS_PRODUCTION">
-                                <VueHcaptcha
-                                    ref="hcaptchaRef"
-                                    :sitekey="HCAPTCHA_SITEKEY"
-                                    theme="light"
-                                    @verify="onCaptchaVerified"
-                                    @expired="onCaptchaExpired"
-                                    @error="onCaptchaExpired"
-                                />
-                                <p v-if="reviewForm.errors.hcaptcha_token" class="mt-1 text-xs text-red-500">
-                                    {{ reviewForm.errors.hcaptcha_token }}
-                                </p>
-                            </div>
-
-                            <button
-                                type="submit"
-                                :disabled="reviewForm.processing || reviewForm.rating === 0 || (IS_PRODUCTION && !reviewForm.hcaptcha_token)"
-                                class="w-full rounded-xl bg-violet-600 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
-                            >
-                                {{ reviewForm.processing ? 'Submitting...' : 'Submit Review' }}
-                            </button>
-                        </form>
-
-                        <!-- Review list -->
-                        <div v-if="reviews.length" class="mt-5 space-y-4">
-                            <div class="border-t border-gray-100 pt-4 text-xs font-semibold uppercase tracking-wider text-gray-400">Recent Reviews</div>
-                            <div v-for="review in reviews" :key="review.id" class="rounded-xl bg-gray-50 p-4">
-                                <div class="flex items-start justify-between gap-2">
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-900">{{ review.patient_name }}</p>
-                                        <p class="text-xs text-gray-400">
-                                            {{ new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
-                                        </p>
-                                    </div>
-                                    <div class="flex shrink-0 gap-0.5">
-                                        <template v-for="s in 5" :key="s">
-                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" :fill="review.rating >= s ? '#FBBF24' : '#E5E7EB'">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                            </svg>
-                                        </template>
-                                    </div>
-                                </div>
-                                <p v-if="review.comment" class="mt-2 text-sm leading-relaxed text-gray-600">{{ review.comment }}</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Booking Panel -->
-                <div class="lg:col-span-2">
+                <!-- Booking Panel + Reviews -->
+                <div class="space-y-6 lg:col-span-2">
                     <div class="rounded-2xl border border-gray-100 bg-white shadow-sm">
                         <!-- Step indicator -->
                         <div class="flex items-center border-b border-gray-100 px-6 py-4">
@@ -647,6 +515,163 @@ function ratingBarWidth(star: number): string {
                                 No account required · Instant confirmation · Free cancellation 24h before
                             </p>
                         </form>
+                    </div>
+
+                    <!-- ─── Reviews ─── -->
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-gray-900">Patient Reviews</h3>
+                            <span class="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-semibold text-violet-700">{{ reviewStats.total }}</span>
+                        </div>
+
+                        <!-- Aggregate row -->
+                        <div v-if="reviewStats.total > 0" class="mt-4">
+                            <div class="flex items-end gap-3">
+                                <span class="text-5xl font-extrabold leading-none text-gray-900">{{ reviewStats.average }}</span>
+                                <div class="pb-1">
+                                    <div class="flex gap-0.5">
+                                        <template v-for="s in 5" :key="s">
+                                            <svg v-if="starType(reviewStats.average, s) === 'full'" class="h-5 w-5" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <svg v-else-if="starType(reviewStats.average, s) === 'half'" class="h-5 w-5" viewBox="0 0 24 24">
+                                                <defs><linearGradient id="hg_agg" x1="0" x2="1" y1="0" y2="0"><stop offset="50%" stop-color="#FBBF24"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs>
+                                                <path fill="url(#hg_agg)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                            <svg v-else class="h-5 w-5" viewBox="0 0 24 24" fill="#E5E7EB"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        </template>
+                                    </div>
+                                    <p class="mt-0.5 text-xs text-gray-500">{{ reviewStats.total }} review{{ reviewStats.total !== 1 ? 's' : '' }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Bar breakdown -->
+                            <div class="mt-4 space-y-1.5">
+                                <div v-for="star in [5,4,3,2,1]" :key="star" class="flex items-center gap-2">
+                                    <span class="w-3 text-right text-xs font-semibold text-gray-500">{{ star }}</span>
+                                    <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+                                        <div class="h-full rounded-full bg-amber-400 transition-all duration-500" :style="{ width: ratingBarWidth(star) }"></div>
+                                    </div>
+                                    <span class="w-6 text-right text-xs text-gray-400">{{ reviewStats.counts[star] ?? 0 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p v-else class="mt-3 text-sm text-gray-400">No reviews yet. Be the first!</p>
+
+                        <!-- Write a review CTA -->
+                        <button
+                            @click="showReviewForm = !showReviewForm"
+                            class="mt-5 w-full rounded-xl border border-violet-200 bg-violet-50 py-2.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-100"
+                        >
+                            {{ showReviewForm ? 'Cancel' : '✏ Write a Review' }}
+                        </button>
+
+                        <!-- Review form -->
+                        <form v-if="showReviewForm" @submit.prevent="submitReview" class="mt-4 space-y-4">
+                            <!-- Success flash -->
+                            <div v-if="reviewSuccess" class="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                {{ reviewSuccess }}
+                            </div>
+
+                            <!-- Rate-limit error -->
+                            <div v-if="rateLimitError" class="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                                {{ rateLimitError }}
+                            </div>
+
+                            <!-- Star picker -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Your Rating <span class="text-red-500">*</span></label>
+                                <div class="mt-2 flex items-center gap-1">
+                                    <button
+                                        v-for="s in 5"
+                                        :key="s"
+                                        type="button"
+                                        @click="reviewForm.rating = s"
+                                        @mouseenter="hoverRating = s"
+                                        @mouseleave="hoverRating = 0"
+                                        class="transition-transform hover:scale-110"
+                                    >
+                                        <svg class="h-8 w-8" viewBox="0 0 24 24" :fill="(hoverRating || reviewForm.rating) >= s ? '#FBBF24' : '#E5E7EB'">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                    </button>
+                                    <span v-if="hoverRating || reviewForm.rating" class="ml-2 text-sm font-medium text-gray-600">
+                                        {{ starLabel(hoverRating || reviewForm.rating) }}
+                                    </span>
+                                </div>
+                                <p v-if="reviewForm.errors.rating" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.rating }}</p>
+                            </div>
+
+                            <div class="grid gap-3 sm:grid-cols-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Your Name <span class="text-red-500">*</span></label>
+                                    <input v-model="reviewForm.patient_name" type="text" placeholder="Jane Smith" required
+                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        :class="{ 'border-red-400': reviewForm.errors.patient_name }" />
+                                    <p v-if="reviewForm.errors.patient_name" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_name }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+                                    <input v-model="reviewForm.patient_email" type="email" placeholder="you@example.com" required
+                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        :class="{ 'border-red-400': reviewForm.errors.patient_email }" />
+                                    <p v-if="reviewForm.errors.patient_email" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_email }}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Comment <span class="text-gray-400">(Optional)</span></label>
+                                <textarea v-model="reviewForm.comment" rows="3" placeholder="Share your experience..."
+                                    class="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
+                            </div>
+
+                            <!-- hCaptcha widget (production only) -->
+                            <div v-if="IS_PRODUCTION">
+                                <VueHcaptcha
+                                    ref="hcaptchaRef"
+                                    :sitekey="HCAPTCHA_SITEKEY"
+                                    theme="light"
+                                    @verify="onCaptchaVerified"
+                                    @expired="onCaptchaExpired"
+                                    @error="onCaptchaExpired"
+                                />
+                                <p v-if="reviewForm.errors.hcaptcha_token" class="mt-1 text-xs text-red-500">
+                                    {{ reviewForm.errors.hcaptcha_token }}
+                                </p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                :disabled="reviewForm.processing || reviewForm.rating === 0 || (IS_PRODUCTION && !reviewForm.hcaptcha_token)"
+                                class="w-full rounded-xl bg-violet-600 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                            >
+                                {{ reviewForm.processing ? 'Submitting...' : 'Submit Review' }}
+                            </button>
+                        </form>
+
+                        <!-- Review list -->
+                        <div v-if="reviews.length" class="mt-5 space-y-4">
+                            <div class="border-t border-gray-100 pt-4 text-xs font-semibold uppercase tracking-wider text-gray-400">Recent Reviews</div>
+                            <div v-for="review in reviews" :key="review.id" class="rounded-xl bg-gray-50 p-4">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">{{ review.patient_name }}</p>
+                                        <p class="text-xs text-gray-400">
+                                            {{ new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
+                                        </p>
+                                    </div>
+                                    <div class="flex shrink-0 gap-0.5">
+                                        <template v-for="s in 5" :key="s">
+                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" :fill="review.rating >= s ? '#FBBF24' : '#E5E7EB'">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                        </template>
+                                    </div>
+                                </div>
+                                <p v-if="review.comment" class="mt-2 text-sm leading-relaxed text-gray-600">{{ review.comment }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

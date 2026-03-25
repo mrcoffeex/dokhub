@@ -3,6 +3,7 @@ import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Patient, Diagnosis, Appointment, Doctor } from '@/types';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     patient: Patient;
@@ -27,7 +28,19 @@ const infoForm = useForm({
 function submitInfo() {
     infoForm.patch(`/doctor/patients/${props.patient.id}`, {
         preserveScroll: true,
-        onSuccess: () => { editingInfo.value = false; },
+        onSuccess: () => {
+            editingInfo.value = false;
+            toast.success('Patient info updated', {
+                description: 'Changes have been saved.',
+                duration: 4000,
+            });
+        },
+        onError: () => {
+            toast.error('Could not save changes', {
+                description: 'Please review the fields and try again.',
+                duration: 5000,
+            });
+        },
     });
 }
 
@@ -65,19 +78,42 @@ function submitDiag() {
     if (editingDiagId.value) {
         diagForm.put(`/doctor/patients/${props.patient.id}/diagnoses/${editingDiagId.value}`, {
             preserveScroll: true,
-            onSuccess: () => { showDiagForm.value = false; diagForm.reset(); editingDiagId.value = null; },
+            onSuccess: () => {
+                showDiagForm.value = false;
+                diagForm.reset();
+                editingDiagId.value = null;
+                toast.success('Diagnosis updated', { duration: 4000 });
+            },
+            onError: () => {
+                toast.error('Could not update diagnosis', { duration: 5000 });
+            },
         });
     } else {
         diagForm.post(`/doctor/patients/${props.patient.id}/diagnoses`, {
             preserveScroll: true,
-            onSuccess: () => { showDiagForm.value = false; diagForm.reset(); },
+            onSuccess: () => {
+                showDiagForm.value = false;
+                diagForm.reset();
+                toast.success('Diagnosis added', { duration: 4000 });
+            },
+            onError: () => {
+                toast.error('Could not add diagnosis', { duration: 5000 });
+            },
         });
     }
 }
 
 function deleteDiag(d: Diagnosis) {
     if (!confirm(`Delete diagnosis "${d.title}"?`)) return;
-    router.delete(`/doctor/patients/${props.patient.id}/diagnoses/${d.id}`, { preserveScroll: true });
+    router.delete(`/doctor/patients/${props.patient.id}/diagnoses/${d.id}`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Diagnosis deleted', { duration: 3000 });
+        },
+        onError: () => {
+            toast.error('Could not delete diagnosis', { duration: 4000 });
+        },
+    });
 }
 
 // ---- Helpers ----

@@ -3,6 +3,7 @@ import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Doctor, Appointment } from '@/types';
 import { ref, watch } from 'vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     doctor: Doctor;
@@ -81,6 +82,15 @@ function updateStatus(appt: Appointment, newStatus: 'confirmed' | 'completed' | 
     }
     router.patch(`/doctor/appointments/${appt.id}/status`, { status: newStatus }, {
         preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Status updated', {
+                description: `Appointment marked as ${newStatus}.`,
+                duration: 3000,
+            });
+        },
+        onError: () => {
+            toast.error('Could not update status', { duration: 4000 });
+        },
     });
 }
 
@@ -88,13 +98,34 @@ function submitCancel() {
     if (!cancellingId.value) return;
     cancelForm.patch(`/doctor/appointments/${cancellingId.value}/status`, {
         preserveScroll: true,
-        onSuccess: () => { cancelModal.value = false; cancellingId.value = null; },
+        onSuccess: () => {
+            cancelModal.value = false;
+            cancellingId.value = null;
+            toast.success('Appointment cancelled', {
+                description: 'The patient will be notified.',
+                duration: 4000,
+            });
+        },
+        onError: () => {
+            toast.error('Could not cancel appointment', { duration: 4000 });
+        },
     });
 }
 
 // ---- Add patient ----
 function addPatient(appt: Appointment) {
-    router.post(`/doctor/appointments/${appt.id}/add-patient`, {}, { preserveScroll: true });
+    router.post(`/doctor/appointments/${appt.id}/add-patient`, {}, {
+        preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Patient added', {
+                description: 'Patient has been linked to this appointment.',
+                duration: 3000,
+            });
+        },
+        onError: () => {
+            toast.error('Could not add patient', { duration: 4000 });
+        },
+    });
 }
 
 const actionConfig: Record<string, { next: { label: string; status: 'confirmed' | 'completed' | 'cancelled'; cls: string }[] }> = {

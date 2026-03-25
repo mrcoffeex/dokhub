@@ -3,6 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import InputError from '@/components/InputError.vue';
 import type { PageProps } from '@/types';
+import { toast } from 'vue-sonner';
 
 defineProps<{
     mustVerifyEmail: boolean;
@@ -24,13 +25,39 @@ const passwordForm = useForm({
 });
 
 function updateProfile() {
-    profileForm.patch('/settings/profile', { preserveScroll: true });
+    profileForm.patch('/settings/profile', {
+        preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Profile updated', {
+                description: 'Your account details have been saved.',
+                duration: 4000,
+            });
+        },
+        onError: () => {
+            toast.error('Could not update profile', {
+                description: 'Please check the highlighted fields.',
+                duration: 5000,
+            });
+        },
+    });
 }
 
 function updatePassword() {
     passwordForm.put('/settings/password', {
         preserveScroll: true,
-        onSuccess: () => passwordForm.reset(),
+        onSuccess: () => {
+            passwordForm.reset();
+            toast.success('Password changed', {
+                description: 'Your new password is active.',
+                duration: 4000,
+            });
+        },
+        onError: () => {
+            toast.error('Could not change password', {
+                description: 'Please check your current password and try again.',
+                duration: 5000,
+            });
+        },
     });
 }
 </script>

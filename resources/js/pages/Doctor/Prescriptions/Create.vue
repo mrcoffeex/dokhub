@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Patient, Doctor, Diagnosis } from '@/types';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     patient: Patient;
@@ -28,7 +29,15 @@ function removeMed(i: number) {
 }
 
 function submit() {
-    form.post(`/doctor/patients/${props.patient.id}/prescriptions`, { preserveScroll: false });
+    form.post(`/doctor/patients/${props.patient.id}/prescriptions`, {
+        preserveScroll: false,
+        onError: () => {
+            toast.error('Could not create prescription', {
+                description: 'Please review the highlighted fields and try again.',
+                duration: 5000,
+            });
+        },
+    });
 }
 
 // ---- Medicine autocomplete ----

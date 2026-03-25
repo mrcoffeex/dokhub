@@ -8,6 +8,7 @@ const props = defineProps<{
     doctors: PaginatedData<Doctor>;
     specializations: string[];
     filters: { search?: string; specialization?: string; sort?: string };
+    avg_rating: number | null;
 }>();
 
 const search = ref(props.filters.search ?? '');
@@ -237,7 +238,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                             { label: 'Verified Doctors',   value: doctors.total + '+' },
                             { label: 'Specializations',    value: specializations.length + '+' },
                             { label: 'Avg. Response',      value: '< 24h' },
-                            { label: 'Patient Rating',     value: '4.8 ★' },
+                            { label: 'Patient Rating',     value: props.avg_rating ? props.avg_rating + ' ★' : 'N/A' },
                         ]"
                         :key="stat.label"
                         class="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-center backdrop-blur-sm"
@@ -384,11 +385,16 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                                     Dr. {{ doctor.name }}
                                 </h3>
                                 <div class="mt-1 flex flex-wrap items-center gap-1">
-                                    <span class="inline-block rounded-lg px-2 py-0.5 text-xs font-semibold" :class="getSpecBadge(doctor.specialization?.[0] ?? '')">
-                                        {{ doctor.specialization?.[0] ?? '—' }}
+                                    <span
+                                        v-for="spec in (doctor.specialization ?? []).slice(0, 2)"
+                                        :key="spec"
+                                        class="inline-block rounded-lg px-2 py-0.5 text-xs font-semibold"
+                                        :class="getSpecBadge(spec)"
+                                    >
+                                        {{ spec }}
                                     </span>
-                                    <span v-if="doctor.specialization?.length > 1" class="inline-block rounded-lg bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-500">
-                                        +{{ doctor.specialization.length - 1 }}
+                                    <span v-if="doctor.specialization?.length > 2" class="inline-block rounded-lg bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-500">
+                                        +{{ doctor.specialization.length - 2 }}
                                     </span>
                                 </div>
                                 <!-- Star rating row -->
@@ -454,7 +460,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                             <div class="flex items-center justify-between border-t border-gray-100 pt-4">
                                 <div>
                                     <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Consultation</p>
-                                    <p class="text-2xl font-extrabold text-gray-900">${{ doctor.consultation_fee }}</p>
+                                    <p class="text-2xl font-extrabold text-gray-900">₱{{ doctor.consultation_fee }}</p>
                                 </div>
                                 <span class="inline-flex items-center gap-1.5 rounded-xl bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 transition-all group-hover:bg-violet-600 group-hover:text-white group-hover:shadow-md group-hover:shadow-violet-200">
                                     Book Now

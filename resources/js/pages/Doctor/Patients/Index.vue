@@ -48,7 +48,7 @@ const genderColors: Record<string, string> = {
         </template>
 
         <!-- Search -->
-        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="relative w-full sm:max-w-sm">
                 <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -60,9 +60,15 @@ const genderColors: Record<string, string> = {
                     class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                 />
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                Patients are auto-registered when you confirm an appointment.
-            </p>
+            <Link
+                href="/doctor/patients/create"
+                class="flex shrink-0 items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Register Walk-in
+            </Link>
         </div>
 
         <!-- Empty state -->
@@ -74,8 +80,18 @@ const genderColors: Record<string, string> = {
             </div>
             <p class="mt-4 text-base font-semibold text-gray-800 dark:text-gray-200">No patients yet</p>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {{ search ? 'No patients match your search.' : 'Confirm appointments to auto-register patients here.' }}
+                {{ search ? 'No patients match your search.' : 'Patients appear here after you confirm an appointment, or register a walk-in.' }}
             </p>
+            <Link
+                v-if="!search"
+                href="/doctor/patients/create"
+                class="mt-5 flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Register Walk-in Patient
+            </Link>
         </div>
 
         <!-- Patient grid -->

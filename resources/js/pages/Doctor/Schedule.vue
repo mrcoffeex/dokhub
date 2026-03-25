@@ -2,6 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Doctor, DoctorSchedule } from '@/types';
+import { toast } from 'vue-sonner';
 
 type ScheduleEntry = {
     day_of_week: number;
@@ -31,7 +32,22 @@ const form = useForm({
 });
 
 function submit() {
-    form.patch('/doctor/schedule');
+    form.patch('/doctor/schedule', {
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Schedule saved', {
+                description: 'Your working hours have been updated successfully.',
+                duration: 4000,
+            });
+        },
+        onError: () => {
+            toast.error('Could not save schedule', {
+                description: 'Please review the fields and try again.',
+                duration: 5000,
+            });
+        },
+    });
 }
 
 function applyToAll(source: ScheduleEntry) {

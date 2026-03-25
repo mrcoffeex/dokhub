@@ -2,6 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import { toast } from 'vue-sonner';
 
 const form = useForm({
     name: '',
@@ -80,7 +81,14 @@ function submit() {
         day_of_week: day,
         ...scheduleSettings.value,
     }));
-    form.post('/admin/doctors');
+    form.post('/admin/doctors', {
+        onError: () => {
+            toast.error('Could not create doctor', {
+                description: 'Please review the highlighted fields and try again.',
+                duration: 5000,
+            });
+        },
+    });
 }
 </script>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { toast } from 'vue-sonner';
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import GuestLayout from '@/layouts/GuestLayout.vue';
 import ClinicMapView from '@/components/ClinicMapView.vue';
@@ -141,7 +142,14 @@ function goToStep2() {
 }
 
 function submitBooking() {
-    form.post(`/doctors/${props.doctor.slug}/book`);
+    form.post(`/doctors/${props.doctor.slug}/book`, {
+        onError: () => {
+            toast.error('Booking failed', {
+                description: 'Please review your details and try again.',
+                duration: 5000,
+            });
+        },
+    });
 }
 
 // --- Review form ---
@@ -176,11 +184,18 @@ function submitReview() {
             hoverRating.value = 0;
             hcaptchaRef.value?.reset();
             showReviewForm.value = false;
+            toast.success('Review submitted', {
+                description: 'Thank you! Your review is pending approval.',
+                duration: 5000,
+            });
         },
         onError: () => {
-            // Reset captcha on any error so user can retry
             hcaptchaRef.value?.reset();
             reviewForm.hcaptcha_token = '';
+            toast.error('Could not submit review', {
+                description: 'Please check your details and try again.',
+                duration: 5000,
+            });
         },
     });
 }

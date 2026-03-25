@@ -97,8 +97,19 @@ function submit() {
 
     form.transform((data) => ({ ...data, languages: langs }))
         .patch('/doctor/profile', {
+            preserveState: true,
+            preserveScroll: true,
             onSuccess: () => {
-                toast.success('Profile updated successfully.');
+                toast.success('Profile updated', {
+                    description: 'Your changes have been saved successfully.',
+                    duration: 4000,
+                });
+            },
+            onError: () => {
+                toast.error('Could not save changes', {
+                    description: 'Please review the highlighted fields and try again.',
+                    duration: 5000,
+                });
             },
         });
 }

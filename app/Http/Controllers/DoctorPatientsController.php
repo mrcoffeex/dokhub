@@ -80,4 +80,50 @@ class DoctorPatientsController extends Controller
 
         return back()->with('success', 'Patient information updated.');
     }
+
+    public function create(): Response
+    {
+        return Inertia::render('Doctor/Patients/Create');
+    }
+
+    public function store(Request $request)
+    {
+        $doctor = $this->getDoctor($request);
+
+        $validated = $request->validate([
+            'name'            => ['required', 'string', 'max:255'],
+            'phone'           => ['required', 'string', 'max:30'],
+            'email'           => ['nullable', 'email', 'max:255'],
+            'gender'          => ['nullable', 'in:male,female,other'],
+            'date_of_birth'   => ['nullable', 'date', 'before:today'],
+            'allergies'       => ['nullable', 'string', 'max:1000'],
+            'medical_history' => ['nullable', 'string', 'max:2000'],
+            'notes'           => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        // Email is unique per doctor — generate a placeholder if not provided
+        $email = $validated['email']
+            ?? 'walkin.' . now()->timestamp . '@practice.local';
+
+        // Prevent duplicate registration for the same doctor
+        if (Patient::where('doctor_id', $doctor->id)->where('email', $validated['email'] ?? '')->exists()) {
+            return back()->withErrors(['email' => 'A patient with this email is already registered.']);
+        }
+
+        $patient = Patient::create([
+            'doctor_id'       => $doctor->id,
+            'name'            => $validated['name'],
+            'email'           => $email,
+            'phone'           => $validated['phone'] ?? null,
+            'gender'          => $validated['gender'] ?? null,
+            'date_of_birth'   => $validated['date_of_birth'] ?? null,
+            'allergies'       => $validated['allergies'] ?? null,
+            'medical_history' => $validated['medical_history'] ?? null,
+            'notes'           => $validated['notes'] ?? null,
+            'first_seen_at'   => now(),
+        ]);
+
+        return redirect()->route('doctor.patients.show', $patient->id)
+            ->with('success', 'Walk-in patient registered successfully.');
+    }
 }

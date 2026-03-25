@@ -48,10 +48,15 @@ class DoctorController extends Controller
             ->orderBy('spec')
             ->pluck('spec');
 
+        $avgRating = DB::table('doctor_reviews')
+            ->where('is_approved', true)
+            ->avg('rating');
+
         return Inertia::render('Doctors/Index', [
-            'doctors' => $doctors,
+            'doctors'        => $doctors,
             'specializations' => $specializations,
-            'filters' => $request->only(['search', 'specialization', 'sort']),
+            'filters'        => $request->only(['search', 'specialization', 'sort']),
+            'avg_rating'     => $avgRating ? round((float) $avgRating, 1) : null,
         ]);
     }
 

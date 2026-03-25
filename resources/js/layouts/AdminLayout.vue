@@ -3,7 +3,6 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
 import ThemeToggle from '@/components/ThemeToggle.vue';
-import { Toaster } from 'vue-sonner';
 
 const page = usePage<PageProps>();
 const flash = computed(() => page.props.flash);
@@ -28,7 +27,6 @@ const sidebarOpen = ref(false);
 
 <template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
-        <Toaster rich-colors position="top-right" />
         <!-- Mobile overlay -->
         <div
             v-show="sidebarOpen"

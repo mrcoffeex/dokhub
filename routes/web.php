@@ -27,7 +27,15 @@ Route::inertia('/privacy-policy', 'legal/PrivacyPolicy')->name('legal.privacy');
 
 // Doctor registration routes
 Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
-    Route::inertia('doctor', 'auth/DoctorRegister')->name('doctor');
+    Route::get('doctor', function () {
+        return Inertia::render('auth/DoctorRegister', [
+            'stats' => [
+                'doctors'  => \App\Models\Doctor::where('status', 'approved')->count(),
+                'patients' => \App\Models\Patient::count(),
+                'rating'   => round(\App\Models\DoctorReview::where('is_approved', true)->avg('rating') ?? 0, 1),
+            ],
+        ]);
+    })->name('doctor');
 });
 
 Route::inertia('/auth/doctor-signup-success', 'auth/DoctorSignupSuccess')->name('auth.doctor-success');

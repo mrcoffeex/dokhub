@@ -9,6 +9,16 @@ import {
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 
+const props = defineProps<{
+    stats: { doctors: number; patients: number; rating: number };
+}>();
+
+function formatCount(n: number): string {
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1) + 'M+';
+    if (n >= 1_000) return (n / 1_000).toFixed(n % 1_000 === 0 ? 0 : 1) + 'K+';
+    return String(n);
+}
+
 const step = ref(1);
 const TOTAL_STEPS = 4;
 
@@ -258,9 +268,9 @@ async function handleSubmit() {
                     <!-- Stats -->
                     <div class="mt-8 grid grid-cols-3 gap-3">
                         <div v-for="stat in [
-                            { value: '5,000+', label: 'Doctors' },
-                            { value: '120K+', label: 'Patients' },
-                            { value: '4.9★', label: 'Rating' },
+                            { value: formatCount(props.stats.doctors), label: 'Doctors' },
+                            { value: formatCount(props.stats.patients), label: 'Patients' },
+                            { value: props.stats.rating > 0 ? props.stats.rating.toFixed(1) + '★' : 'New★', label: 'Rating' },
                         ]" :key="stat.label" class="rounded-xl bg-white/10 px-2 py-3 text-center ring-1 ring-white/10">
                             <p class="text-base font-bold text-white">{{ stat.value }}</p>
                             <p class="text-xs text-violet-300">{{ stat.label }}</p>

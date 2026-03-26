@@ -283,7 +283,7 @@ function ratingBarWidth(star: number): string {
 
                         <div class="mt-5 border-t border-gray-100 pt-5">
                             <p class="text-sm font-semibold text-gray-900">Consultation Fee</p>
-                            <p class="mt-1 text-2xl font-bold text-violet-600">${{ doctor.consultation_fee }}</p>
+                            <p class="mt-1 text-2xl font-bold text-violet-600">₱{{ doctor.consultation_fee }}</p>
                         </div>
                     </div>
 

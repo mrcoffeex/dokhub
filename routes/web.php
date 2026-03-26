@@ -21,6 +21,10 @@ use Laravel\Fortify\Features;
 // Public landing / home
 Route::inertia('/', 'Home')->name('home');
 
+// Legal pages
+Route::inertia('/terms-of-service', 'legal/TermsOfService')->name('legal.terms');
+Route::inertia('/privacy-policy', 'legal/PrivacyPolicy')->name('legal.privacy');
+
 // Doctor registration routes
 Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
     Route::inertia('doctor', 'auth/DoctorRegister')->name('doctor');

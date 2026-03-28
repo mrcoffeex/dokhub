@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -40,6 +42,40 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+        // Custom authentication: only allow admins and approved doctors to sign in.
+        Fortify::authenticateUsing(function (Request $request) {
+            $email = $request->input(Fortify::username());
+            $password = $request->input('password');
+
+            $user = User::where('email', $email)->first();
+
+            if (! $user || ! Hash::check($password, $user->getAuthPassword())) {
+                return null;
+            }
+
+            if ($user->isAdmin()) {
+                return $user;
+            }
+
+            if ($user->isDoctor()) {
+                $doctor = $user->doctor;
+                if ($doctor && $doctor->isApproved()) {
+                    return $user;
+                }
+
+                if ($doctor && $doctor->isSuspended()) {
+                    $request->session()->flash('login_error', 'Your account is suspended. Please contact support.');
+                    return null;
+                }
+
+                $request->session()->flash('login_error', 'Your account is not approved yet.');
+                return null;
+            }
+
+            // Deny other roles by default
+            $request->session()->flash('login_error', 'Only approved doctors and admins may sign in.');
+            return null;
+        });
     }
 
     /**
@@ -51,6 +87,7 @@ class FortifyServiceProvider extends ServiceProvider
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
+            'loginError' => $request->session()->get('login_error'),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/ResetPassword', [

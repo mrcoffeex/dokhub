@@ -44,7 +44,8 @@ const calendarDays = computed(() => {
 
     for (let d = 1; d <= daysInMonth; d++) {
         const dateObj = new Date(year, month, d);
-        const dateStr = dateObj.toISOString().split('T')[0];
+        // Format date as local YYYY-MM-DD to avoid UTC shifts from toISOString()
+        const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
         const dayOfWeek = dateObj.getDay();
         const isPast = dateObj < new Date(today.getFullYear(), today.getMonth(), today.getDate());
         const hasSchedule = props.doctor.schedules?.some(s => s.day_of_week === dayOfWeek && s.is_active) ?? false;
@@ -82,8 +83,9 @@ function nextMonth() {
 // --- Time slots ---
 const timeSlots = computed(() => {
     if (!selectedDate.value) return [];
-
-    const dateObj = new Date(selectedDate.value + 'T00:00:00');
+    // Parse selectedDate (YYYY-MM-DD) as a local date to avoid timezone shifts
+    const [y, m, d] = selectedDate.value.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
     const dayOfWeek = dateObj.getDay();
     const schedule = props.doctor.schedules?.find(s => s.day_of_week === dayOfWeek && s.is_active);
     if (!schedule) return [];
@@ -115,6 +117,17 @@ function formatTime(time: string): string {
     const ampm = h < 12 ? 'AM' : 'PM';
     const hour = h % 12 || 12;
     return `${hour}:${String(m).padStart(2, '0')} ${ampm}`;
+}
+
+// Parse a YYYY-MM-DD string into a local Date (avoids UTC shift issues)
+function parseDateString(dateStr: string): Date {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
+function formatSelectedDate(dateStr: string, options?: Intl.DateTimeFormatOptions): string {
+    if (!dateStr) return '';
+    return parseDateString(dateStr).toLocaleDateString('en-US', options);
 }
 
 function selectDate(date: string) {
@@ -391,7 +404,7 @@ function ratingBarWidth(star: number): string {
                                 <h3 class="mb-4 font-semibold text-gray-900">
                                     Available Times
                                     <span class="ml-2 text-sm font-normal text-gray-500">
-                                        {{ new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) }}
+                                        {{ formatSelectedDate(selectedDate, { weekday: 'long', month: 'short', day: 'numeric' }) }}
                                     </span>
                                 </h3>
                                 <div v-if="timeSlots.length" class="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
@@ -439,7 +452,7 @@ function ratingBarWidth(star: number): string {
                                 <div>
                                     <p class="text-xs font-semibold uppercase tracking-wide text-violet-500">Your Appointment</p>
                                     <p class="mt-0.5 text-sm font-semibold text-violet-900">
-                                        {{ new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) }}
+                                        {{ formatSelectedDate(selectedDate, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) }}
                                         at {{ formatTime(selectedTime) }}
                                     </p>
                                 </div>

@@ -61,7 +61,7 @@ function formatTime(timeStr: string) {
                         </div>
                         <div class="flex justify-between py-3">
                             <span class="text-sm text-gray-500">Specialization</span>
-                            <span class="text-sm font-semibold text-gray-900">{{ appointment.doctor?.specialization }}</span>
+                            <span class="text-sm font-semibold text-gray-900">{{ appointment.doctor?.specialization?.join(', ') }}</span>
                         </div>
                         <div class="flex justify-between py-3">
                             <span class="text-sm text-gray-500">Date</span>

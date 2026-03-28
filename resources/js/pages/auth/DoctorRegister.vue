@@ -382,7 +382,7 @@ async function handleSubmit() {
                                             <label for="name" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Full name</label>
                                             <div class="relative">
                                                 <User class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                                                <input id="name" v-model="form.name" type="text" autofocus placeholder="Dr. John Doe"
+                                                <input id="name" v-model="form.name" type="text" autofocus placeholder="John Doe"
                                                     class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.name }" />
                                             </div>
@@ -402,7 +402,7 @@ async function handleSubmit() {
                                             <label for="phone" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Phone number</label>
                                             <div class="relative">
                                                 <Phone class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                                                <input id="phone" v-model="form.phone" type="tel" placeholder="+1 (555) 000-0000"
+                                                <input id="phone" v-model="form.phone" type="tel" placeholder="0912 345 6789"
                                                     class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.phone }" />
                                             </div>
@@ -555,9 +555,9 @@ async function handleSubmit() {
                                         <!-- Legal note -->
                                         <p class="text-xs text-gray-400 dark:text-gray-500">
                                             By registering, you agree to our
-                                            <Link href="/terms-of-service" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Terms of Service</Link>
+                                            <Link href="/terms-of-service" target="_new" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Terms of Service</Link>
                                             and
-                                            <Link href="/privacy-policy" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Privacy Policy</Link>.
+                                            <Link href="/privacy-policy" target="_new" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Privacy Policy</Link>.
                                             Your profile will be reviewed before activation.
                                         </p>
                                     </template>

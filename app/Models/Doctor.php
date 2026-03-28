@@ -122,6 +122,11 @@ class Doctor extends Model
         return $this->status === 'approved';
     }
 
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
+    }
+
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar) {

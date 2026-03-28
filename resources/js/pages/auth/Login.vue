@@ -11,6 +11,7 @@ defineProps<{
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    loginError?: string;
 }>();
 </script>
 
@@ -102,6 +103,11 @@ defineProps<{
                     <!-- Status message -->
                     <div v-if="status" class="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 dark:border-green-800/40 dark:bg-green-900/20 dark:text-green-400">
                         {{ status }}
+                    </div>
+
+                    <!-- Login error (e.g. not approved) -->
+                    <div v-if="loginError" class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-800/40 dark:bg-red-900/20 dark:text-red-400">
+                        {{ loginError }}
                     </div>
 
                     <Form

@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from '@/components/ui/dialog';
+import DoctorPreview from '@/components/DoctorPreview.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Doctor, PaginatedData } from '@/types';
 import { toast } from 'vue-sonner';
@@ -66,6 +75,15 @@ function submitCreateAccount() {
             toast.error('Failed to create user account.');
         },
     });
+}
+
+// Preview modal (large)
+const previewDoctor = ref<Doctor | null>(null);
+function openPreview(doctor: Doctor) {
+    previewDoctor.value = doctor;
+}
+function clearPreview() {
+    previewDoctor.value = null;
 }
 
 const statusLabels: Record<string, { bg: string; text: string; dot: string; label: string }> = {
@@ -242,6 +260,28 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </Link>
+                                    <!-- Preview (opens in modal) -->
+                                    <Dialog @update:open="(open) => { if (!open) clearPreview() }">
+                                        <DialogTrigger as-child>
+                                            <button
+                                                @click="openPreview(doctor)"
+                                                title="Preview profile"
+                                                class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 active:scale-95 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                                            >
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </button>
+                                        </DialogTrigger>
+
+                                        <DialogContent :showCloseButton="false" class="sm:max-w-5xl p-0">
+
+                                            <div class="mt-0 overflow-hidden rounded-lg">
+                                                <DoctorPreview v-if="previewDoctor" :doctor="previewDoctor" />
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
                                     <!-- Delete (icon only) -->
                                     <button
                                         @click="destroy(doctor)"

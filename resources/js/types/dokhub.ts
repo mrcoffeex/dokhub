@@ -27,6 +27,7 @@ export type Doctor = {
     latitude: number | null;
     longitude: number | null;
     languages: string[] | null;
+    insurance?: string[] | null;
     schedules?: DoctorSchedule[];
     appointments_count?: number;
     reviews_count?: number;

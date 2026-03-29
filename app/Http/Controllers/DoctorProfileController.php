@@ -32,6 +32,8 @@ class DoctorProfileController extends Controller
             'phone'             => ['nullable', 'string', 'max:30'],
             'specialization'    => ['nullable', 'array'],
             'specialization.*'  => ['string', 'max:100'],
+            'insurance'         => ['nullable', 'array'],
+            'insurance.*'       => ['string', 'max:100'],
             'qualification'     => ['nullable', 'string', 'max:255'],
             'bio'               => ['nullable', 'string', 'max:1000'],
             'experience_years'  => ['nullable', 'integer', 'min:0', 'max:80'],
@@ -44,6 +46,11 @@ class DoctorProfileController extends Controller
         ]);
 
         $doctor->update($validated);
+
+        // Keep linked user account name in sync
+        if ($doctor->user && isset($validated['name'])) {
+            $doctor->user->update(['name' => $validated['name']]);
+        }
 
         return back()->with('status', 'Profile updated successfully.');
     }

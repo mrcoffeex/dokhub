@@ -18,12 +18,14 @@ const activeTab = ref<Tab>('overview');
 // ---- Patient edit ----
 const editingInfo = ref(false);
 const infoForm = useForm({
-    phone:          props.patient.phone ?? '',
-    gender:         props.patient.gender ?? '',
-    date_of_birth:  props.patient.date_of_birth ?? '',
-    allergies:      props.patient.allergies ?? '',
+    name:            props.patient.name ?? '',
+    email:           props.patient.email ?? '',
+    phone:           props.patient.phone ?? '',
+    gender:          props.patient.gender ?? '',
+    date_of_birth:   props.patient.date_of_birth ?? '',
+    allergies:       props.patient.allergies ?? '',
     medical_history: props.patient.medical_history ?? '',
-    notes:          props.patient.notes ?? '',
+    notes:           props.patient.notes ?? '',
 });
 function submitInfo() {
     infoForm.patch(`/doctor/patients/${props.patient.id}`, {
@@ -173,6 +175,31 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
 
                     <!-- Edit form -->
                     <form v-if="editingInfo" @submit.prevent="submitInfo" class="border-b border-gray-100 p-4 dark:border-gray-800 space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Name <span class="text-red-500">*</span></label>
+                            <input
+                                v-model="infoForm.name"
+                                type="text"
+                                required
+                                :class="infoForm.errors.name
+                                    ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="infoForm.errors.name" class="mt-1 text-xs text-red-500">{{ infoForm.errors.name }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Email</label>
+                            <input
+                                v-model="infoForm.email"
+                                type="email"
+                                :class="infoForm.errors.email
+                                    ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="infoForm.errors.email" class="mt-1 text-xs text-red-500">{{ infoForm.errors.email }}</p>
+                        </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Phone</label>
                             <input

@@ -9,6 +9,7 @@ const form = useForm({
     email: '',
     phone: '',
     specialization: [] as string[],
+    insurance: [] as string[],
     qualification: '',
     bio: '',
     experience_years: 0,
@@ -60,6 +61,10 @@ const SPECIALIZATIONS = [
     'Thoracic Surgery',
     'Urology',
     'Vascular Surgery',
+] as const;
+
+const INSURANCE_OPTIONS = [
+    'PhilHealth', 'Maxicare', 'MediCard', 'Intellicare', 'Pacific Cross', 'FWD', 'Careplus', 'Sterling', 'Cocolife', 'PruLife',
 ] as const;
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -216,6 +221,27 @@ function submit() {
                                 </p>
                                 <p v-if="form.errors.specialization" class="mt-1 text-xs text-red-500">{{ form.errors.specialization }}</p>
                             </div>
+                               <div>
+                                   <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Accepted Insurance</label>
+                                   <div class="mt-1.5 max-h-48 overflow-y-auto rounded-xl border p-3 dark:border-gray-700 dark:bg-gray-800"
+                                       :class="form.errors.insurance ? 'border-red-400 dark:border-red-500' : 'border-gray-200'">
+                                       <div class="flex flex-wrap gap-1.5">
+                                           <button
+                                               v-for="i in INSURANCE_OPTIONS" :key="i"
+                                               type="button"
+                                               @click="form.insurance.includes(i) ? form.insurance = form.insurance.filter(x => x !== i) : form.insurance.push(i)"
+                                               class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"
+                                               :class="form.insurance.includes(i)
+                                                   ? 'border-violet-500 bg-violet-600 text-white'
+                                                   : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-600 dark:border-gray-600 dark:text-gray-300'"
+                                           >
+                                               {{ i }}
+                                           </button>
+                                       </div>
+                                   </div>
+                                   <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ form.insurance.length ? form.insurance.length + ' selected' : 'Select one or more' }}</p>
+                                   <p v-if="form.errors.insurance" class="mt-1 text-xs text-red-500">{{ form.errors.insurance }}</p>
+                               </div>
                             <div>
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Qualification</label>
                                 <input

@@ -18,6 +18,10 @@ const SPECIALIZATIONS = [
     'Urology', 'Vascular Surgery',
 ] as const;
 
+const INSURANCE_OPTIONS = [
+    'PhilHealth', 'Maxicare', 'MediCard', 'Intellicare', 'Pacific Cross', 'FWD', 'Careplus', 'Sterling', 'Cocolife', 'PruLife',
+] as const;
+
 const props = defineProps<{ doctor: Doctor }>();
 
 // ── Avatar upload ─────────────────────────────────────────────
@@ -86,6 +90,7 @@ const form = useForm({
     latitude:         props.doctor.latitude ?? null as number | null,
     longitude:        props.doctor.longitude ?? null as number | null,
     languages:        Array.isArray(props.doctor.languages) ? props.doctor.languages.join(', ') : (props.doctor.languages ?? ''),
+    insurance:        Array.isArray(props.doctor.insurance) ? [...props.doctor.insurance] : [],
 });
 
 function submit() {
@@ -296,6 +301,18 @@ const initials = computed(() =>
                         <p v-if="form.errors.phone" class="mt-1 text-xs text-red-500">{{ form.errors.phone }}</p>
                     </div>
 
+                    <!-- Qualification -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Qualification</label>
+                        <input
+                            v-model="form.qualification"
+                            type="text"
+                            placeholder="e.g. MBBS, MD"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                        />
+                        <p v-if="form.errors.qualification" class="mt-1 text-xs text-red-500">{{ form.errors.qualification }}</p>
+                    </div>
+
                     <!-- Specialization -->
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Specialization</label>
@@ -322,16 +339,29 @@ const initials = computed(() =>
                         <p v-if="form.errors.specialization" class="mt-1 text-xs text-red-500">{{ form.errors.specialization }}</p>
                     </div>
 
-                    <!-- Qualification -->
+                    <!-- Insurance -->
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Qualification</label>
-                        <input
-                            v-model="form.qualification"
-                            type="text"
-                            placeholder="e.g. MBBS, MD"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
-                        />
-                        <p v-if="form.errors.qualification" class="mt-1 text-xs text-red-500">{{ form.errors.qualification }}</p>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Accepted Insurance</label>
+                        <div class="max-h-48 overflow-y-auto rounded-xl border p-3 transition dark:bg-gray-800"
+                            :class="form.errors.insurance ? 'border-red-400 dark:border-red-500' : 'border-gray-200 dark:border-gray-700'">
+                            <div class="flex flex-wrap gap-1.5">
+                                <button
+                                    v-for="s in INSURANCE_OPTIONS" :key="s"
+                                    type="button"
+                                    @click="form.insurance.includes(s) ? form.insurance = form.insurance.filter(x => x !== s) : form.insurance.push(s)"
+                                    class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"
+                                    :class="form.insurance.includes(s)
+                                        ? 'border-violet-500 bg-violet-600 text-white dark:border-violet-400'
+                                        : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-600 dark:border-gray-600 dark:text-gray-300 dark:hover:border-violet-500'"
+                                >
+                                    {{ s }}
+                                </button>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                            {{ form.insurance.length ? form.insurance.length + ' selected' : 'Select one or more' }}
+                        </p>
+                        <p v-if="form.errors.insurance" class="mt-1 text-xs text-red-500">{{ form.errors.insurance }}</p>
                     </div>
 
                     <!-- Experience years -->

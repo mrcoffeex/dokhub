@@ -555,9 +555,9 @@ async function handleSubmit() {
                                         <!-- Legal note -->
                                         <p class="text-xs text-gray-400 dark:text-gray-500">
                                             By registering, you agree to our
-                                            <Link href="/terms-of-service" target="_new" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Terms of Service</Link>
+                                            <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Terms of Service</a>
                                             and
-                                            <Link href="/privacy-policy" target="_new" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Privacy Policy</Link>.
+                                            <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Privacy Policy</a>.
                                             Your profile will be reviewed before activation.
                                         </p>
                                     </template>

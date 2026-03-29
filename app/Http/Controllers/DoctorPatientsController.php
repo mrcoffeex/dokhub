@@ -6,6 +6,7 @@ use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -67,7 +68,19 @@ class DoctorPatientsController extends Controller
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
 
+        $oldEmail = $patient->email;
+        $oldName  = $patient->name;
+
         $validated = $request->validate([
+            'name'            => ['required', 'string', 'max:255'],
+            'email'           => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('patients')
+                    ->where(fn($q) => $q->where('doctor_id', $doctor->id))
+                    ->ignore($patient->id),
+            ],
             'gender'          => ['nullable', 'in:male,female,other'],
             'date_of_birth'   => ['nullable', 'date', 'before:today'],
             'allergies'       => ['nullable', 'string', 'max:1000'],
@@ -77,6 +90,25 @@ class DoctorPatientsController extends Controller
         ]);
 
         $patient->update($validated);
+
+        // If the patient's email or name changed, keep appointments in sync
+        $newEmail = $patient->email;
+        $newName  = $patient->name;
+
+        if ($oldEmail && $newEmail && $newEmail !== $oldEmail) {
+            Appointment::where('doctor_id', $doctor->id)
+                ->where('patient_email', $oldEmail)
+                ->update(['patient_email' => $newEmail, 'patient_name' => $newName]);
+        } elseif ($oldEmail && $newName !== $oldName) {
+            Appointment::where('doctor_id', $doctor->id)
+                ->where('patient_email', $oldEmail)
+                ->update(['patient_name' => $newName]);
+        } elseif (!$oldEmail && $oldName && $newName !== $oldName) {
+            // Fallback: update appointments by matching the name if there was no email
+            Appointment::where('doctor_id', $doctor->id)
+                ->where('patient_name', $oldName)
+                ->update(['patient_name' => $newName]);
+        }
 
         return back()->with('success', 'Patient information updated.');
     }

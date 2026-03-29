@@ -19,6 +19,7 @@ class Doctor extends Model
         'email',
         'phone',
         'specialization',
+        'insurance',
         'qualification',
         'bio',
         'avatar',
@@ -70,6 +71,7 @@ class Doctor extends Model
     {
         return [
             'specialization'   => 'array',
+            'insurance'        => 'array',
             'languages'        => 'array',
             'consultation_fee' => 'decimal:2',
             'latitude'         => 'float',

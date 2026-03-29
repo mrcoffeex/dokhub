@@ -292,6 +292,19 @@ function ratingBarWidth(star: number): string {
                                 </svg>
                                 {{ doctor.location }}
                             </div>
+                            <div v-if="doctor.insurance && doctor.insurance.length" class="flex items-start gap-2 text-sm text-gray-600">
+                                <svg class="h-4 w-4 shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3 4h-6l3-4zm0 6v7" />
+                                </svg>
+                                <div>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span v-for="ins in doctor.insurance" :key="ins" class="inline-block rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-700">
+                                            {{ ins }}
+                                        </span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-400">Accepted insurance</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-5 border-t border-gray-100 pt-5">

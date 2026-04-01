@@ -26,42 +26,9 @@ const form = useForm({
     }[],
 });
 
-const SPECIALIZATIONS = [
-    'Allergy & Immunology',
-    'Anesthesiology',
-    'Cardiology',
-    'Colorectal Surgery',
-    'Critical Care Medicine',
-    'Dermatology',
-    'Emergency Medicine',
-    'Endocrinology',
-    'Family Medicine',
-    'Gastroenterology',
-    'General Surgery',
-    'Geriatrics',
-    'Hematology',
-    'Infectious Disease',
-    'Internal Medicine',
-    'Nephrology',
-    'Neurology',
-    'Neurosurgery',
-    'Obstetrics & Gynecology',
-    'Oncology',
-    'Ophthalmology',
-    'Orthopedic Surgery',
-    'Otolaryngology (ENT)',
-    'Pathology',
-    'Pediatrics',
-    'Physical Medicine & Rehabilitation',
-    'Plastic Surgery',
-    'Psychiatry',
-    'Pulmonology',
-    'Radiology',
-    'Rheumatology',
-    'Thoracic Surgery',
-    'Urology',
-    'Vascular Surgery',
-] as const;
+const props = defineProps<{
+    specializations: string[];
+}>();
 
 const INSURANCE_OPTIONS = [
     'PhilHealth', 'Maxicare', 'MediCard', 'Intellicare', 'Pacific Cross', 'FWD', 'Careplus', 'Sterling', 'Cocolife', 'PruLife',
@@ -204,7 +171,7 @@ function submit() {
                                 >
                                     <div class="flex flex-wrap gap-1.5">
                                         <button
-                                            v-for="s in SPECIALIZATIONS" :key="s"
+                                            v-for="s in props.specializations" :key="s"
                                             type="button"
                                             @click="form.specialization.includes(s) ? form.specialization = form.specialization.filter(x => x !== s) : form.specialization.push(s)"
                                             class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"

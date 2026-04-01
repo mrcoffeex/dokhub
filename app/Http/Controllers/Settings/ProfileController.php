@@ -38,6 +38,10 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
+        if ($request->user()->isAdmin()) {
+            return to_route('admin.profile')->with('status', 'profile-information-updated');
+        }
+
         return to_route('profile.edit');
     }
 

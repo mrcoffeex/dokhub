@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Specialization;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,8 @@ class DoctorProfileController extends Controller
         abort_unless($doctor, 403);
 
         return Inertia::render('Doctor/Profile', [
-            'doctor' => $doctor,
+            'doctor'          => $doctor,
+            'specializations' => Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
         ]);
     }
 

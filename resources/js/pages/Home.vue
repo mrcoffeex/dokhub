@@ -2,6 +2,31 @@
 import { Head, Link } from '@inertiajs/vue3';
 import GuestLayout from '@/layouts/GuestLayout.vue';
 
+defineProps<{ featuredSpecializations: string[] }>();
+
+const EMOJI_MAP: Record<string, string> = {
+    'Cardiology': '❤️',
+    'Neurology': '🧠',
+    'Dermatology': '✨',
+    'Orthopedic Surgery': '🦴',
+    'Pediatrics': '👶',
+    'General Surgery': '🩺',
+    'Obstetrics & Gynecology': '🌸',
+    'Psychiatry': '🧘',
+    'Oncology': '🎗️',
+    'Ophthalmology': '👁️',
+    'Pulmonology': '🫁',
+    'Endocrinology': '⚗️',
+    'Gastroenterology': '💊',
+    'Nephrology': '🫘',
+    'Rheumatology': '🦴',
+    'Infectious Disease': '🦠',
+};
+
+function emoji(name: string) {
+    return EMOJI_MAP[name] ?? '🏥';
+}
+
 const stats = [
     { value: '500+', label: 'Verified Doctors' },
     { value: '50k+', label: 'Appointments Booked' },
@@ -31,17 +56,6 @@ const steps = [
         bg: 'bg-green-100',
         color: 'text-green-600',
     },
-];
-
-const specializations = [
-    { name: 'Cardiology', emoji: '❤️' },
-    { name: 'Neurology', emoji: '🧠' },
-    { name: 'Dermatology', emoji: '✨' },
-    { name: 'Orthopedics', emoji: '🦴' },
-    { name: 'Pediatrics', emoji: '👶' },
-    { name: 'General Practice', emoji: '🩺' },
-    { name: 'Gynecology', emoji: '🌸' },
-    { name: 'Psychiatry', emoji: '🧘' },
 ];
 </script>
 
@@ -125,13 +139,13 @@ const specializations = [
                 </div>
                 <div class="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
                     <Link
-                        v-for="spec in specializations"
-                        :key="spec.name"
-                        :href="`/doctors?specialization=${encodeURIComponent(spec.name)}`"
+                        v-for="spec in featuredSpecializations"
+                        :key="spec"
+                        :href="`/doctors?specialization=${encodeURIComponent(spec)}`"
                         class="group flex flex-col items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center transition-all hover:border-violet-200 hover:bg-violet-50 hover:shadow-md"
                     >
-                        <span class="text-3xl">{{ spec.emoji }}</span>
-                        <span class="text-sm font-semibold text-gray-700 group-hover:text-violet-700">{{ spec.name }}</span>
+                        <span class="text-3xl">{{ emoji(spec) }}</span>
+                        <span class="text-sm font-semibold text-gray-700 group-hover:text-violet-700">{{ spec }}</span>
                     </Link>
                 </div>
                 <div class="mt-10 text-center">

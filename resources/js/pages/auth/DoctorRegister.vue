@@ -11,6 +11,7 @@ import { ref, computed } from 'vue';
 
 const props = defineProps<{
     stats: { doctors: number; patients: number; rating: number };
+    specializations: string[];
 }>();
 
 function formatCount(n: number): string {
@@ -101,18 +102,6 @@ const STEPS = [
 
 const current = computed(() => STEPS[step.value - 1]);
 const progress = computed(() => Math.round(((step.value - 1) / (TOTAL_STEPS - 1)) * 100));
-
-const specializations = [
-    'Allergy & Immunology', 'Anesthesiology', 'Cardiology', 'Colorectal Surgery',
-    'Critical Care Medicine', 'Dermatology', 'Emergency Medicine', 'Endocrinology',
-    'Family Medicine', 'Gastroenterology', 'General Surgery', 'Geriatrics',
-    'Hematology', 'Infectious Disease', 'Internal Medicine', 'Nephrology',
-    'Neurology', 'Neurosurgery', 'Obstetrics & Gynecology', 'Oncology',
-    'Ophthalmology', 'Orthopedic Surgery', 'Otolaryngology (ENT)', 'Pathology',
-    'Pediatrics', 'Physical Medicine & Rehabilitation', 'Plastic Surgery',
-    'Psychiatry', 'Pulmonology', 'Radiology', 'Rheumatology', 'Thoracic Surgery',
-    'Urology', 'Vascular Surgery',
-];
 
 function toggleSpec(spec: string) {
     if (form.value.specialization.includes(spec)) {
@@ -423,7 +412,7 @@ async function handleSubmit() {
                                             <div class="h-44 overflow-y-auto rounded-xl border bg-white p-3 dark:bg-gray-800"
                                                 :class="errors.specialization ? 'border-red-400' : 'border-gray-200 dark:border-gray-700'">
                                                 <div class="flex flex-wrap gap-1.5">
-                                                    <button v-for="spec in specializations" :key="spec"
+                                                    <button v-for="spec in props.specializations" :key="spec"
                                                         type="button" @click="toggleSpec(spec)"
                                                         class="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all"
                                                         :class="form.specialization.includes(spec)

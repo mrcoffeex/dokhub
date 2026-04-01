@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Doctor;
-use App\Models\DoctorSchedule;
+use App\Models\Specialization;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +38,9 @@ class DoctorController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Admin/Doctors/Create');
+        return Inertia::render('Admin/Doctors/Create', [
+            'specializations' => Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+        ]);
     }
 
     public function store(Request $request)
@@ -89,7 +91,10 @@ class DoctorController extends Controller
     public function edit(Doctor $doctor): Response
     {
         $doctor->load('schedules');
-        return Inertia::render('Admin/Doctors/Edit', ['doctor' => $doctor->append('avatar_url')]);
+        return Inertia::render('Admin/Doctors/Edit', [
+            'doctor'          => $doctor->append('avatar_url'),
+            'specializations' => Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+        ]);
     }
 
     public function update(Request $request, Doctor $doctor)

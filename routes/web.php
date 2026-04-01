@@ -10,16 +10,23 @@ use App\Http\Controllers\DoctorPatientsController;
 use App\Http\Controllers\DoctorPrescriptionsController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\DoctorScheduleController;
-use App\Http\Controllers\DoctorRegistrationController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\SpecializationController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 // Public landing / home
-Route::inertia('/', 'Home')->name('home');
+Route::get('/', function () {
+    return Inertia::render('Home', [
+        'featuredSpecializations' => \App\Models\Specialization::active()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit(8)
+            ->pluck('name'),
+    ]);
+})->name('home');
 
 // Legal pages
 Route::inertia('/terms-of-service', 'legal/TermsOfService')->name('legal.terms');
@@ -34,6 +41,7 @@ Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
                 'patients' => \App\Models\Patient::count(),
                 'rating'   => round(\App\Models\DoctorReview::where('is_approved', true)->avg('rating') ?? 0, 1),
             ],
+            'specializations' => \App\Models\Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
         ]);
     })->name('doctor');
 });
@@ -120,12 +128,17 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
 
         Route::get('/spam-detection', [Admin\SpamDetectionController::class, 'index'])->name('spam-detection');
 
-        Route::get('/settings', function (Request $request) {
-            return Inertia::render('Admin/Settings', [
+        Route::get('/specializations', [SpecializationController::class, 'index'])->name('specializations.index');
+        Route::post('/specializations', [SpecializationController::class, 'store'])->name('specializations.store');
+        Route::patch('/specializations/{specialization}', [SpecializationController::class, 'update'])->name('specializations.update');
+        Route::delete('/specializations/{specialization}', [SpecializationController::class, 'destroy'])->name('specializations.destroy');
+
+        Route::get('/profile', function (Request $request) {
+            return Inertia::render('Admin/Profile', [
                 'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
                 'status' => $request->session()->get('status'),
             ]);
-        })->name('admin.settings');
+        })->name('profile');
     });
 
 require __DIR__.'/settings.php';

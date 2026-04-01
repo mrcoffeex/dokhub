@@ -15,44 +15,8 @@ import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     doctor: Doctor;
+    specializations: string[];
 }>();
-
-const SPECIALIZATIONS = [
-    'Allergy & Immunology',
-    'Anesthesiology',
-    'Cardiology',
-    'Colorectal Surgery',
-    'Critical Care Medicine',
-    'Dermatology',
-    'Emergency Medicine',
-    'Endocrinology',
-    'Family Medicine',
-    'Gastroenterology',
-    'General Surgery',
-    'Geriatrics',
-    'Hematology',
-    'Infectious Disease',
-    'Internal Medicine',
-    'Nephrology',
-    'Neurology',
-    'Neurosurgery',
-    'Obstetrics & Gynecology',
-    'Oncology',
-    'Ophthalmology',
-    'Orthopedic Surgery',
-    'Otolaryngology (ENT)',
-    'Pathology',
-    'Pediatrics',
-    'Physical Medicine & Rehabilitation',
-    'Plastic Surgery',
-    'Psychiatry',
-    'Pulmonology',
-    'Radiology',
-    'Rheumatology',
-    'Thoracic Surgery',
-    'Urology',
-    'Vascular Surgery',
-] as const;
 
 const form = useForm({
     name: props.doctor.name,
@@ -260,7 +224,7 @@ function submit() {
                                 >
                                     <div class="flex flex-wrap gap-1.5">
                                         <button
-                                            v-for="s in SPECIALIZATIONS"
+                                            v-for="s in props.specializations"
                                             :key="s"
                                             type="button"
                                             @click="

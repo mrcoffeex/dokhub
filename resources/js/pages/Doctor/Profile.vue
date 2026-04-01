@@ -68,6 +68,7 @@ function cancelPreview() {
 // ── Profile form ──────────────────────────────────────────────
 const form = useForm({
     name:             props.doctor.name ?? '',
+    slug:             props.doctor.slug ?? '',
     phone:            props.doctor.phone ?? '',
     specialization:   Array.isArray(props.doctor.specialization) ? [...props.doctor.specialization] : [],
     qualification:    props.doctor.qualification ?? '',
@@ -262,6 +263,39 @@ const initials = computed(() =>
                 </div>
 
                 <div class="grid gap-5 p-6 sm:grid-cols-2">
+
+                    <!-- Public Profile Link -->
+                    <div class="sm:col-span-2">
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Public Profile Link</label>
+                        <div class="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:focus-within:border-violet-500 dark:focus-within:ring-violet-900/40"
+                            :class="{ 'border-red-400 focus-within:border-red-400 focus-within:ring-red-100': form.errors.slug }"
+                        >
+                            <span class="flex items-center rounded-l-xl border-r border-gray-200 bg-gray-100 px-3 text-sm text-gray-500 select-none dark:border-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                                /doctors/
+                            </span>
+                            <input
+                                :value="form.slug"
+                                @input="form.slug = ($event.target as HTMLInputElement).value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 50)"
+                                type="text"
+                                maxlength="50"
+                                placeholder="your-slug"
+                                class="min-w-0 flex-1 rounded-r-xl bg-transparent px-4 py-2.5 text-sm text-gray-900 outline-none dark:text-gray-100 dark:placeholder-gray-500"
+                                :class="{ 'text-red-500': form.errors.slug }"
+                            />
+                            <a
+                                :href="`/doctors/${form.slug}`"
+                                target="_blank"
+                                class="flex items-center gap-1 rounded-r-xl px-3 text-sm text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                                title="Open public profile"
+                            >
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-600">Lowercase letters, numbers, and hyphens only</p>
+                        <p v-if="form.errors.slug" class="mt-1 text-xs text-red-500">{{ form.errors.slug }}</p>
+                    </div>
 
                     <!-- Name -->
                     <div class="sm:col-span-2">

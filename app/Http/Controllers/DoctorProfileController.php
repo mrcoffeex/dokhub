@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use App\Models\Specialization;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,6 +33,7 @@ class DoctorProfileController extends Controller
 
         $validated = $request->validate([
             'name'              => ['required', 'string', 'max:255'],
+            'slug'              => ['required', 'string', 'max:50', 'regex:/^[a-z0-9-]+$/', Rule::unique('doctors', 'slug')->ignore($doctor->id)],
             'phone'             => ['nullable', 'string', 'max:30'],
             'specialization'    => ['nullable', 'array'],
             'specialization.*'  => ['string', 'max:100'],

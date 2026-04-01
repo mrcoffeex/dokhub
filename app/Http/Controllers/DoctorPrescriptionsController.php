@@ -60,8 +60,7 @@ class DoctorPrescriptionsController extends Controller
             'notes'        => $validated['notes'] ?? null,
         ]);
 
-        return redirect()->route('doctor.prescriptions.show', $prescription->id)
-            ->with('success', 'Prescription created successfully.');
+        return redirect()->route('doctor.prescriptions.show', $prescription->id);
     }
 
     public function show(Request $request, Prescription $prescription): Response

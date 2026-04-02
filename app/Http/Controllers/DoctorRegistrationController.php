@@ -54,6 +54,8 @@ class DoctorRegistrationController extends Controller
             'location' => $validated['location'],
             'languages' => array_map('trim', explode(',', $validated['languages'])),
             'insurance' => $validated['insurance'] ?? null,
+            'plan' => 'basic',
+            'trial_ends_at' => null, // Set on admin approval
             'status' => 'pending', // Requires admin approval
         ]);
 

@@ -159,7 +159,16 @@ export type PaginatedData<T> = {
     links: { url: string | null; label: string; active: boolean }[];
 };
 
+export type DoctorPlan = {
+    plan: 'basic' | 'pro';
+    hasProAccess: boolean;
+    isInTrial: boolean;
+    isPaidPro: boolean;
+    trialDays: number;
+};
+
 export type PageProps = {
     flash: { success: string | null; error: string | null };
+    doctor_plan: DoctorPlan | null;
     [key: string]: unknown;
 };

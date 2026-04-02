@@ -15,6 +15,7 @@ const navItems = [
     { label: 'Spam Detection',  href: '/admin/spam-detection',    icon: 'shield' },
     { label: 'Specializations', href: '/admin/specializations',   icon: 'tag' },
     { label: 'Insurance',       href: '/admin/insurances',        icon: 'credit-card' },
+    { label: 'Payment Logs',    href: '/admin/payment-logs',      icon: 'receipt' },
     { label: 'Profile',         href: '/admin/profile',           icon: 'user' },
 ];
 
@@ -94,6 +95,10 @@ const sidebarOpen = ref(false);
                         <!-- Credit card icon (Insurance) -->
                         <svg v-else-if="item.icon === 'credit-card'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <!-- Receipt icon (Payment Logs) -->
+                        <svg v-else-if="item.icon === 'receipt'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                         </svg>
                         {{ item.label }}
                     </Link>

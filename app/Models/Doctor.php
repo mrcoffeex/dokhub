@@ -27,6 +27,11 @@ class Doctor extends Model
         'experience_years',
         'consultation_fee',
         'status',
+        'plan',
+        'trial_ends_at',
+        'pro_expires_at',
+        'last_payment_id',
+        'pending_checkout_session_id',
         'location',
         'latitude',
         'longitude',
@@ -77,7 +82,37 @@ class Doctor extends Model
             'consultation_fee' => 'decimal:2',
             'latitude'         => 'float',
             'longitude'        => 'float',
+            'trial_ends_at'    => 'datetime',
+            'pro_expires_at'   => 'datetime',
         ];
+    }
+
+    // ── Plan helpers ──────────────────────────────────────────────────────────
+
+    /** True while the 15-day trial window is still open. */
+    public function isInTrial(): bool
+    {
+        return $this->trial_ends_at !== null && $this->trial_ends_at->isFuture();
+    }
+
+    /** True when on an active paid Pro subscription. */
+    public function isPaidPro(): bool
+    {
+        return $this->plan === 'pro'
+            && ($this->pro_expires_at === null || $this->pro_expires_at->isFuture());
+    }
+
+    /** True when the doctor has full feature access (trial OR paid pro). */
+    public function hasProAccess(): bool
+    {
+        return $this->isInTrial() || $this->isPaidPro();
+    }
+
+    /** Days remaining in trial (0 if expired / not in trial). */
+    public function trialDaysRemaining(): int
+    {
+        if (!$this->isInTrial()) return 0;
+        return (int) now()->diffInDays($this->trial_ends_at, false);
     }
 
     public function schedules(): HasMany

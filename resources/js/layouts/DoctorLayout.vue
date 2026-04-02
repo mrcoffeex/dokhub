@@ -7,6 +7,7 @@ import ThemeToggle from '@/components/ThemeToggle.vue';
 const page = usePage<PageProps>();
 const flash = computed(() => page.props.flash);
 const user = computed(() => (page.props.auth as any)?.user);
+const doctorPlan = computed(() => page.props.doctor_plan);
 
 const mobileOpen = ref(false);
 
@@ -16,6 +17,7 @@ const navItems = [
     { label: 'Patients',     href: '/doctor/patients',     icon: 'users' },
     { label: 'Schedule',     href: '/doctor/schedule',     icon: 'clock' },
     { label: 'My Profile',   href: '/doctor/profile',      icon: 'user' },
+    { label: 'Billing',      href: '/doctor/billing',      icon: 'credit-card' },
 ];
 
 function isActive(href: string): boolean {
@@ -104,6 +106,10 @@ function isActive(href: string): boolean {
                         <svg v-else-if="item.icon === 'users'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
+                        <!-- Credit-card icon -->
+                        <svg v-else-if="item.icon === 'credit-card'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
                         {{ item.label }}
                     </Link>
 
@@ -123,6 +129,29 @@ function isActive(href: string): boolean {
                     </div>
                 </nav>
 
+                <!-- Trial warning banner — hidden once on a paid Pro subscription -->
+                <div
+                    v-if="doctorPlan?.isInTrial && !doctorPlan?.isPaidPro"
+                    class="mx-3 mb-2 rounded-xl p-3"
+                    :class="doctorPlan.trialDays <= 3 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-amber-50 dark:bg-amber-900/20'"
+                >
+                    <p class="text-xs font-semibold" :class="doctorPlan.trialDays <= 3 ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'">
+                        {{ doctorPlan.trialDays }} day{{ doctorPlan.trialDays === 1 ? '' : 's' }} left in trial
+                    </p>
+                    <Link href="/doctor/billing" class="mt-1 block text-xs font-medium underline" :class="doctorPlan.trialDays <= 3 ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'">
+                        Subscribe to Pro →
+                    </Link>
+                </div>
+                <div
+                    v-else-if="doctorPlan && !doctorPlan.hasProAccess"
+                    class="mx-3 mb-2 rounded-xl bg-violet-50 p-3 dark:bg-violet-900/20"
+                >
+                    <p class="text-xs font-semibold text-violet-700 dark:text-violet-300">Upgrade to unlock all features</p>
+                    <Link href="/doctor/billing" class="mt-1 block text-xs font-medium text-violet-600 underline dark:text-violet-400">
+                        View plans →
+                    </Link>
+                </div>
+
                 <!-- User footer -->
                 <div class="border-t border-gray-100 p-4 dark:border-gray-800">
                     <!-- User info -->
@@ -132,7 +161,20 @@ function isActive(href: string): boolean {
                             <span class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-400 dark:border-gray-900"></span>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{{ user?.name }}</p>
+                            <div class="flex items-center gap-1.5">
+                                <p class="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{{ user?.name }}</p>
+                                <span
+                                    v-if="doctorPlan"
+                                    class="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none"
+                                    :class="doctorPlan.isPaidPro
+                                        ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300'
+                                        : doctorPlan.isInTrial
+                                            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                                            : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'"
+                                >
+                                    {{ doctorPlan.isPaidPro ? 'Pro' : doctorPlan.isInTrial ? 'Trial' : 'Basic' }}
+                                </span>
+                            </div>
                             <p class="truncate text-xs text-gray-400 dark:text-gray-500">Doctor</p>
                         </div>
                     </div>

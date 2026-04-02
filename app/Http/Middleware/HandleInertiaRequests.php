@@ -43,6 +43,13 @@ class HandleInertiaRequests extends Middleware
                 'isAdmin' => $request->user()?->isAdmin() ?? false,
                 'isDoctor' => $request->user()?->isDoctor() ?? false,
             ],
+            'doctor_plan' => fn () => $request->user()?->isDoctor() ? [
+                'plan'         => $request->user()->doctor->plan,
+                'hasProAccess' => $request->user()->doctor->hasProAccess(),
+                'isInTrial'    => $request->user()->doctor->isInTrial(),
+                'isPaidPro'    => $request->user()->doctor->isPaidPro(),
+                'trialDays'    => $request->user()->doctor->trialDaysRemaining(),
+            ] : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [
                 'success'        => $request->session()->get('success'),

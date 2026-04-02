@@ -555,6 +555,12 @@ function ratingBarWidth(star: number): string {
                             <p class="mt-4 text-center text-xs text-gray-400">
                                 No account required · Instant confirmation · Free cancellation 24h before
                             </p>
+                            <p class="mt-2 text-center text-xs text-gray-400">
+                                By confirming, you agree to our
+                                <a href="/terms-of-service" target="_blank" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600">Terms of Service</a>
+                                and
+                                <a href="/privacy-policy" target="_blank" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600">Privacy Policy</a>.
+                            </p>
                         </form>
                     </div>
 

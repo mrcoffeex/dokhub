@@ -81,7 +81,11 @@ class DoctorController extends Controller
             'role'     => 'doctor',
         ]);
 
-        $doctor = Doctor::create(array_merge($validated, ['user_id' => $user->id]));
+        $doctor = Doctor::create(array_merge($validated, [
+            'user_id'      => $user->id,
+            'plan'         => 'basic',
+            'trial_ends_at' => now()->addDays(15),
+        ]));
 
         foreach ($schedules as $schedule) {
             $doctor->schedules()->create($schedule);
@@ -154,7 +158,14 @@ class DoctorController extends Controller
 
     public function approve(Doctor $doctor)
     {
-        $doctor->update(['status' => 'approved']);
+        $updates = ['status' => 'approved'];
+
+        // Start the 15-day Pro trial on first approval (not on re-approval after suspension).
+        if (is_null($doctor->trial_ends_at)) {
+            $updates['trial_ends_at'] = now()->addDays(15);
+        }
+
+        $doctor->update($updates);
         return back()->with('success', "Dr. {$doctor->name} has been approved.");
     }
 

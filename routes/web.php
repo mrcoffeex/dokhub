@@ -12,7 +12,10 @@ use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\DoctorScheduleController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\InsuranceController;
+use App\Http\Controllers\Admin\PaymentLogsController;
 use App\Http\Controllers\Admin\SpecializationController;
+use App\Http\Controllers\DoctorBillingController;
+use App\Http\Controllers\PayMongoWebhookController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +53,9 @@ Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
 
 Route::inertia('/auth/doctor-signup-success', 'auth/DoctorSignupSuccess')->name('auth.doctor-success');
 
+// PayMongo webhook — no auth, CSRF excluded in bootstrap/app.php
+Route::post('paymongo/webhook', [PayMongoWebhookController::class, 'handle'])->name('paymongo.webhook');
+
 // Public doctor listing & booking (no auth required)
 Route::prefix('doctors')->name('doctors.')->group(function () {
     Route::get('/', [DoctorController::class, 'index'])->name('index');
@@ -86,22 +92,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('doctor/schedule', [DoctorScheduleController::class, 'edit'])->name('doctor.schedule.edit');
     Route::patch('doctor/schedule', [DoctorScheduleController::class, 'update'])->name('doctor.schedule.update');
 
-    // Patients
-    Route::get('doctor/patients', [DoctorPatientsController::class, 'index'])->name('doctor.patients');
-    Route::get('doctor/patients/create', [DoctorPatientsController::class, 'create'])->name('doctor.patients.create');
-    Route::post('doctor/patients', [DoctorPatientsController::class, 'store'])->name('doctor.patients.store');
-    Route::get('doctor/patients/{patient}', [DoctorPatientsController::class, 'show'])->name('doctor.patients.show');
-    Route::patch('doctor/patients/{patient}', [DoctorPatientsController::class, 'update'])->name('doctor.patients.update');
+    // Billing
+    Route::get('doctor/billing', [DoctorBillingController::class, 'index'])->name('doctor.billing');
+    Route::post('doctor/billing/checkout', [DoctorBillingController::class, 'checkout'])->name('doctor.billing.checkout');
+    Route::get('doctor/billing/return', [DoctorBillingController::class, 'checkoutReturn'])->name('doctor.billing.return');
 
-    // Diagnoses
-    Route::post('doctor/patients/{patient}/diagnoses', [DoctorDiagnosisController::class, 'store'])->name('doctor.diagnoses.store');
-    Route::put('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'update'])->name('doctor.diagnoses.update');
-    Route::delete('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'destroy'])->name('doctor.diagnoses.destroy');
+    // Patients (Pro only)
+    Route::middleware('pro')->group(function () {
+        Route::get('doctor/patients', [DoctorPatientsController::class, 'index'])->name('doctor.patients');
+        Route::get('doctor/patients/create', [DoctorPatientsController::class, 'create'])->name('doctor.patients.create');
+        Route::post('doctor/patients', [DoctorPatientsController::class, 'store'])->name('doctor.patients.store');
+        Route::get('doctor/patients/{patient}', [DoctorPatientsController::class, 'show'])->name('doctor.patients.show');
+        Route::patch('doctor/patients/{patient}', [DoctorPatientsController::class, 'update'])->name('doctor.patients.update');
 
-    // Prescriptions
-    Route::get('doctor/patients/{patient}/prescriptions/create', [DoctorPrescriptionsController::class, 'create'])->name('doctor.prescriptions.create');
-    Route::post('doctor/patients/{patient}/prescriptions', [DoctorPrescriptionsController::class, 'store'])->name('doctor.prescriptions.store');
-    Route::get('doctor/prescriptions/{prescription}', [DoctorPrescriptionsController::class, 'show'])->name('doctor.prescriptions.show');
+        // Diagnoses
+        Route::post('doctor/patients/{patient}/diagnoses', [DoctorDiagnosisController::class, 'store'])->name('doctor.diagnoses.store');
+        Route::put('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'update'])->name('doctor.diagnoses.update');
+        Route::delete('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'destroy'])->name('doctor.diagnoses.destroy');
+
+        // Prescriptions
+        Route::get('doctor/patients/{patient}/prescriptions/create', [DoctorPrescriptionsController::class, 'create'])->name('doctor.prescriptions.create');
+        Route::post('doctor/patients/{patient}/prescriptions', [DoctorPrescriptionsController::class, 'store'])->name('doctor.prescriptions.store');
+        Route::get('doctor/prescriptions/{prescription}', [DoctorPrescriptionsController::class, 'show'])->name('doctor.prescriptions.show');
+    });
 });
 
 // Admin routes
@@ -139,6 +152,8 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
         Route::post('/insurances', [InsuranceController::class, 'store'])->name('insurances.store');
         Route::patch('/insurances/{insurance}', [InsuranceController::class, 'update'])->name('insurances.update');
         Route::delete('/insurances/{insurance}', [InsuranceController::class, 'destroy'])->name('insurances.destroy');
+
+        Route::get('/payment-logs', [PaymentLogsController::class, 'index'])->name('payment-logs.index');
 
         Route::get('/profile', function (Request $request) {
             return Inertia::render('Admin/Profile', [

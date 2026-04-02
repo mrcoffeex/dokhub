@@ -25,8 +25,13 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'paymongo/webhook',
+        ]);
+
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'pro'   => \App\Http\Middleware\EnsureProAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

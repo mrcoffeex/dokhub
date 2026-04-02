@@ -125,8 +125,8 @@ function submitDelete(spec: Specialization) {
                 <!-- Card header + Add form -->
                 <div class="border-b border-gray-100 px-5 py-4 dark:border-gray-800">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-900/30">
-                            <svg class="h-5 w-5 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-900/30">
+                            <svg class="h-5 w-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                             </svg>
                         </div>
@@ -143,13 +143,13 @@ function submitDelete(spec: Specialization) {
                             type="text"
                             placeholder="New specialization name…"
                             maxlength="100"
-                            class="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                             :class="{ 'border-red-400 dark:border-red-500': addForm.errors.name }"
                         />
                         <button
                             type="submit"
                             :disabled="addForm.processing || !addForm.name.trim()"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                         >
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -182,7 +182,7 @@ function submitDelete(spec: Specialization) {
                                     v-model="editName"
                                     type="text"
                                     maxlength="100"
-                                    class="w-full rounded-lg border border-violet-400 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none ring-2 ring-violet-100 focus:ring-violet-200 dark:border-violet-500 dark:bg-gray-800 dark:text-gray-100 dark:ring-violet-900/40"
+                                    class="w-full rounded-lg border border-orange-400 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none ring-2 ring-orange-100 focus:ring-orange-200 dark:border-orange-500 dark:bg-gray-800 dark:text-gray-100 dark:ring-orange-900/40"
                                     @keydown.enter.prevent="submitEdit(spec)"
                                     @keydown.escape.prevent="cancelEdit"
                                     autofocus
@@ -221,7 +221,7 @@ function submitDelete(spec: Specialization) {
                             <template v-else-if="editingId === spec.id">
                                 <button
                                     @click="submitEdit(spec)"
-                                    class="rounded-lg bg-violet-600 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-violet-700 active:scale-95"
+                                    class="rounded-lg bg-orange-600 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-orange-700 active:scale-95"
                                 >
                                     Save
                                 </button>

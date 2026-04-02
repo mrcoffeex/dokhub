@@ -252,7 +252,7 @@ function ratingBarWidth(star: number): string {
                             <div>
                                 <h1 class="text-xl font-bold text-gray-900">Dr. {{ doctor.name }}</h1>
                                 <div class="mt-1 flex flex-wrap gap-1">
-                                    <span v-for="s in doctor.specialization" :key="s" class="inline-block rounded-full bg-violet-100 px-3 py-0.5 text-sm font-medium text-violet-700">
+                                    <span v-for="s in doctor.specialization" :key="s" class="inline-block rounded-full bg-orange-100 px-3 py-0.5 text-sm font-medium text-orange-700">
                                         {{ s }}
                                     </span>
                                 </div>
@@ -274,26 +274,26 @@ function ratingBarWidth(star: number): string {
 
                         <div class="mt-5 space-y-3">
                             <div v-if="doctor.qualification" class="flex items-center gap-2 text-sm text-gray-600">
-                                <svg class="h-4 w-4 shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-4 w-4 shrink-0 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                                 </svg>
                                 {{ doctor.qualification }}
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-600">
-                                <svg class="h-4 w-4 shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-4 w-4 shrink-0 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 {{ doctor.experience_years }}+ years experience
                             </div>
                             <div v-if="doctor.location" class="flex items-center gap-2 text-sm text-gray-600">
-                                <svg class="h-4 w-4 shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-4 w-4 shrink-0 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                                 {{ doctor.location }}
                             </div>
                             <div v-if="doctor.insurance && doctor.insurance.length" class="flex items-start gap-2 text-sm text-gray-600">
-                                <svg class="h-4 w-4 shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-4 w-4 shrink-0 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3 4h-6l3-4zm0 6v7" />
                                 </svg>
                                 <div>
@@ -309,7 +309,7 @@ function ratingBarWidth(star: number): string {
 
                         <div class="mt-5 border-t border-gray-100 pt-5">
                             <p class="text-sm font-semibold text-gray-900">Consultation Fee</p>
-                            <p class="mt-1 text-2xl font-bold text-violet-600">₱{{ doctor.consultation_fee }}</p>
+                            <p class="mt-1 text-2xl font-bold text-orange-600">₱{{ doctor.consultation_fee }}</p>
                         </div>
                     </div>
 
@@ -323,7 +323,7 @@ function ratingBarWidth(star: number): string {
                     <div v-if="doctor.latitude && doctor.longitude" class="rounded-2xl border border-gray-100 bg-white shadow-sm">
                         <div class="border-b border-gray-100 px-4 py-3">
                             <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                                <svg class="h-4 w-4 text-violet-500" fill="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-4 w-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                                 </svg>
                                 Clinic Location
@@ -358,7 +358,7 @@ function ratingBarWidth(star: number): string {
                         <!-- Step indicator -->
                         <div class="flex items-center border-b border-gray-100 px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <div class="flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold" :class="step === 1 ? 'bg-violet-600 text-white' : 'bg-green-500 text-white'">
+                                <div class="flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold" :class="step === 1 ? 'bg-orange-600 text-white' : 'bg-green-500 text-white'">
                                     <span v-if="step === 1">1</span>
                                     <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
                                 </div>
@@ -366,7 +366,7 @@ function ratingBarWidth(star: number): string {
                             </div>
                             <div class="mx-4 h-px flex-1 bg-gray-200" />
                             <div class="flex items-center gap-3">
-                                <div class="flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold" :class="step === 2 ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-400'">
+                                <div class="flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold" :class="step === 2 ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-400'">
                                     2
                                 </div>
                                 <span class="text-sm font-medium" :class="step === 2 ? 'text-gray-900' : 'text-gray-400'">Your Details</span>
@@ -401,9 +401,9 @@ function ratingBarWidth(star: number): string {
                                             @click="d.available && selectDate(d.date)"
                                             class="relative flex h-9 w-full items-center justify-center rounded-xl text-sm font-medium transition-all"
                                             :class="{
-                                                'bg-violet-600 text-white shadow-md shadow-violet-200': selectedDate === d.date,
+                                                'bg-orange-600 text-white shadow-md shadow-orange-200': selectedDate === d.date,
                                                 'cursor-not-allowed text-gray-300': !d.available,
-                                                'text-gray-700 hover:bg-violet-50 hover:text-violet-700': d.available && selectedDate !== d.date,
+                                                'text-gray-700 hover:bg-orange-50 hover:text-orange-700': d.available && selectedDate !== d.date,
                                             }"
                                         >
                                             {{ d.day }}
@@ -428,9 +428,9 @@ function ratingBarWidth(star: number): string {
                                         @click="!isSlotBooked(time) && (selectedTime = time)"
                                         class="rounded-xl border px-3 py-2 text-sm font-medium transition-all"
                                         :class="{
-                                            'border-violet-600 bg-violet-600 text-white shadow-md': selectedTime === time,
+                                            'border-orange-600 bg-orange-600 text-white shadow-md': selectedTime === time,
                                             'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300 line-through': isSlotBooked(time),
-                                            'border-gray-200 text-gray-700 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700': !isSlotBooked(time) && selectedTime !== time,
+                                            'border-gray-200 text-gray-700 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700': !isSlotBooked(time) && selectedTime !== time,
                                         }"
                                     >
                                         {{ formatTime(time) }}
@@ -450,7 +450,7 @@ function ratingBarWidth(star: number): string {
                                 <button
                                     @click="goToStep2"
                                     :disabled="!selectedDate || !selectedTime"
-                                    class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+                                    class="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                     Continue
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
@@ -461,15 +461,15 @@ function ratingBarWidth(star: number): string {
                         <!-- Step 2: Patient Details Form -->
                         <form v-if="step === 2" @submit.prevent="submitBooking" class="p-6">
                             <!-- Selected appointment summary -->
-                            <div class="mb-6 flex items-center justify-between rounded-xl bg-violet-50 px-4 py-3">
+                            <div class="mb-6 flex items-center justify-between rounded-xl bg-orange-50 px-4 py-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wide text-violet-500">Your Appointment</p>
-                                    <p class="mt-0.5 text-sm font-semibold text-violet-900">
+                                    <p class="text-xs font-semibold uppercase tracking-wide text-orange-500">Your Appointment</p>
+                                    <p class="mt-0.5 text-sm font-semibold text-orange-900">
                                         {{ formatSelectedDate(selectedDate, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) }}
                                         at {{ formatTime(selectedTime) }}
                                     </p>
                                 </div>
-                                <button type="button" @click="step = 1" class="text-xs font-semibold text-violet-600 hover:text-violet-700">Change</button>
+                                <button type="button" @click="step = 1" class="text-xs font-semibold text-orange-600 hover:text-orange-700">Change</button>
                             </div>
 
                             <div class="space-y-4">
@@ -481,7 +481,7 @@ function ratingBarWidth(star: number): string {
                                             type="text"
                                             placeholder="John Doe"
                                             required
-                                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                                             :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': form.errors.patient_name }"
                                         />
                                         <p v-if="form.errors.patient_name" class="mt-1 text-xs text-red-500">{{ form.errors.patient_name }}</p>
@@ -493,7 +493,7 @@ function ratingBarWidth(star: number): string {
                                             type="tel"
                                             placeholder="+1 555 000 0000"
                                             required
-                                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                                             :class="{ 'border-red-400': form.errors.patient_phone }"
                                         />
                                         <p v-if="form.errors.patient_phone" class="mt-1 text-xs text-red-500">{{ form.errors.patient_phone }}</p>
@@ -507,7 +507,7 @@ function ratingBarWidth(star: number): string {
                                         type="email"
                                         placeholder="you@example.com"
                                         required
-                                        class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                                         :class="{ 'border-red-400': form.errors.patient_email }"
                                     />
                                     <p v-if="form.errors.patient_email" class="mt-1 text-xs text-red-500">{{ form.errors.patient_email }}</p>
@@ -520,7 +520,7 @@ function ratingBarWidth(star: number): string {
                                         v-model="form.reason"
                                         rows="3"
                                         placeholder="Briefly describe your symptoms or what you'd like to discuss..."
-                                        class="mt-1.5 w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        class="mt-1.5 w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                                     />
                                 </div>
                             </div>
@@ -542,7 +542,7 @@ function ratingBarWidth(star: number): string {
                                 <button
                                     type="submit"
                                     :disabled="form.processing"
-                                    class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-violet-700 disabled:opacity-60"
+                                    class="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-8 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-orange-700 disabled:opacity-60"
                                 >
                                     <svg v-if="form.processing" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -557,9 +557,9 @@ function ratingBarWidth(star: number): string {
                             </p>
                             <p class="mt-2 text-center text-xs text-gray-400">
                                 By confirming, you agree to our
-                                <a href="/terms-of-service" target="_blank" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600">Terms of Service</a>
+                                <a href="/terms-of-service" target="_blank" class="font-medium text-gray-500 underline underline-offset-2 hover:text-orange-600">Terms of Service</a>
                                 and
-                                <a href="/privacy-policy" target="_blank" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600">Privacy Policy</a>.
+                                <a href="/privacy-policy" target="_blank" class="font-medium text-gray-500 underline underline-offset-2 hover:text-orange-600">Privacy Policy</a>.
                             </p>
                         </form>
                     </div>
@@ -568,7 +568,7 @@ function ratingBarWidth(star: number): string {
                     <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between">
                             <h3 class="font-semibold text-gray-900">Patient Reviews</h3>
-                            <span class="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-semibold text-violet-700">{{ reviewStats.total }}</span>
+                            <span class="rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-700">{{ reviewStats.total }}</span>
                         </div>
 
                         <!-- Aggregate row -->
@@ -607,7 +607,7 @@ function ratingBarWidth(star: number): string {
                         <!-- Write a review CTA -->
                         <button
                             @click="showReviewForm = !showReviewForm"
-                            class="mt-5 w-full rounded-xl border border-violet-200 bg-violet-50 py-2.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-100"
+                            class="mt-5 w-full rounded-xl border border-orange-200 bg-orange-50 py-2.5 text-sm font-semibold text-orange-700 transition hover:bg-orange-100"
                         >
                             {{ showReviewForm ? 'Cancel' : '✏ Write a Review' }}
                         </button>
@@ -654,14 +654,14 @@ function ratingBarWidth(star: number): string {
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Your Name <span class="text-red-500">*</span></label>
                                     <input v-model="reviewForm.patient_name" type="text" placeholder="Jane Smith" required
-                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                                         :class="{ 'border-red-400': reviewForm.errors.patient_name }" />
                                     <p v-if="reviewForm.errors.patient_name" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_name }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
                                     <input v-model="reviewForm.patient_email" type="email" placeholder="you@example.com" required
-                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                                        class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                                         :class="{ 'border-red-400': reviewForm.errors.patient_email }" />
                                     <p v-if="reviewForm.errors.patient_email" class="mt-1 text-xs text-red-500">{{ reviewForm.errors.patient_email }}</p>
                                 </div>
@@ -670,7 +670,7 @@ function ratingBarWidth(star: number): string {
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Comment <span class="text-gray-400">(Optional)</span></label>
                                 <textarea v-model="reviewForm.comment" rows="3" placeholder="Share your experience..."
-                                    class="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
+                                    class="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100" />
                             </div>
 
                             <!-- hCaptcha widget (production only) -->
@@ -691,7 +691,7 @@ function ratingBarWidth(star: number): string {
                             <button
                                 type="submit"
                                 :disabled="reviewForm.processing || reviewForm.rating === 0 || (IS_PRODUCTION && !reviewForm.hcaptcha_token)"
-                                class="w-full rounded-xl bg-violet-600 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                                class="w-full rounded-xl bg-orange-600 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50"
                             >
                                 {{ reviewForm.processing ? 'Submitting...' : 'Submit Review' }}
                             </button>

@@ -45,9 +45,9 @@ onMounted(() => {
         maxZoom: 19,
     }).addTo(map);
 
-    // Custom violet pin icon
+    // Custom orange pin icon
     const pinIcon = L.divIcon({
-        html: `<div style="width:36px;height:36px;background:#7c3aed;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(124,58,237,.45)"></div>`,
+        html: `<div style="width:36px;height:36px;background:#ea580c;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(234,88,12,.45)"></div>`,
         className: '',
         iconSize: [36, 36],
         iconAnchor: [18, 36],
@@ -76,7 +76,7 @@ onUnmounted(() => {
         <!-- Footer bar -->
         <div class="flex items-center justify-between border-t border-gray-100 bg-white px-4 py-2.5">
             <div class="flex items-center gap-2 text-xs text-gray-500">
-                <svg class="h-3.5 w-3.5 shrink-0 text-violet-500" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="h-3.5 w-3.5 shrink-0 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                 </svg>
                 <span class="line-clamp-1">{{ address ?? 'Clinic location' }}</span>
@@ -84,7 +84,7 @@ onUnmounted(() => {
             <button
                 type="button"
                 @click="openDirections"
-                class="ml-3 flex shrink-0 items-center gap-1 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-violet-700"
+                class="ml-3 flex shrink-0 items-center gap-1 rounded-lg bg-orange-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-orange-700"
             >
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />

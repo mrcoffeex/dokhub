@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
 
 const page = usePage<PageProps>();
 const flash = computed(() => page.props.flash);
 const isAdmin = computed(() => (page.props.auth as any)?.isAdmin ?? false);
 const user = computed(() => (page.props.auth as any)?.user ?? null);
+
+const mobileMenuOpen = ref(false);
 </script>
 
 <template>
@@ -15,11 +17,7 @@ const user = computed(() => (page.props.auth as any)?.user ?? null);
         <header class="sticky top-0 z-50 border-b border-gray-200/80 bg-white/95 backdrop-blur-sm">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <Link href="/" class="flex items-center gap-2.5">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600">
-                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </div>
+                    <img src="/logo.png" alt="DokHub" class="h-8 w-auto" />
                     <span class="text-lg font-bold tracking-tight text-gray-900">DokHub</span>
                 </Link>
 
@@ -31,7 +29,7 @@ const user = computed(() => (page.props.auth as any)?.user ?? null);
                         My Appointment
                     </Link>
                     <template v-if="user">
-                        <Link v-if="isAdmin" href="/admin" class="text-sm font-medium text-violet-600 hover:text-violet-700">
+                        <Link v-if="isAdmin" href="/admin" class="text-sm font-medium text-orange-600 hover:text-orange-700">
                             Admin Panel
                         </Link>
                         <Link v-else href="/dashboard" class="text-sm font-medium text-gray-600 hover:text-gray-900">
@@ -42,18 +40,88 @@ const user = computed(() => (page.props.auth as any)?.user ?? null);
                         <Link href="/login" class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900">
                             Sign In
                         </Link>
-                        <Link href="/doctors" class="inline-flex items-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
+                        <Link href="/doctors" class="inline-flex items-center rounded-lg bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">
                             Book Appointment
                         </Link>
                     </template>
                 </nav>
 
-                <!-- Mobile menu button -->
-                <div class="sm:hidden">
-                    <Link href="/doctors" class="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white">
-                        Book Now
+                <!-- Mobile hamburger button -->
+                <button
+                    type="button"
+                    class="sm:hidden inline-flex items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    :aria-expanded="mobileMenuOpen"
+                    aria-label="Toggle navigation menu"
+                    @click="mobileMenuOpen = !mobileMenuOpen"
+                >
+                    <!-- Hamburger icon -->
+                    <svg v-if="!mobileMenuOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <!-- Close icon -->
+                    <svg v-else class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile menu dropdown -->
+            <div
+                v-show="mobileMenuOpen"
+                class="sm:hidden border-t border-gray-200 bg-white px-4 pb-4 pt-3"
+            >
+                <nav class="flex flex-col gap-1">
+                    <Link
+                        href="/doctors"
+                        class="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        @click="mobileMenuOpen = false"
+                    >
+                        Find Doctors
                     </Link>
-                </div>
+                    <Link
+                        href="/my-appointment"
+                        class="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        @click="mobileMenuOpen = false"
+                    >
+                        My Appointment
+                    </Link>
+                    <template v-if="user">
+                        <Link
+                            v-if="isAdmin"
+                            href="/admin"
+                            class="rounded-lg px-3 py-2.5 text-sm font-medium text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                            @click="mobileMenuOpen = false"
+                        >
+                            Admin Panel
+                        </Link>
+                        <Link
+                            v-else
+                            href="/dashboard"
+                            class="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                            @click="mobileMenuOpen = false"
+                        >
+                            Dashboard
+                        </Link>
+                    </template>
+                    <template v-else>
+                        <Link
+                            href="/login"
+                            class="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                            @click="mobileMenuOpen = false"
+                        >
+                            Sign In
+                        </Link>
+                        <div class="pt-2">
+                            <Link
+                                href="/doctors"
+                                class="block rounded-lg bg-orange-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-orange-700"
+                                @click="mobileMenuOpen = false"
+                            >
+                                Book Appointment
+                            </Link>
+                        </div>
+                    </template>
+                </nav>
             </div>
         </header>
 
@@ -83,11 +151,7 @@ const user = computed(() => (page.props.auth as any)?.user ?? null);
             <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between">
                     <Link href="/" class="flex items-center gap-2">
-                        <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600">
-                            <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                        </div>
+                        <img src="/logo.png" alt="DokHub" class="h-7 w-auto" />
                         <span class="text-sm font-bold text-gray-900">DokHub</span>
                     </Link>
                     <p class="text-sm text-gray-500">© {{ new Date().getFullYear() }} DokHub. All rights reserved.</p>

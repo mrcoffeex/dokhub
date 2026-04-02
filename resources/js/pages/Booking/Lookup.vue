@@ -57,7 +57,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
                             type="text"
                             placeholder="APT-2026-0001"
                             required
-                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 font-mono text-sm uppercase text-gray-900 outline-none transition placeholder:normal-case placeholder:font-sans focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 font-mono text-sm uppercase text-gray-900 outline-none transition placeholder:normal-case placeholder:font-sans focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                         />
                         <p v-if="form.errors.reference" class="mt-1 text-xs text-red-500">{{ form.errors.reference }}</p>
                     </div>
@@ -68,14 +68,14 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
                             type="email"
                             placeholder="you@example.com"
                             required
-                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                            class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                         />
                         <p v-if="form.errors.email" class="mt-1 text-xs text-red-500">{{ form.errors.email }}</p>
                     </div>
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="w-full rounded-xl bg-violet-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:opacity-60"
+                        class="w-full rounded-xl bg-orange-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 disabled:opacity-60"
                     >
                         {{ form.processing ? 'Looking up...' : 'Look Up Appointment' }}
                     </button>
@@ -93,7 +93,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
                 <div class="p-6">
                     <div class="mb-4 text-center">
                         <p class="text-xs font-semibold uppercase tracking-widest text-gray-400">Reference</p>
-                        <p class="font-mono text-xl font-bold text-violet-700">{{ appointment.reference }}</p>
+                        <p class="font-mono text-xl font-bold text-orange-700">{{ appointment.reference }}</p>
                     </div>
                     <div class="divide-y divide-gray-100">
                         <div class="flex justify-between py-3">

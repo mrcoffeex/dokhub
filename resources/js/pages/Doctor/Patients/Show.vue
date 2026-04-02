@@ -142,7 +142,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
     <DoctorLayout>
         <template #header>
             <div class="flex items-center gap-2 text-sm">
-                <Link href="/doctor/patients" class="text-gray-500 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400 transition-colors">
+                <Link href="/doctor/patients" class="text-gray-500 hover:text-orange-600 dark:text-gray-400 dark:hover:text-orange-400 transition-colors">
                     Patients
                 </Link>
                 <svg class="h-4 w-4 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,14 +158,14 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                 <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
                     <!-- Avatar + Name -->
                     <div class="flex flex-col items-center gap-3 border-b border-gray-100 p-6 dark:border-gray-800">
-                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-xl font-bold text-white shadow">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-indigo-600 text-xl font-bold text-white shadow">
                             {{ initials(patient.name) }}
                         </div>
                         <div class="text-center">
                             <h2 class="text-base font-bold text-gray-900 dark:text-white">{{ patient.name }}</h2>
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ patient.email }}</p>
                         </div>
-                        <button @click="editingInfo = !editingInfo" class="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:border-violet-300 hover:text-violet-700 dark:border-gray-700 dark:text-gray-400 dark:hover:text-violet-400">
+                        <button @click="editingInfo = !editingInfo" class="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:border-orange-300 hover:text-orange-700 dark:border-gray-700 dark:text-gray-400 dark:hover:text-orange-400">
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
@@ -183,7 +183,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 required
                                 :class="infoForm.errors.name
                                     ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 focus:ring-1 focus:ring-orange-100 dark:border-gray-700'"
                                 class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="infoForm.errors.name" class="mt-1 text-xs text-red-500">{{ infoForm.errors.name }}</p>
@@ -195,7 +195,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 type="email"
                                 :class="infoForm.errors.email
                                     ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 focus:ring-1 focus:ring-orange-100 dark:border-gray-700'"
                                 class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="infoForm.errors.email" class="mt-1 text-xs text-red-500">{{ infoForm.errors.email }}</p>
@@ -207,7 +207,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 type="tel"
                                 :class="infoForm.errors.phone
                                     ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 focus:ring-1 focus:ring-orange-100 dark:border-gray-700'"
                                 class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="infoForm.errors.phone" class="mt-1 text-xs text-red-500">{{ infoForm.errors.phone }}</p>
@@ -218,7 +218,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 v-model="infoForm.gender"
                                 :class="infoForm.errors.gender
                                     ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                 class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             >
                                 <option value="">— Select —</option>
@@ -235,7 +235,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 type="date"
                                 :class="infoForm.errors.date_of_birth
                                     ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                 class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="infoForm.errors.date_of_birth" class="mt-1 text-xs text-red-500">{{ infoForm.errors.date_of_birth }}</p>
@@ -247,7 +247,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 rows="2"
                                 :class="infoForm.errors.allergies
                                     ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                 class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="infoForm.errors.allergies" class="mt-1 text-xs text-red-500">{{ infoForm.errors.allergies }}</p>
@@ -259,7 +259,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 rows="3"
                                 :class="infoForm.errors.medical_history
                                     ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                 class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="infoForm.errors.medical_history" class="mt-1 text-xs text-red-500">{{ infoForm.errors.medical_history }}</p>
@@ -271,12 +271,12 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 rows="2"
                                 :class="infoForm.errors.notes
                                     ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                 class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="infoForm.errors.notes" class="mt-1 text-xs text-red-500">{{ infoForm.errors.notes }}</p>
                         </div>
-                        <button type="submit" :disabled="infoForm.processing" class="w-full rounded-xl bg-violet-600 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50">
+                        <button type="submit" :disabled="infoForm.processing" class="w-full rounded-xl bg-orange-600 py-2 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50">
                             Save Changes
                         </button>
                     </form>
@@ -328,7 +328,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                         @click="activeTab = tab"
                         class="flex-1 rounded-lg py-2 text-xs font-semibold capitalize transition-all"
                         :class="activeTab === tab
-                            ? 'bg-white shadow-sm text-violet-700 dark:bg-gray-900 dark:text-violet-300'
+                            ? 'bg-white shadow-sm text-orange-700 dark:bg-gray-900 dark:text-orange-300'
                             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
                     >
                         {{ tab }}
@@ -339,7 +339,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
 
                 <!-- OVERVIEW TAB -->
                 <div v-if="activeTab === 'overview'" class="grid gap-4 sm:grid-cols-3">
-                    <div class="rounded-2xl border border-violet-100 bg-white p-5 shadow-sm dark:border-violet-900/30 dark:bg-gray-900">
+                    <div class="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm dark:border-orange-900/30 dark:bg-gray-900">
                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Visits</p>
                         <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ appointments.length }}</p>
                     </div>
@@ -398,7 +398,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                 <div v-else-if="activeTab === 'diagnoses'">
                     <div class="mb-4 flex items-center justify-between">
                         <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Diagnosis History</p>
-                        <button @click="openNewDiag" class="flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2 text-xs font-semibold text-white hover:bg-violet-700 transition">
+                        <button @click="openNewDiag" class="flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-700 transition">
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -407,8 +407,8 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                     </div>
 
                     <!-- Diagnosis form -->
-                    <form v-if="showDiagForm" @submit.prevent="submitDiag" class="mb-4 rounded-2xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-800 dark:bg-violet-900/20 space-y-3">
-                        <h3 class="text-sm font-semibold text-violet-800 dark:text-violet-200">{{ editingDiagId ? 'Edit Diagnosis' : 'New Diagnosis' }}</h3>
+                    <form v-if="showDiagForm" @submit.prevent="submitDiag" class="mb-4 rounded-2xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-900/20 space-y-3">
+                        <h3 class="text-sm font-semibold text-orange-800 dark:text-orange-200">{{ editingDiagId ? 'Edit Diagnosis' : 'New Diagnosis' }}</h3>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Diagnosis Title <span class="text-red-500">*</span></label>
                             <input
@@ -418,7 +418,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 placeholder="e.g. Type 2 Diabetes, Acute Pharyngitis…"
                                 :class="diagForm.errors.title
                                     ? 'border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-100 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 focus:ring-1 focus:ring-violet-100 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 focus:ring-1 focus:ring-orange-100 dark:border-gray-700'"
                                 class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="diagForm.errors.title" class="mt-1 text-xs text-red-500">{{ diagForm.errors.title }}</p>
@@ -432,7 +432,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                     placeholder="Describe symptoms…"
                                     :class="diagForm.errors.symptoms
                                         ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                        : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                     class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                                 />
                                 <p v-if="diagForm.errors.symptoms" class="mt-1 text-xs text-red-500">{{ diagForm.errors.symptoms }}</p>
@@ -445,7 +445,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                     placeholder="Detailed clinical notes…"
                                     :class="diagForm.errors.description
                                         ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                        : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                     class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                                 />
                                 <p v-if="diagForm.errors.description" class="mt-1 text-xs text-red-500">{{ diagForm.errors.description }}</p>
@@ -459,7 +459,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 placeholder="Treatment plan, medications, lifestyle advice…"
                                 :class="diagForm.errors.treatment
                                     ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                    : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                    : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                 class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                             />
                             <p v-if="diagForm.errors.treatment" class="mt-1 text-xs text-red-500">{{ diagForm.errors.treatment }}</p>
@@ -472,7 +472,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                     type="date"
                                     :class="diagForm.errors.follow_up_date
                                         ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                        : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                     class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                                 />
                                 <p v-if="diagForm.errors.follow_up_date" class="mt-1 text-xs text-red-500">{{ diagForm.errors.follow_up_date }}</p>
@@ -483,7 +483,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                     v-model="diagForm.appointment_id"
                                     :class="diagForm.errors.appointment_id
                                         ? 'border-red-400 focus:border-red-400 dark:border-red-500'
-                                        : 'border-gray-200 focus:border-violet-400 dark:border-gray-700'"
+                                        : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
                                     class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
                                 >
                                     <option :value="null">— None —</option>
@@ -495,7 +495,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button type="submit" :disabled="diagForm.processing" class="rounded-xl bg-violet-600 px-5 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50 transition">
+                            <button type="submit" :disabled="diagForm.processing" class="rounded-xl bg-orange-600 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50 transition">
                                 {{ editingDiagId ? 'Update' : 'Save Diagnosis' }}
                             </button>
                             <button type="button" @click="showDiagForm = false" class="rounded-xl border border-gray-200 px-5 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 transition">
@@ -540,7 +540,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                         </svg>
                                         Rx
                                     </Link>
-                                    <button @click="openEditDiag(diag)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 hover:border-violet-300 hover:text-violet-600 transition dark:border-gray-700">
+                                    <button @click="openEditDiag(diag)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 hover:border-orange-300 hover:text-orange-600 transition dark:border-gray-700">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
@@ -608,7 +608,7 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                                 </div>
                                 <Link
                                     :href="`/doctor/prescriptions/${rx.id}`"
-                                    class="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-violet-300 hover:text-violet-600 transition dark:border-gray-700 dark:text-gray-400"
+                                    class="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-orange-300 hover:text-orange-600 transition dark:border-gray-700 dark:text-gray-400"
                                 >
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />

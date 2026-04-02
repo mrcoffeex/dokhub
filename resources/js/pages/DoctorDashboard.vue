@@ -75,7 +75,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
         </template>
 
         <!-- Welcome Banner -->
-        <div class="mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 px-5 py-5 sm:px-7 sm:py-6 text-white shadow-md">
+        <div class="mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-600 to-indigo-700 px-5 py-5 sm:px-7 sm:py-6 text-white shadow-md">
             <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <!-- Doctor identity -->
                 <div class="flex items-center gap-4">
@@ -87,9 +87,9 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
                         <span class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-indigo-700 bg-green-400"></span>
                     </div>
                     <div>
-                        <p class="text-xs font-medium text-violet-200">Welcome back</p>
+                        <p class="text-xs font-medium text-orange-200">Welcome back</p>
                         <h2 class="text-xl font-bold leading-tight">Dr. {{ doctor?.name }}</h2>
-                        <p class="mt-0.5 text-sm text-violet-200">
+                        <p class="mt-0.5 text-sm text-orange-200">
                             {{ doctor?.specialization?.join(', ') }}
                             <span v-if="doctor?.location">&nbsp;·&nbsp;{{ doctor.location }}</span>
                             <span v-if="doctor?.experience_years">&nbsp;·&nbsp;{{ doctor.experience_years }} yrs exp</span>
@@ -98,19 +98,19 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
                 </div>
                 <!-- Quick KPIs -->
                 <div class="flex flex-col gap-3 sm:items-end">
-                    <p class="text-xs font-medium text-violet-200">{{ todayLabel }}</p>
+                    <p class="text-xs font-medium text-orange-200">{{ todayLabel }}</p>
                     <div class="flex flex-wrap gap-2">
                         <div class="rounded-xl bg-white/15 px-4 py-2.5 text-center backdrop-blur-sm">
                             <p class="text-xl font-bold">{{ stats?.confirmed_appointments ?? 0 }}</p>
-                            <p class="text-[11px] text-violet-200">Upcoming</p>
+                            <p class="text-[11px] text-orange-200">Upcoming</p>
                         </div>
                         <div class="rounded-xl bg-amber-400/25 px-4 py-2.5 text-center backdrop-blur-sm">
                             <p class="text-xl font-bold text-amber-100">{{ stats?.pending_appointments ?? 0 }}</p>
-                            <p class="text-[11px] text-violet-200">Pending</p>
+                            <p class="text-[11px] text-orange-200">Pending</p>
                         </div>
                         <div class="rounded-xl bg-white/15 px-4 py-2.5 text-center backdrop-blur-sm">
                             <p class="text-xl font-bold">{{ completionRate }}%</p>
-                            <p class="text-[11px] text-violet-200">Done</p>
+                            <p class="text-[11px] text-orange-200">Done</p>
                         </div>
                     </div>
                 </div>
@@ -120,18 +120,18 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
         <!-- Stats Grid (5 cards) -->
         <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
             <!-- Total -->
-            <div class="rounded-2xl border border-violet-100 bg-white p-5 shadow-sm dark:border-violet-900/30 dark:bg-gray-900">
+            <div class="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm dark:border-orange-900/30 dark:bg-gray-900">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Total</p>
-                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 dark:bg-violet-900/30">
-                        <svg class="h-4 w-4 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-900/30">
+                        <svg class="h-4 w-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </span>
                 </div>
                 <p class="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{{ stats?.total_appointments ?? 0 }}</p>
                 <div class="mt-2.5 h-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
-                    <div class="h-full rounded-full bg-violet-400 transition-all duration-700" :style="{ width: `${completionRate}%` }"></div>
+                    <div class="h-full rounded-full bg-orange-400 transition-all duration-700" :style="{ width: `${completionRate}%` }"></div>
                 </div>
                 <p class="mt-1 text-[11px] text-gray-400 dark:text-gray-600">{{ completionRate }}% completion</p>
             </div>
@@ -297,7 +297,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string }> 
             <div class="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
                     <h2 class="font-semibold text-gray-900 dark:text-white">Recent Appointments</h2>
-                    <Link href="/doctor/appointments" class="text-sm font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">
+                    <Link href="/doctor/appointments" class="text-sm font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300">
                         View all →
                     </Link>
                 </div>

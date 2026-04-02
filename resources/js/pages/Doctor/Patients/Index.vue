@@ -31,7 +31,7 @@ function initials(name: string): string {
 const genderColors: Record<string, string> = {
     male: 'bg-sky-100 text-sky-700',
     female: 'bg-pink-100 text-pink-700',
-    other: 'bg-purple-100 text-purple-700',
+    other: 'bg-indigo-100 text-indigo-700',
 };
 </script>
 
@@ -41,7 +41,7 @@ const genderColors: Record<string, string> = {
         <template #header>
             <div class="flex items-center gap-3">
                 <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Patients</h1>
-                <span class="rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+                <span class="rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
                     {{ patients.total }}
                 </span>
             </div>
@@ -57,12 +57,12 @@ const genderColors: Record<string, string> = {
                     v-model="search"
                     type="text"
                     placeholder="Search by name, email or phone…"
-                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                 />
             </div>
             <Link
                 href="/doctor/patients/create"
-                class="flex shrink-0 items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+                class="flex shrink-0 items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700"
             >
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -73,8 +73,8 @@ const genderColors: Record<string, string> = {
 
         <!-- Empty state -->
         <div v-if="patients.data.length === 0" class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white py-20 dark:border-gray-700 dark:bg-gray-900">
-            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-violet-50 dark:bg-violet-900/30">
-                <svg class="h-8 w-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-900/30">
+                <svg class="h-8 w-8 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             </div>
@@ -85,7 +85,7 @@ const genderColors: Record<string, string> = {
             <Link
                 v-if="!search"
                 href="/doctor/patients/create"
-                class="mt-5 flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+                class="mt-5 flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700"
             >
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -100,17 +100,17 @@ const genderColors: Record<string, string> = {
                 v-for="patient in patients.data"
                 :key="patient.id"
                 :href="`/doctor/patients/${patient.id}`"
-                class="group relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:border-violet-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:hover:border-violet-700"
+                class="group relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:hover:border-orange-700"
             >
                 <div class="flex items-start gap-4">
                     <!-- Avatar -->
-                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white shadow-sm">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-indigo-600 text-sm font-bold text-white shadow-sm">
                         {{ initials(patient.name) }}
                     </div>
 
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2">
-                            <p class="truncate text-sm font-semibold text-gray-900 dark:text-white group-hover:text-violet-700 dark:group-hover:text-violet-300 transition-colors">
+                            <p class="truncate text-sm font-semibold text-gray-900 dark:text-white group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors">
                                 {{ patient.name }}
                             </p>
                             <span v-if="patient.gender" :class="genderColors[patient.gender]" class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize">
@@ -150,7 +150,7 @@ const genderColors: Record<string, string> = {
                     :href="link.url"
                     class="inline-flex h-8 min-w-[2rem] items-center justify-center rounded-lg px-2 text-sm font-medium transition-colors"
                     :class="link.active
-                        ? 'bg-violet-600 text-white shadow-sm'
+                        ? 'bg-orange-600 text-white shadow-sm'
                         : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'"
                     v-html="link.label"
                 />

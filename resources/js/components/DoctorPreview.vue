@@ -34,7 +34,7 @@ const statusLabel = computed(() => {
         <header class="sticky top-0 z-30 bg-card/95 backdrop-blur-sm border-b">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-5 pr-12 sm:pr-0">
                 <div class="flex items-start sm:items-center gap-3 min-w-0">
-                    <div class="h-12 w-12 sm:h-16 sm:w-16 rounded-lg overflow-hidden bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-lg sm:text-xl font-bold flex-shrink-0">
+                    <div class="h-12 w-12 sm:h-16 sm:w-16 rounded-lg overflow-hidden bg-gradient-to-br from-orange-500 to-indigo-600 flex items-center justify-center text-white text-lg sm:text-xl font-bold flex-shrink-0">
                         <img v-if="props.doctor.avatar_url" :src="props.doctor.avatar_url" :alt="props.doctor.name" class="h-full w-full object-cover" />
                         <span v-else>{{ props.doctor.name?.charAt(0)?.toUpperCase() }}</span>
                     </div>
@@ -46,14 +46,14 @@ const statusLabel = computed(() => {
                         </div>
                         <p class="text-sm text-gray-500 truncate">{{ props.doctor.email ?? '—' }}</p>
                         <div class="mt-2 flex flex-wrap gap-2">
-                            <span v-for="s in props.doctor.specialization ?? []" :key="s" class="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">{{ s }}</span>
+                            <span v-for="s in props.doctor.specialization ?? []" :key="s" class="inline-block rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">{{ s }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <div class="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
-                        <a :href="`/admin/doctors/${props.doctor.slug}/edit`" class="w-full sm:w-auto text-center rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-700">
+                        <a :href="`/admin/doctors/${props.doctor.slug}/edit`" class="w-full sm:w-auto text-center rounded-lg bg-orange-600 px-3 py-2 text-sm font-medium text-white hover:bg-orange-700">
                             Edit
                         </a>
                         <a :href="`/doctors/${props.doctor.slug}`" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto text-center rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium hover:bg-gray-50">
@@ -78,7 +78,7 @@ const statusLabel = computed(() => {
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <p class="text-sm font-semibold text-gray-900">Consultation Fee</p>
-                            <p class="mt-1 text-2xl font-bold text-violet-600">₱{{ props.doctor.consultation_fee ?? '0.00' }}</p>
+                            <p class="mt-1 text-2xl font-bold text-orange-600">₱{{ props.doctor.consultation_fee ?? '0.00' }}</p>
                         </div>
                     </div>
                 </div>

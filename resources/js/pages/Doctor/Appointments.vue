@@ -160,7 +160,7 @@ const actionConfig: Record<string, { next: { label: string; status: 'confirmed' 
                     v-model="search"
                     type="text"
                     placeholder="Search by patient name, email or reference…"
-                    class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-10 text-sm shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                    class="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-11 pr-10 text-sm shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                 />
                 <button
                     v-if="search"
@@ -211,8 +211,8 @@ const actionConfig: Record<string, { next: { label: string; status: 'confirmed' 
                     <input
                         v-model="date"
                         type="date"
-                        class="rounded-xl border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-gray-700 shadow-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:focus:border-violet-500"
-                        :class="date ? 'border-violet-300 dark:border-violet-700' : ''"
+                        class="rounded-xl border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-gray-700 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:focus:border-orange-500"
+                        :class="date ? 'border-orange-300 dark:border-orange-700' : ''"
                     />
                     <button
                         v-if="date"
@@ -293,7 +293,7 @@ const actionConfig: Record<string, { next: { label: string; status: 'confirmed' 
                                 <div class="flex items-center gap-1.5">
                                     <button
                                         @click="addPatient(appt)"
-                                        class="rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-100 dark:bg-violet-900/20 dark:text-violet-300 dark:border-violet-800"
+                                        class="rounded-lg border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-700 transition-colors hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800"
                                         title="Add to patients"
                                     >
                                         + Add Patient
@@ -337,7 +337,7 @@ const actionConfig: Record<string, { next: { label: string; status: 'confirmed' 
                             :href="link.url"
                             class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
                             :class="link.active
-                                ? 'bg-violet-600 text-white'
+                                ? 'bg-orange-600 text-white'
                                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'"
                             v-html="link.label"
                         />

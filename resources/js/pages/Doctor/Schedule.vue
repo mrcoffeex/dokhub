@@ -82,16 +82,16 @@ function slotsPerDay(s: ScheduleEntry): number {
 
             <!-- Summary strip -->
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-                <div class="rounded-2xl border border-violet-100 bg-white p-5 shadow-sm dark:border-violet-900/30 dark:bg-gray-900">
+                <div class="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm dark:border-orange-900/30 dark:bg-gray-900">
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-600">Working Days</p>
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 dark:bg-violet-900/30">
-                            <svg class="h-4 w-4 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-900/30">
+                            <svg class="h-4 w-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </span>
                     </div>
-                    <p class="mt-3 text-3xl font-bold text-violet-600 dark:text-violet-400">{{ activeDaysCount() }}</p>
+                    <p class="mt-3 text-3xl font-bold text-orange-600 dark:text-orange-400">{{ activeDaysCount() }}</p>
                     <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-600">days per week</p>
                 </div>
                 <div class="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm dark:border-sky-900/30 dark:bg-gray-900">
@@ -137,7 +137,7 @@ function slotsPerDay(s: ScheduleEntry): number {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                            class="flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                         >
                             <svg v-if="!form.processing" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -160,8 +160,8 @@ function slotsPerDay(s: ScheduleEntry): number {
                             @click="s.is_active = !s.is_active"
                             class="flex h-9 w-9 flex-col items-center justify-center rounded-xl text-xs font-bold transition-all duration-150"
                             :class="s.is_active
-                                ? 'bg-violet-600 text-white shadow-sm'
-                                : 'bg-white text-gray-400 border border-gray-200 hover:border-violet-300 hover:text-violet-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-600 dark:hover:text-violet-400'"
+                                ? 'bg-orange-600 text-white shadow-sm'
+                                : 'bg-white text-gray-400 border border-gray-200 hover:border-orange-300 hover:text-orange-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-600 dark:hover:text-orange-400'"
                             :title="DAY_NAMES[s.day_of_week]"
                         >
                             {{ DAY_SHORT[s.day_of_week].charAt(0) }}
@@ -182,7 +182,7 @@ function slotsPerDay(s: ScheduleEntry): number {
                             <!-- Active indicator bar -->
                             <div
                                 class="absolute inset-y-0 left-0 w-1 rounded-r-sm transition-colors duration-200"
-                                :class="schedule.is_active ? 'bg-violet-500' : 'bg-transparent'"
+                                :class="schedule.is_active ? 'bg-orange-500' : 'bg-transparent'"
                             ></div>
 
                             <!-- Toggle + day name -->
@@ -190,8 +190,8 @@ function slotsPerDay(s: ScheduleEntry): number {
                                 <button
                                     type="button"
                                     @click="schedule.is_active = !schedule.is_active"
-                                    class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-                                    :class="schedule.is_active ? 'bg-violet-600' : 'bg-gray-200 dark:bg-gray-700'"
+                                    class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                                    :class="schedule.is_active ? 'bg-orange-600' : 'bg-gray-200 dark:bg-gray-700'"
                                     :aria-label="`Toggle ${DAY_NAMES[schedule.day_of_week]}`"
                                 >
                                     <span
@@ -203,7 +203,7 @@ function slotsPerDay(s: ScheduleEntry): number {
                                     <p class="text-sm font-semibold leading-none" :class="schedule.is_active ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600'">
                                         {{ DAY_NAMES[schedule.day_of_week] }}
                                     </p>
-                                    <p v-if="schedule.is_active" class="mt-0.5 text-[11px] text-violet-500 dark:text-violet-400">
+                                    <p v-if="schedule.is_active" class="mt-0.5 text-[11px] text-orange-500 dark:text-orange-400">
                                         {{ slotsPerDay(schedule) }} slots
                                     </p>
                                     <p v-else class="mt-0.5 text-[11px] text-gray-300 dark:text-gray-700">Day off</p>
@@ -243,8 +243,8 @@ function slotsPerDay(s: ScheduleEntry): number {
                                         @click="schedule.slot_duration_minutes = opt.value"
                                         class="rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-150"
                                         :class="schedule.slot_duration_minutes === opt.value
-                                            ? 'bg-violet-600 text-white shadow-sm'
-                                            : 'border border-gray-200 text-gray-500 hover:border-violet-300 hover:text-violet-600 dark:border-gray-700 dark:text-gray-500 dark:hover:text-violet-400'"
+                                            ? 'bg-orange-600 text-white shadow-sm'
+                                            : 'border border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600 dark:border-gray-700 dark:text-gray-500 dark:hover:text-orange-400'"
                                     >
                                         {{ opt.label }}
                                     </button>
@@ -257,7 +257,7 @@ function slotsPerDay(s: ScheduleEntry): number {
                                     v-if="schedule.is_active"
                                     type="button"
                                     @click="applyToAll(schedule)"
-                                    class="flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-500 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600 dark:border-gray-700 dark:text-gray-500 dark:hover:border-violet-700 dark:hover:bg-violet-900/20 dark:hover:text-violet-400"
+                                    class="flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-500 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 dark:border-gray-700 dark:text-gray-500 dark:hover:border-orange-700 dark:hover:bg-orange-900/20 dark:hover:text-orange-400"
                                     title="Copy these hours to all active days"
                                 >
                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -285,7 +285,7 @@ function slotsPerDay(s: ScheduleEntry): number {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                            class="flex items-center gap-2 rounded-xl bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                         >
                             <svg v-if="!form.processing" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />

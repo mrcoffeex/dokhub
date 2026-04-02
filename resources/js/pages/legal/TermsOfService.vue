@@ -15,11 +15,7 @@ const effectiveDate = 'March 26, 2026';
         <header class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-900/90">
             <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-3.5">
                 <Link href="/" class="flex items-center gap-2 font-bold text-gray-900 dark:text-white">
-                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600">
-                        <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </div>
+                    <img src="/logo.png" alt="DokHub" class="h-7 w-auto" />
                     DokHub
                 </Link>
                 <Link href="/" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-500 transition hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">
@@ -33,9 +29,9 @@ const effectiveDate = 'March 26, 2026';
 
             <!-- Page header -->
             <div class="mb-10">
-                <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 dark:border-violet-800/40 dark:bg-violet-900/20">
-                    <FileText class="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
-                    <span class="text-xs font-medium text-violet-700 dark:text-violet-300">Legal Document</span>
+                <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 dark:border-orange-800/40 dark:bg-orange-900/20">
+                    <FileText class="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />
+                    <span class="text-xs font-medium text-orange-700 dark:text-orange-300">Legal Document</span>
                 </div>
                 <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Terms of Service</h1>
                 <p class="mt-3 text-base text-gray-500 dark:text-gray-400">
@@ -70,8 +66,8 @@ const effectiveDate = 'March 26, 2026';
                         'Changes to These Terms',
                         'Contact Us',
                     ]" :key="i" class="py-2.5">
-                        <a :href="'#section-' + (i + 1)" class="flex items-center gap-2 text-sm text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-200">
-                            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-50 text-[11px] font-bold text-violet-600 dark:bg-violet-900/40 dark:text-violet-400">{{ i + 1 }}</span>
+                        <a :href="'#section-' + (i + 1)" class="flex items-center gap-2 text-sm text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-200">
+                            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-50 text-[11px] font-bold text-orange-600 dark:bg-orange-900/40 dark:text-orange-400">{{ i + 1 }}</span>
                             {{ section }}
                         </a>
                     </li>
@@ -171,7 +167,7 @@ const effectiveDate = 'March 26, 2026';
 
                 <section id="section-9">
                     <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">9. Privacy</h2>
-                    <p class="leading-relaxed">Your use of the Service is also governed by our <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-violet-600 hover:underline dark:text-violet-400">Privacy Policy</Link>, which is incorporated into these Terms by reference. Please review our Privacy Policy to understand our data practices, including how we collect and handle health-related information.</p>
+                    <p class="leading-relaxed">Your use of the Service is also governed by our <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-orange-600 hover:underline dark:text-orange-400">Privacy Policy</Link>, which is incorporated into these Terms by reference. Please review our Privacy Policy to understand our data practices, including how we collect and handle health-related information.</p>
                 </section>
 
                 <section id="section-10">
@@ -220,11 +216,11 @@ const effectiveDate = 'March 26, 2026';
                             </div>
                             <div class="flex gap-3 px-5 py-3.5">
                                 <span class="w-28 shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">Email</span>
-                                <a href="mailto:legal@dokhub.com" class="text-sm text-violet-600 hover:underline dark:text-violet-400">legal@dokhub.com</a>
+                                <a href="mailto:legal@dokhub.com" class="text-sm text-orange-600 hover:underline dark:text-orange-400">legal@dokhub.com</a>
                             </div>
                             <div class="flex gap-3 px-5 py-3.5">
                                 <span class="w-28 shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">Support</span>
-                                <a href="mailto:support@dokhub.com" class="text-sm text-violet-600 hover:underline dark:text-violet-400">support@dokhub.com</a>
+                                <a href="mailto:support@dokhub.com" class="text-sm text-orange-600 hover:underline dark:text-orange-400">support@dokhub.com</a>
                             </div>
                         </div>
                     </div>
@@ -234,7 +230,7 @@ const effectiveDate = 'March 26, 2026';
 
             <!-- Footer nav -->
             <div class="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-8 dark:border-gray-800">
-                <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-200">
+                <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-sm font-medium text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-200">
                     View Privacy Policy →
                 </Link>
                 <Link href="/" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100">

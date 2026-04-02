@@ -49,7 +49,7 @@ import AuthBase from '@/layouts/AuthLayout.vue';
                         </div>
 
                         <div class="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 dark:bg-gray-800 dark:border-gray-700">
-                            <div class="flex h-9 w-9 items-center justify-center rounded-md bg-violet-50 dark:bg-violet-900/20 text-violet-600">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-md bg-orange-50 dark:bg-orange-900/20 text-orange-600">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8" />
                                 </svg>
@@ -64,7 +64,7 @@ import AuthBase from '@/layouts/AuthLayout.vue';
                     <div class="mt-6 flex flex-col sm:flex-row gap-3">
                         <Link
                             href="/"
-                            class="flex-1 inline-flex items-center justify-center rounded-xl bg-violet-600 px-4 py-2.5 font-semibold text-white hover:bg-violet-700 transition"
+                            class="flex-1 inline-flex items-center justify-center rounded-xl bg-orange-600 px-4 py-2.5 font-semibold text-white hover:bg-orange-700 transition"
                         >
                             Back to Home
                         </Link>

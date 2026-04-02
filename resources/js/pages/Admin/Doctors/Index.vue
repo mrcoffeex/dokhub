@@ -115,7 +115,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                         @input="onSearch"
                         type="text"
                         placeholder="Search doctors..."
-                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                     />
                 </div>
                 <!-- Status filter chips -->
@@ -131,14 +131,14 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                         @click="status = opt.value; applyFilters()"
                         class="rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-150"
                         :class="status === opt.value
-                            ? 'border-violet-300 bg-violet-600 text-white shadow-sm dark:border-violet-700'
+                            ? 'border-orange-300 bg-orange-600 text-white shadow-sm dark:border-orange-700'
                             : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300'"
                     >
                         {{ opt.label }}
                     </button>
                 </div>
             </div>
-            <Link href="/admin/doctors/create" class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-95">
+            <Link href="/admin/doctors/create" class="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 active:scale-95">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -167,7 +167,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                 <div class="flex items-center gap-3">
                                     <!-- Avatar: fallback behind, img on top -->
                                     <div class="relative h-10 w-10 shrink-0">
-                                        <div class="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white select-none">
+                                        <div class="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-indigo-600 text-sm font-bold text-white select-none">
                                             {{ doctor.name?.charAt(0)?.toUpperCase() }}
                                         </div>
                                         <img
@@ -188,7 +188,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                             <!-- Specialization -->
                             <td class="px-5 py-3.5">
                                 <template v-if="doctor.specialization?.length">
-                                    <span class="inline-flex items-center rounded-lg bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 dark:bg-violet-900/20 dark:text-violet-300">
+                                    <span class="inline-flex items-center rounded-lg bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-700 dark:bg-orange-900/20 dark:text-orange-300">
                                         {{ doctor.specialization[0] }}
                                     </span>
                                     <span v-if="doctor.specialization.length > 1" class="ml-1 inline-flex items-center rounded-lg bg-gray-100 px-1.5 py-1 text-xs font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
@@ -297,7 +297,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                         v-if="!doctor.user_id"
                                         @click="openAccountModal(doctor)"
                                         title="Create user account"
-                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-violet-50 hover:text-violet-600 active:scale-95 dark:hover:bg-violet-900/20 dark:hover:text-violet-400"
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-orange-50 hover:text-orange-600 active:scale-95 dark:hover:bg-orange-900/20 dark:hover:text-orange-400"
                                     >
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -320,7 +320,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                         <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">No doctors found</p>
                                         <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">Try adjusting your search or filter criteria</p>
                                     </div>
-                                    <Link href="/admin/doctors/create" class="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-violet-700">
+                                    <Link href="/admin/doctors/create" class="inline-flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-orange-700">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                         </svg>
@@ -345,7 +345,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                             :href="link.url"
                             class="flex h-8 min-w-[2rem] items-center justify-center rounded-lg px-2.5 text-sm font-medium transition-all active:scale-95"
                             :class="link.active
-                                ? 'bg-violet-600 text-white shadow-sm'
+                                ? 'bg-orange-600 text-white shadow-sm'
                                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'"
                             v-html="link.label"
                         />
@@ -384,7 +384,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                 autocomplete="new-password"
                                 required
                                 minlength="8"
-                                class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                                 :class="{ 'border-red-400': accountForm.errors.password }"
                             />
                             <p v-if="accountForm.errors.password" class="mt-1 text-xs text-red-500">{{ accountForm.errors.password }}</p>
@@ -396,7 +396,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                 type="password"
                                 autocomplete="new-password"
                                 required
-                                class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                                 :class="{ 'border-red-400': accountForm.errors.password_confirmation }"
                             />
                             <p v-if="accountForm.errors.password_confirmation" class="mt-1 text-xs text-red-500">{{ accountForm.errors.password_confirmation }}</p>
@@ -413,7 +413,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                             <button
                                 type="submit"
                                 :disabled="accountForm.processing"
-                                class="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-60"
+                                class="rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-60"
                             >
                                 <span v-if="accountForm.processing">Creating…</span>
                                 <span v-else>Create Account</span>

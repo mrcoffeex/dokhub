@@ -44,7 +44,7 @@ function print() {
             <div class="flex items-center gap-2 text-sm">
                 <Link
                     href="/doctor/patients"
-                    class="text-gray-500 transition-colors hover:text-violet-600"
+                    class="text-gray-500 transition-colors hover:text-orange-600"
                     >Patients</Link
                 >
                 <svg
@@ -63,7 +63,7 @@ function print() {
                 <Link
                     v-if="prescription.patient"
                     :href="`/doctor/patients/${prescription.patient.id}`"
-                    class="text-gray-500 transition-colors hover:text-violet-600"
+                    class="text-gray-500 transition-colors hover:text-orange-600"
                 >
                     {{ prescription.patient.name }}
                 </Link>
@@ -90,7 +90,7 @@ function print() {
         <div class="mb-6 flex items-center gap-3 print:hidden">
             <button
                 @click="print"
-                class="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+                class="flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700"
             >
                 <svg
                     class="h-4 w-4"
@@ -123,12 +123,12 @@ function print() {
         >
             <!-- Letterhead -->
             <div
-                class="flex items-start justify-between border-b-4 border-violet-600 p-8 print:p-6"
+                class="flex items-start justify-between border-b-4 border-orange-600 p-8 print:p-6"
             >
                 <div>
                     <div class="mb-3 flex items-center gap-3">
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600 print:bg-violet-600"
+                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-600 print:bg-orange-600"
                         >
                             <svg
                                 class="h-6 w-6 text-white"
@@ -162,7 +162,7 @@ function print() {
                         <span
                             v-for="(s, index) in doctor.specialization"
                             :key="s"
-                            class="inline-block text-sm font-medium text-violet-700"
+                            class="inline-block text-sm font-medium text-orange-700"
                         >
                             {{ s
                             }}<span
@@ -186,7 +186,7 @@ function print() {
                         Prescription
                     </p>
                     <p
-                        class="text-lg font-bold text-violet-600 dark:text-violet-400"
+                        class="text-lg font-bold text-orange-600 dark:text-orange-400"
                     >
                         {{ prescription.reference }}
                     </p>
@@ -216,7 +216,7 @@ function print() {
             <div class="px-8 py-6">
                 <div class="mb-5 flex items-center gap-3">
                     <span
-                        class="text-4xl leading-none font-bold text-violet-600 italic dark:text-violet-400"
+                        class="text-4xl leading-none font-bold text-orange-600 italic dark:text-orange-400"
                         >℞</span
                     >
                     <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700" />

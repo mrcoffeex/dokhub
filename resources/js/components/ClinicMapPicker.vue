@@ -29,14 +29,14 @@ let map: L.Map | null = null;
 let marker: L.Marker | null = null;
 let accuracyCircle: L.Circle | null = null;
 
-// Custom violet teardrop pin icon
+// Custom orange teardrop pin icon
 function makePinIcon(pulse = false) {
     return L.divIcon({
         html: `
             <div style="position:relative;width:32px;height:40px">
-                ${pulse ? `<span style="position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:rgba(124,58,237,.35);animation:pin-pulse 1.4s ease-out infinite"></span>` : ''}
+                ${pulse ? `<span style="position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:rgba(234,88,12,.35);animation:pin-pulse 1.4s ease-out infinite"></span>` : ''}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" style="width:32px;height:40px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))">
-                    <path d="M16 0C9.373 0 4 5.373 4 12c0 9 12 28 12 28s12-19 12-28C28 5.373 22.627 0 16 0z" fill="#7c3aed"/>
+                    <path d="M16 0C9.373 0 4 5.373 4 12c0 9 12 28 12 28s12-19 12-28C28 5.373 22.627 0 16 0z" fill="#ea580c"/>
                     <circle cx="16" cy="12" r="5" fill="white"/>
                 </svg>
             </div>`,
@@ -142,8 +142,8 @@ function useCurrentLocation() {
             if (pos.coords.accuracy < 5000 && map) {
                 accuracyCircle = L.circle([lat, lng], {
                     radius: pos.coords.accuracy,
-                    color: '#7c3aed',
-                    fillColor: '#7c3aed',
+                    color: '#ea580c',
+                    fillColor: '#ea580c',
                     fillOpacity: 0.08,
                     weight: 1,
                 }).addTo(map);
@@ -218,7 +218,7 @@ onUnmounted(() => {
                     v-model="searchQuery"
                     type="text"
                     placeholder="Search clinic address…"
-                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                     @keydown.enter.prevent="findOnMap"
                 />
             </div>
@@ -226,7 +226,7 @@ onUnmounted(() => {
                 type="button"
                 @click="findOnMap"
                 :disabled="isSearching || !searchQuery.trim()"
-                class="flex shrink-0 items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                class="flex shrink-0 items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50"
                 title="Search address"
             >
                 <svg v-if="isSearching" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -251,7 +251,7 @@ onUnmounted(() => {
                 v-if="!lat && !lng"
                 class="pointer-events-none absolute left-3 top-3 z-[400] flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1.5 text-xs font-medium text-gray-600 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300"
             >
-                <svg class="h-3.5 w-3.5 text-violet-500" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="h-3.5 w-3.5 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                 </svg>
                 Click on map to drop pin
@@ -262,14 +262,14 @@ onUnmounted(() => {
                 type="button"
                 :disabled="isLocating"
                 @click="useCurrentLocation"
-                class="absolute right-3 top-3 z-[400] flex items-center gap-1.5 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-md transition hover:bg-violet-50 hover:text-violet-700 disabled:opacity-60 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-violet-950/50"
+                class="absolute right-3 top-3 z-[400] flex items-center gap-1.5 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-md transition hover:bg-orange-50 hover:text-orange-700 disabled:opacity-60 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-orange-950/50"
                 title="Use my current location"
             >
-                <svg v-if="isLocating" class="h-4 w-4 animate-spin text-violet-600" fill="none" viewBox="0 0 24 24">
+                <svg v-if="isLocating" class="h-4 w-4 animate-spin text-orange-600" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                <svg v-else class="h-4 w-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg v-else class="h-4 w-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="3" />
                     <path stroke-linecap="round" d="M12 2v2M12 20v2M2 12h2M20 12h2" />
                     <path stroke-linecap="round" d="M12 5a7 7 0 100 14A7 7 0 0012 5z" />
@@ -293,20 +293,20 @@ onUnmounted(() => {
             leave-active-class="transition ease-in duration-150"
             leave-to-class="opacity-0 translate-y-1"
         >
-            <div v-if="lat && lng" class="flex items-start justify-between gap-3 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 dark:border-violet-800 dark:bg-violet-950/30">
+            <div v-if="lat && lng" class="flex items-start justify-between gap-3 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2.5 dark:border-orange-800 dark:bg-orange-950/30">
                 <div class="flex min-w-0 items-start gap-2">
-                    <svg class="mt-0.5 h-4 w-4 shrink-0 text-violet-600" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="mt-0.5 h-4 w-4 shrink-0 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                     </svg>
                     <div class="min-w-0">
-                        <p v-if="pinnedAddress" class="truncate text-xs font-medium text-violet-800 dark:text-violet-200">{{ pinnedAddress }}</p>
-                        <p class="text-xs text-violet-500 dark:text-violet-400">{{ lat.toFixed(6) }}, {{ lng.toFixed(6) }}</p>
+                        <p v-if="pinnedAddress" class="truncate text-xs font-medium text-orange-800 dark:text-orange-200">{{ pinnedAddress }}</p>
+                        <p class="text-xs text-orange-500 dark:text-orange-400">{{ lat.toFixed(6) }}, {{ lng.toFixed(6) }}</p>
                     </div>
                 </div>
                 <button
                     type="button"
                     @click="clearPin"
-                    class="shrink-0 rounded-lg p-1 text-violet-400 transition hover:bg-violet-100 hover:text-red-500 dark:hover:bg-violet-900"
+                    class="shrink-0 rounded-lg p-1 text-orange-400 transition hover:bg-orange-100 hover:text-red-500 dark:hover:bg-orange-900"
                     title="Remove pin"
                 >
                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

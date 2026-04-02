@@ -136,7 +136,7 @@ const initials = computed(() =>
 
                     <!-- Avatar circle -->
                     <div
-                        class="group relative h-20 w-20 cursor-pointer overflow-hidden rounded-full ring-2 ring-violet-200 dark:ring-violet-800"
+                        class="group relative h-20 w-20 cursor-pointer overflow-hidden rounded-full ring-2 ring-orange-200 dark:ring-orange-800"
                         @click="fileInput?.click()"
                         title="Change photo"
                     >
@@ -149,7 +149,7 @@ const initials = computed(() =>
                         />
                         <div
                             v-else
-                            class="flex h-20 w-20 items-center justify-center bg-gradient-to-br from-violet-500 to-indigo-600 text-2xl font-bold text-white"
+                            class="flex h-20 w-20 items-center justify-center bg-gradient-to-br from-orange-500 to-indigo-600 text-2xl font-bold text-white"
                         >
                             {{ initials }}
                         </div>
@@ -167,7 +167,7 @@ const initials = computed(() =>
                     <!-- Uploading spinner badge -->
                     <div
                         v-if="avatarForm.processing"
-                        class="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-violet-600 dark:border-gray-900"
+                        class="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-orange-600 dark:border-gray-900"
                     >
                         <svg class="h-3.5 w-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -197,7 +197,7 @@ const initials = computed(() =>
                                 type="button"
                                 :disabled="avatarForm.processing"
                                 @click="uploadAvatar"
-                                class="flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-violet-700 disabled:opacity-60"
+                                class="flex items-center gap-1.5 rounded-lg bg-orange-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-orange-700 disabled:opacity-60"
                             >
                                 <svg v-if="!avatarForm.processing" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -265,7 +265,7 @@ const initials = computed(() =>
                     <!-- Public Profile Link -->
                     <div class="sm:col-span-2">
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Public Profile Link</label>
-                        <div class="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:focus-within:border-violet-500 dark:focus-within:ring-violet-900/40"
+                        <div class="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:focus-within:border-orange-500 dark:focus-within:ring-orange-900/40"
                             :class="{ 'border-red-400 focus-within:border-red-400 focus-within:ring-red-100': form.errors.slug }"
                         >
                             <span class="flex items-center rounded-l-xl border-r border-gray-200 bg-gray-100 px-3 text-sm text-gray-500 select-none dark:border-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -283,7 +283,7 @@ const initials = computed(() =>
                             <a
                                 :href="`/doctors/${form.slug}`"
                                 target="_blank"
-                                class="flex items-center gap-1 rounded-r-xl px-3 text-sm text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                                class="flex items-center gap-1 rounded-r-xl px-3 text-sm text-orange-600 transition hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
                                 title="Open public profile"
                             >
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -303,7 +303,7 @@ const initials = computed(() =>
                             type="text"
                             required
                             placeholder="Dr. Jane Smith"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                             :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': form.errors.name }"
                         />
                         <p v-if="form.errors.name" class="mt-1 text-xs text-red-500">{{ form.errors.name }}</p>
@@ -316,7 +316,7 @@ const initials = computed(() =>
                             v-model="form.phone"
                             type="text"
                             placeholder="+1 (555) 000-0000"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                         />
                         <p v-if="form.errors.phone" class="mt-1 text-xs text-red-500">{{ form.errors.phone }}</p>
                     </div>
@@ -328,7 +328,7 @@ const initials = computed(() =>
                             v-model="form.qualification"
                             type="text"
                             placeholder="e.g. MBBS, MD"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                         />
                         <p v-if="form.errors.qualification" class="mt-1 text-xs text-red-500">{{ form.errors.qualification }}</p>
                     </div>
@@ -346,8 +346,8 @@ const initials = computed(() =>
                                     @click="form.specialization.includes(s) ? form.specialization = form.specialization.filter((x: string) => x !== s) : form.specialization.push(s)"
                                     class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"
                                     :class="form.specialization.includes(s)
-                                        ? 'border-violet-500 bg-violet-600 text-white dark:border-violet-400'
-                                        : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-600 dark:border-gray-600 dark:text-gray-300 dark:hover:border-violet-500'"
+                                        ? 'border-orange-500 bg-orange-600 text-white dark:border-orange-400'
+                                        : 'border-gray-200 text-gray-600 hover:border-orange-300 hover:text-orange-600 dark:border-gray-600 dark:text-gray-300 dark:hover:border-orange-500'"
                                 >
                                     {{ s }}
                                 </button>
@@ -371,8 +371,8 @@ const initials = computed(() =>
                                     @click="form.insurance.includes(s) ? form.insurance = form.insurance.filter(x => x !== s) : form.insurance.push(s)"
                                     class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"
                                     :class="form.insurance.includes(s)
-                                        ? 'border-violet-500 bg-violet-600 text-white dark:border-violet-400'
-                                        : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-600 dark:border-gray-600 dark:text-gray-300 dark:hover:border-violet-500'"
+                                        ? 'border-orange-500 bg-orange-600 text-white dark:border-orange-400'
+                                        : 'border-gray-200 text-gray-600 hover:border-orange-300 hover:text-orange-600 dark:border-gray-600 dark:text-gray-300 dark:hover:border-orange-500'"
                                 >
                                     {{ s }}
                                 </button>
@@ -393,7 +393,7 @@ const initials = computed(() =>
                             min="0"
                             max="80"
                             placeholder="0"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                         />
                         <p v-if="form.errors.experience_years" class="mt-1 text-xs text-red-500">{{ form.errors.experience_years }}</p>
                     </div>
@@ -407,7 +407,7 @@ const initials = computed(() =>
                             min="0"
                             step="0.01"
                             placeholder="0.00"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                         />
                         <p v-if="form.errors.consultation_fee" class="mt-1 text-xs text-red-500">{{ form.errors.consultation_fee }}</p>
                     </div>
@@ -419,18 +419,18 @@ const initials = computed(() =>
                             v-model="form.location"
                             type="text"
                             placeholder="e.g. 123 Main St, Makati City"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                         />
                         <p v-if="form.errors.location" class="mt-1 text-xs text-red-500">{{ form.errors.location }}</p>
 
                         <!-- Map pin picker -->
-                        <div class="mt-3 rounded-xl border border-dashed border-violet-200 bg-violet-50/50 p-4 dark:border-violet-800 dark:bg-violet-950/20">
+                        <div class="mt-3 rounded-xl border border-dashed border-orange-200 bg-orange-50/50 p-4 dark:border-orange-800 dark:bg-orange-950/20">
                             <div class="mb-3 flex items-center gap-2">
-                                <svg class="h-4 w-4 text-violet-600" fill="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-4 w-4 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                                 </svg>
-                                <span class="text-sm font-semibold text-violet-700 dark:text-violet-300">Pin Clinic on Map</span>
-                                <span class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-900 dark:text-violet-300">Optional</span>
+                                <span class="text-sm font-semibold text-orange-700 dark:text-orange-300">Pin Clinic on Map</span>
+                                <span class="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-600 dark:bg-orange-900 dark:text-orange-300">Optional</span>
                             </div>
                             <ClinicMapPicker
                                 :lat="form.latitude"
@@ -448,7 +448,7 @@ const initials = computed(() =>
                             v-model="form.languages"
                             type="text"
                             placeholder="English, Spanish, French"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                         />
                         <p class="mt-1 text-xs text-gray-400 dark:text-gray-600">Comma-separated list</p>
                         <p v-if="form.errors.languages" class="mt-1 text-xs text-red-500">{{ form.errors.languages }}</p>
@@ -461,7 +461,7 @@ const initials = computed(() =>
                             v-model="form.bio"
                             rows="4"
                             placeholder="Brief professional summary…"
-                            class="w-full resize-y rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                            class="w-full resize-y rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                         />
                         <p v-if="form.errors.bio" class="mt-1 text-xs text-red-500">{{ form.errors.bio }}</p>
                     </div>
@@ -473,7 +473,7 @@ const initials = computed(() =>
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 disabled:opacity-60 dark:focus:ring-offset-gray-900"
+                        class="rounded-xl bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 disabled:opacity-60 dark:focus:ring-offset-gray-900"
                     >
                         <span v-if="form.processing">Saving…</span>
                         <span v-else>Save Changes</span>

@@ -97,7 +97,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                 </div>
                 <Link
                     href="/admin/doctors/create"
-                    class="hidden shrink-0 items-center gap-2 rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-95 sm:inline-flex"
+                    class="hidden shrink-0 items-center gap-2 rounded-xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 active:scale-95 sm:inline-flex"
                 >
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -138,15 +138,15 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
 
             <!-- Total Doctors -->
             <div class="relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
-                <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-violet-50/60 to-transparent dark:from-violet-900/10 dark:to-transparent"></div>
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-orange-50/60 to-transparent dark:from-orange-900/10 dark:to-transparent"></div>
                 <div class="relative">
                     <div class="flex items-start justify-between">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/50">
-                            <svg class="h-5 w-5 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-900/50">
+                            <svg class="h-5 w-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                         </div>
-                        <span class="rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">All time</span>
+                        <span class="rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-600 dark:bg-orange-900/20 dark:text-orange-400">All time</span>
                     </div>
                     <p class="mt-4 text-3xl font-bold tabular-nums text-gray-900 dark:text-white">{{ stats.total_doctors }}</p>
                     <p class="mt-0.5 text-sm font-medium text-gray-500 dark:text-gray-400">Total Doctors</p>
@@ -302,7 +302,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Appointment Trend</h2>
                         <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">Appointments scheduled over the last 7 days</p>
                     </div>
-                    <span class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-600 dark:bg-orange-900/20 dark:text-orange-400">
                         7-day window
                     </span>
                 </div>
@@ -316,8 +316,8 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                 >
                     <defs>
                         <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%"   stop-color="#7c3aed" stop-opacity="0.22" />
-                            <stop offset="100%" stop-color="#7c3aed" stop-opacity="0" />
+                            <stop offset="0%"   stop-color="#ea580c" stop-opacity="0.22" />
+                            <stop offset="100%" stop-color="#ea580c" stop-opacity="0" />
                         </linearGradient>
                     </defs>
                     <!-- Horizontal grid lines -->
@@ -327,7 +327,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                     <!-- Area fill -->
                     <path :d="sparkline.area" fill="url(#sparkGrad)" />
                     <!-- Line -->
-                    <polyline :points="sparkline.polyline" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+                    <polyline :points="sparkline.polyline" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
                     <!-- Data point dots -->
                     <circle
                         v-for="(pt, i) in sparkline.pts"
@@ -335,7 +335,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         :cx="pt.x"
                         :cy="pt.y"
                         r="3.5"
-                        fill="#7c3aed"
+                        fill="#ea580c"
                         stroke="white"
                         stroke-width="2"
                         class="dark:stroke-gray-900"
@@ -371,7 +371,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Top Doctors</h2>
                         <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">Ranked by appointment count</p>
                     </div>
-                    <Link href="/admin/doctors" class="text-xs font-semibold text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">
+                    <Link href="/admin/doctors" class="text-xs font-semibold text-orange-600 transition hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300">
                         View all →
                     </Link>
                 </div>
@@ -393,7 +393,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         >{{ i + 1 }}</span>
                         <!-- Avatar -->
                         <div class="relative h-9 w-9 shrink-0">
-                            <div class="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
+                            <div class="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-indigo-600 text-xs font-bold text-white">
                                 {{ doctor.name?.charAt(0)?.toUpperCase() }}
                             </div>
                             <img
@@ -412,7 +412,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                             </p>
                         </div>
                         <!-- Appointment count -->
-                        <span class="inline-flex h-7 min-w-[1.75rem] shrink-0 items-center justify-center rounded-lg bg-violet-50 px-2 text-xs font-bold text-violet-700 dark:bg-violet-900/20 dark:text-violet-300">
+                        <span class="inline-flex h-7 min-w-[1.75rem] shrink-0 items-center justify-center rounded-lg bg-orange-50 px-2 text-xs font-bold text-orange-700 dark:bg-orange-900/20 dark:text-orange-300">
                             {{ doctor.appointments_count }}
                         </span>
                     </div>
@@ -435,7 +435,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Recent Appointments</h2>
                         <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">Latest activity across the platform</p>
                     </div>
-                    <Link href="/admin/appointments" class="text-xs font-semibold text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">
+                    <Link href="/admin/appointments" class="text-xs font-semibold text-orange-600 transition hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300">
                         View all →
                     </Link>
                 </div>
@@ -447,7 +447,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         class="flex items-center gap-3 px-6 py-3.5 transition-colors hover:bg-gray-50/70 dark:hover:bg-gray-800/40"
                     >
                         <!-- Doctor initial avatar -->
-                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-indigo-600 text-xs font-bold text-white">
                             {{ apt.doctor?.name?.charAt(0)?.toUpperCase() ?? '?' }}
                         </div>
                         <!-- Info -->

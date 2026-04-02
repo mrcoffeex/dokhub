@@ -86,8 +86,8 @@ function submit() {
                 <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
                     <!-- Section header -->
                     <div class="flex items-center gap-3 border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 dark:bg-violet-900/30">
-                            <svg class="h-4 w-4 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-900/30">
+                            <svg class="h-4 w-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </span>
@@ -112,7 +112,7 @@ function submit() {
                                     class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:ring-2 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                     :class="form.errors.name
                                         ? 'border-red-400 focus:border-red-400 focus:ring-red-100 dark:border-red-500 dark:focus:ring-red-900/30'
-                                        : 'border-gray-200 focus:border-violet-400 focus:ring-violet-100 dark:border-gray-700 dark:focus:border-violet-500 dark:focus:ring-violet-900/30'"
+                                        : 'border-gray-200 focus:border-orange-400 focus:ring-orange-100 dark:border-gray-700 dark:focus:border-orange-500 dark:focus:ring-orange-900/30'"
                                 />
                                 <p v-if="form.errors.name" class="mt-1 text-xs text-red-500">{{ form.errors.name }}</p>
                             </div>
@@ -128,7 +128,7 @@ function submit() {
                                     class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:ring-2 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                     :class="form.errors.email
                                         ? 'border-red-400 focus:border-red-400 focus:ring-red-100 dark:border-red-500 dark:focus:ring-red-900/30'
-                                        : 'border-gray-200 focus:border-violet-400 focus:ring-violet-100 dark:border-gray-700 dark:focus:border-violet-500 dark:focus:ring-violet-900/30'"
+                                        : 'border-gray-200 focus:border-orange-400 focus:ring-orange-100 dark:border-gray-700 dark:focus:border-orange-500 dark:focus:ring-orange-900/30'"
                                 />
                                 <p v-if="form.errors.email" class="mt-1 text-xs text-red-500">{{ form.errors.email }}</p>
                             </div>
@@ -142,7 +142,7 @@ function submit() {
                                     v-model="form.phone"
                                     type="tel"
                                     placeholder="+1 555 000 0000"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                                 />
                             </div>
                             <div>
@@ -151,7 +151,7 @@ function submit() {
                                     v-model="form.location"
                                     type="text"
                                     placeholder="Manila, Philippines"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                                 />
                             </div>
                         </div>
@@ -175,8 +175,8 @@ function submit() {
                                             @click="form.specialization.includes(s) ? form.specialization = form.specialization.filter(x => x !== s) : form.specialization.push(s)"
                                             class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"
                                             :class="form.specialization.includes(s)
-                                                ? 'border-violet-500 bg-violet-600 text-white dark:border-violet-400'
-                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-600 dark:border-gray-600 dark:text-gray-300 dark:hover:border-violet-500'"
+                                                ? 'border-orange-500 bg-orange-600 text-white dark:border-orange-400'
+                                                : 'border-gray-200 text-gray-600 hover:border-orange-300 hover:text-orange-600 dark:border-gray-600 dark:text-gray-300 dark:hover:border-orange-500'"
                                         >
                                             {{ s }}
                                         </button>
@@ -198,8 +198,8 @@ function submit() {
                                                @click="form.insurance.includes(i) ? form.insurance = form.insurance.filter(x => x !== i) : form.insurance.push(i)"
                                                class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"
                                                :class="form.insurance.includes(i)
-                                                   ? 'border-violet-500 bg-violet-600 text-white'
-                                                   : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-600 dark:border-gray-600 dark:text-gray-300'"
+                                                   ? 'border-orange-500 bg-orange-600 text-white'
+                                                   : 'border-gray-200 text-gray-600 hover:border-orange-300 hover:text-orange-600 dark:border-gray-600 dark:text-gray-300'"
                                            >
                                                {{ i }}
                                            </button>
@@ -214,7 +214,7 @@ function submit() {
                                     v-model="form.qualification"
                                     type="text"
                                     placeholder="e.g. MD, FACC"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                                 />
                             </div>
                         </div>
@@ -229,7 +229,7 @@ function submit() {
                                     min="0"
                                     max="60"
                                     placeholder="0"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                                 />
                             </div>
                             <div>
@@ -240,7 +240,7 @@ function submit() {
                                     min="0"
                                     step="0.01"
                                     placeholder="0.00"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                                 />
                             </div>
                         </div>
@@ -252,7 +252,7 @@ function submit() {
                                 v-model="form.bio"
                                 rows="3"
                                 placeholder="Brief description of the doctor's background and expertise…"
-                                class="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                class="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                             />
                         </div>
 
@@ -306,7 +306,7 @@ function submit() {
                                 class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:ring-2 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                 :class="form.errors.password
                                     ? 'border-red-400 focus:border-red-400 focus:ring-red-100 dark:border-red-500 dark:focus:ring-red-900/30'
-                                    : 'border-gray-200 focus:border-violet-400 focus:ring-violet-100 dark:border-gray-700 dark:focus:border-violet-500 dark:focus:ring-violet-900/30'"
+                                    : 'border-gray-200 focus:border-orange-400 focus:ring-orange-100 dark:border-gray-700 dark:focus:border-orange-500 dark:focus:ring-orange-900/30'"
                             />
                             <p v-if="form.errors.password" class="mt-1 text-xs text-red-500">{{ form.errors.password }}</p>
                         </div>
@@ -319,7 +319,7 @@ function submit() {
                                 type="password"
                                 required
                                 placeholder="Repeat password"
-                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/30"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/30"
                             />
                         </div>
                     </div>
@@ -351,8 +351,8 @@ function submit() {
                                     @click="toggleDay(idx)"
                                     class="flex h-10 w-10 flex-col items-center justify-center rounded-xl text-xs font-bold transition-all duration-150"
                                     :class="selectedDays.includes(idx)
-                                        ? 'bg-violet-600 text-white shadow-sm'
-                                        : 'border border-gray-200 text-gray-500 hover:border-violet-300 hover:text-violet-600 dark:border-gray-700 dark:text-gray-500 dark:hover:border-violet-700 dark:hover:text-violet-400'"
+                                        ? 'bg-orange-600 text-white shadow-sm'
+                                        : 'border border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600 dark:border-gray-700 dark:text-gray-500 dark:hover:border-orange-700 dark:hover:text-orange-400'"
                                     :title="day"
                                 >
                                     {{ day.charAt(0) }}
@@ -401,8 +401,8 @@ function submit() {
                                     @click="scheduleSettings.slot_duration_minutes = opt.value"
                                     class="rounded-lg px-3.5 py-2 text-xs font-semibold transition-all duration-150"
                                     :class="scheduleSettings.slot_duration_minutes === opt.value
-                                        ? 'bg-violet-600 text-white shadow-sm'
-                                        : 'border border-gray-200 text-gray-500 hover:border-violet-300 hover:text-violet-600 dark:border-gray-700 dark:text-gray-500 dark:hover:border-violet-700 dark:hover:text-violet-400'"
+                                        ? 'bg-orange-600 text-white shadow-sm'
+                                        : 'border border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600 dark:border-gray-700 dark:text-gray-500 dark:hover:border-orange-700 dark:hover:text-orange-400'"
                                 >
                                     {{ opt.label }}
                                 </button>
@@ -431,7 +431,7 @@ function submit() {
                         type="submit"
                         :disabled="form.processing"
                         @click="submit"
-                        class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                        class="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                     >
                         <svg v-if="form.processing" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />

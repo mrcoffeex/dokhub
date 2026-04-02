@@ -15,11 +15,7 @@ const effectiveDate = 'March 26, 2026';
         <header class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-900/90">
             <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-3.5">
                 <Link href="/" class="flex items-center gap-2 font-bold text-gray-900 dark:text-white">
-                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600">
-                        <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </div>
+                    <img src="/logo.png" alt="DokHub" class="h-7 w-auto" />
                     DokHub
                 </Link>
                 <Link href="/" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-500 transition hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">
@@ -90,8 +86,8 @@ const effectiveDate = 'March 26, 2026';
                         'Changes to This Policy',
                         'Contact Us',
                     ]" :key="i" class="py-2.5">
-                        <a :href="'#pp-section-' + (i + 1)" class="flex items-center gap-2 text-sm text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-200">
-                            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-50 text-[11px] font-bold text-violet-600 dark:bg-violet-900/40 dark:text-violet-400">{{ i + 1 }}</span>
+                        <a :href="'#pp-section-' + (i + 1)" class="flex items-center gap-2 text-sm text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-200">
+                            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-50 text-[11px] font-bold text-orange-600 dark:bg-orange-900/40 dark:text-orange-400">{{ i + 1 }}</span>
                             {{ section }}
                         </a>
                     </li>
@@ -235,12 +231,12 @@ const effectiveDate = 'March 26, 2026';
                             </div>
                         </div>
                     </div>
-                    <p class="mt-4 leading-relaxed">To exercise any of these rights, contact us at <a href="mailto:privacy@dokhub.com" class="font-medium text-violet-600 hover:underline dark:text-violet-400">privacy@dokhub.com</a>. We will respond within 30 days. Identity verification may be required before processing your request.</p>
+                    <p class="mt-4 leading-relaxed">To exercise any of these rights, contact us at <a href="mailto:privacy@dokhub.com" class="font-medium text-orange-600 hover:underline dark:text-orange-400">privacy@dokhub.com</a>. We will respond within 30 days. Identity verification may be required before processing your request.</p>
                 </section>
 
                 <section id="pp-section-10">
                     <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">10. Children's Privacy</h2>
-                    <p class="leading-relaxed">The Service is not directed to children under the age of 13 (or 16 in applicable jurisdictions). We do not knowingly collect personal information from children. If we become aware that a child under the applicable age has provided us with personal data without verifiable parental consent, we will delete it promptly. If you believe a child has provided us their information, contact us at <a href="mailto:privacy@dokhub.com" class="font-medium text-violet-600 hover:underline dark:text-violet-400">privacy@dokhub.com</a>.</p>
+                    <p class="leading-relaxed">The Service is not directed to children under the age of 13 (or 16 in applicable jurisdictions). We do not knowingly collect personal information from children. If we become aware that a child under the applicable age has provided us with personal data without verifiable parental consent, we will delete it promptly. If you believe a child has provided us their information, contact us at <a href="mailto:privacy@dokhub.com" class="font-medium text-orange-600 hover:underline dark:text-orange-400">privacy@dokhub.com</a>.</p>
                 </section>
 
                 <section id="pp-section-11">
@@ -269,11 +265,11 @@ const effectiveDate = 'March 26, 2026';
                             </div>
                             <div class="flex gap-3 px-5 py-3.5">
                                 <span class="w-28 shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">Privacy email</span>
-                                <a href="mailto:privacy@dokhub.com" class="text-sm text-violet-600 hover:underline dark:text-violet-400">privacy@dokhub.com</a>
+                                <a href="mailto:privacy@dokhub.com" class="text-sm text-orange-600 hover:underline dark:text-orange-400">privacy@dokhub.com</a>
                             </div>
                             <div class="flex gap-3 px-5 py-3.5">
                                 <span class="w-28 shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">Legal email</span>
-                                <a href="mailto:legal@dokhub.com" class="text-sm text-violet-600 hover:underline dark:text-violet-400">legal@dokhub.com</a>
+                                <a href="mailto:legal@dokhub.com" class="text-sm text-orange-600 hover:underline dark:text-orange-400">legal@dokhub.com</a>
                             </div>
                         </div>
                     </div>
@@ -283,7 +279,7 @@ const effectiveDate = 'March 26, 2026';
 
             <!-- Footer nav -->
             <div class="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-8 dark:border-gray-800">
-                <Link href="/terms-of-service" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-200">
+                <Link href="/terms-of-service" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-sm font-medium text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-200">
                     View Terms of Service →
                 </Link>
                 <Link href="/" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100">

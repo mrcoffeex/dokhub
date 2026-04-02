@@ -120,7 +120,7 @@ function formatDate(dateStr: string) {
                 @click="setFilter(tab.key)"
                 class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors"
                 :class="filter === tab.key
-                    ? 'bg-violet-600 text-white shadow-sm'
+                    ? 'bg-orange-600 text-white shadow-sm'
                     : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-750'"
             >
                 {{ tab.label }}

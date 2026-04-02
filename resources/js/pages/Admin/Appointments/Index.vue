@@ -71,7 +71,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         @input="onSearch"
                         type="text"
                         placeholder="Search patient, reference..."
-                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 sm:w-64 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 sm:w-64 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                     />
                 </div>
 
@@ -89,7 +89,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         @click="status = opt.value; applyFilters()"
                         class="rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-150"
                         :class="status === opt.value
-                            ? 'border-violet-300 bg-violet-600 text-white shadow-sm dark:border-violet-700'
+                            ? 'border-orange-300 bg-orange-600 text-white shadow-sm dark:border-orange-700'
                             : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300'"
                     >
                         {{ opt.label }}
@@ -102,8 +102,8 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         v-model="date"
                         @change="applyFilters"
                         type="date"
-                        class="rounded-xl border border-gray-200 bg-white py-2.5 pl-4 pr-3 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
-                        :class="{ 'border-violet-400 ring-2 ring-violet-100': date }"
+                        class="rounded-xl border border-gray-200 bg-white py-2.5 pl-4 pr-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                        :class="{ 'border-orange-400 ring-2 ring-orange-100': date }"
                     />
                     <button
                         v-if="date"
@@ -152,12 +152,12 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                             <!-- Doctor -->
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-2">
-                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
+                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-indigo-600 text-xs font-bold text-white">
                                         {{ apt.doctor?.name?.charAt(0)?.toUpperCase() }}
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Dr. {{ apt.doctor?.name }}</p>
-                                        <span class="inline-block rounded-md bg-violet-50 px-1.5 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">
+                                        <span class="inline-block rounded-md bg-orange-50 px-1.5 py-0.5 text-xs font-medium text-orange-600 dark:bg-orange-900/20 dark:text-orange-400">
                                             {{ Array.isArray(apt.doctor?.specialization) ? apt.doctor.specialization.join(', ') : apt.doctor?.specialization }}
                                         </span>
                                     </div>
@@ -217,7 +217,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                             :href="link.url"
                             class="flex h-8 min-w-[2rem] items-center justify-center rounded-lg px-2.5 text-sm font-medium transition-all active:scale-95"
                             :class="link.active
-                                ? 'bg-violet-600 text-white shadow-sm'
+                                ? 'bg-orange-600 text-white shadow-sm'
                                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'"
                             v-html="link.label"
                         />

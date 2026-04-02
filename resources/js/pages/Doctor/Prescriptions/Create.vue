@@ -163,7 +163,7 @@ function formatDate(d: string | null): string {
             <div class="flex items-center gap-2 text-sm">
                 <Link
                     href="/doctor/patients"
-                    class="text-gray-500 transition-colors hover:text-violet-600"
+                    class="text-gray-500 transition-colors hover:text-orange-600"
                     >Patients</Link
                 >
                 <svg
@@ -181,7 +181,7 @@ function formatDate(d: string | null): string {
                 </svg>
                 <Link
                     :href="`/doctor/patients/${patient.id}`"
-                    class="text-gray-500 transition-colors hover:text-violet-600"
+                    class="text-gray-500 transition-colors hover:text-orange-600"
                     >{{ patient.name }}</Link
                 >
                 <svg
@@ -217,7 +217,7 @@ function formatDate(d: string | null): string {
                             class="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-200"
                         >
                             <span
-                                class="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded bg-violet-100 text-violet-600 dark:bg-violet-900/40 dark:text-violet-300"
+                                class="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-300"
                             >
                                 <svg
                                     class="h-3 w-3"
@@ -240,7 +240,7 @@ function formatDate(d: string | null): string {
                         </label>
                         <select
                             v-model="form.diagnosis_id"
-                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                         >
                             <option :value="null">— None —</option>
                             <option
@@ -263,10 +263,10 @@ function formatDate(d: string | null): string {
                         >
                             <div class="flex items-center gap-2">
                                 <span
-                                    class="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/40"
+                                    class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/40"
                                 >
                                     <svg
-                                        class="h-4 w-4 text-violet-600 dark:text-violet-400"
+                                        class="h-4 w-4 text-orange-600 dark:text-orange-400"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
@@ -285,7 +285,7 @@ function formatDate(d: string | null): string {
                                     Medications
                                 </h3>
                                 <span
-                                    class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
+                                    class="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300"
                                 >
                                     {{ form.medications.length }}
                                 </span>
@@ -293,7 +293,7 @@ function formatDate(d: string | null): string {
                             <button
                                 type="button"
                                 @click="addMed"
-                                class="flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-95"
+                                class="flex items-center gap-1.5 rounded-lg bg-orange-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-orange-700 active:scale-95"
                             >
                                 <svg
                                     class="h-3.5 w-3.5"
@@ -327,7 +327,7 @@ function formatDate(d: string | null): string {
                                     >
                                         <div class="flex items-center gap-2">
                                             <span
-                                                class="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 text-xs font-bold text-white"
+                                                class="flex h-6 w-6 items-center justify-center rounded-full bg-orange-600 text-xs font-bold text-white"
                                                 >{{ i + 1 }}</span
                                             >
                                             <span
@@ -398,7 +398,7 @@ function formatDate(d: string | null): string {
                                                     type="text"
                                                     required
                                                     placeholder="Search medicine name (powered by NIH RxNorm)…"
-                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-10 pl-10 text-sm transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-10 pl-10 text-sm transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     autocomplete="off"
                                                 />
                                                 <div
@@ -410,7 +410,7 @@ function formatDate(d: string | null): string {
                                                             activeFieldIndex ===
                                                                 i
                                                         "
-                                                        class="h-4 w-4 animate-spin text-violet-500"
+                                                        class="h-4 w-4 animate-spin text-orange-500"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
                                                     >
@@ -483,7 +483,7 @@ function formatDate(d: string | null): string {
                                                         class="flex items-center gap-3 px-4 py-3.5 text-sm text-gray-500 dark:text-gray-400"
                                                     >
                                                         <svg
-                                                            class="h-4 w-4 animate-spin text-violet-500"
+                                                            class="h-4 w-4 animate-spin text-orange-500"
                                                             fill="none"
                                                             viewBox="0 0 24 24"
                                                         >
@@ -553,7 +553,7 @@ function formatDate(d: string | null): string {
                                                                     i,
                                                                 )
                                                             "
-                                                            class="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 transition-colors hover:bg-violet-50 hover:text-violet-700 dark:text-gray-300 dark:hover:bg-violet-900/30 dark:hover:text-violet-300"
+                                                            class="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 transition-colors hover:bg-orange-50 hover:text-orange-700 dark:text-gray-300 dark:hover:bg-orange-900/30 dark:hover:text-orange-300"
                                                         >
                                                             <span
                                                                 class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-bold"
@@ -561,7 +561,7 @@ function formatDate(d: string | null): string {
                                                                     s.type ===
                                                                     'brand'
                                                                         ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
-                                                                        : 'bg-violet-100 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400'
+                                                                        : 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400'
                                                                 "
                                                             >
                                                                 {{
@@ -605,7 +605,7 @@ function formatDate(d: string | null): string {
                                                 type="text"
                                                 required
                                                 placeholder="e.g. 500mg, 10ml"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                             />
                                             <p
                                                 v-if="
@@ -638,7 +638,7 @@ function formatDate(d: string | null): string {
                                                 required
                                                 :list="`freq-presets-${i}`"
                                                 placeholder="e.g. Twice daily"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                             />
                                             <datalist :id="`freq-presets-${i}`">
                                                 <option
@@ -664,7 +664,7 @@ function formatDate(d: string | null): string {
                                                 required
                                                 :list="`dur-presets-${i}`"
                                                 placeholder="e.g. 7 days"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                             />
                                             <datalist :id="`dur-presets-${i}`">
                                                 <option
@@ -690,7 +690,7 @@ function formatDate(d: string | null): string {
                                                 v-model="med.instructions"
                                                 type="text"
                                                 placeholder="e.g. Take after meals, avoid sunlight…"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                             />
                                         </div>
                                     </div>
@@ -704,7 +704,7 @@ function formatDate(d: string | null): string {
                                 <button
                                     type="button"
                                     @click="addMed"
-                                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-violet-300 py-2.5 text-sm font-medium text-violet-600 transition hover:border-violet-400 hover:bg-violet-50/60 dark:border-violet-700 dark:text-violet-400 dark:hover:bg-violet-900/20"
+                                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-orange-300 py-2.5 text-sm font-medium text-orange-600 transition hover:border-orange-400 hover:bg-orange-50/60 dark:border-orange-700 dark:text-orange-400 dark:hover:bg-orange-900/20"
                                 >
                                     <svg
                                         class="h-4 w-4"
@@ -753,7 +753,7 @@ function formatDate(d: string | null): string {
                                     v-model="form.notes"
                                     rows="3"
                                     placeholder="Any additional instructions, dietary advice, follow-up notes…"
-                                    class="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                    class="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                 />
                             </div>
 
@@ -764,7 +764,7 @@ function formatDate(d: string | null): string {
                                 <button
                                     type="submit"
                                     :disabled="form.processing"
-                                    class="flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-95 disabled:opacity-50"
+                                    class="flex items-center gap-2 rounded-xl bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 active:scale-95 disabled:opacity-50"
                                 >
                                     <svg
                                         v-if="form.processing"
@@ -843,10 +843,10 @@ function formatDate(d: string | null): string {
                     <div class="mb-3 flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span
-                                class="flex h-6 w-6 items-center justify-center rounded-md bg-violet-100 dark:bg-violet-900/40"
+                                class="flex h-6 w-6 items-center justify-center rounded-md bg-orange-100 dark:bg-orange-900/40"
                             >
                                 <svg
-                                    class="h-3.5 w-3.5 text-violet-600 dark:text-violet-400"
+                                    class="h-3.5 w-3.5 text-orange-600 dark:text-orange-400"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -884,12 +884,12 @@ function formatDate(d: string | null): string {
                     >
                         <!-- Letterhead -->
                         <div
-                            class="flex items-start justify-between border-b-4 border-violet-600 px-6 py-5"
+                            class="flex items-start justify-between border-b-4 border-orange-600 px-6 py-5"
                         >
                             <div>
                                 <div class="mb-2.5 flex items-center gap-2.5">
                                     <div
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600"
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-600"
                                     >
                                         <svg
                                             class="h-5 w-5 text-white"
@@ -927,7 +927,7 @@ function formatDate(d: string | null): string {
                                             s, index
                                         ) in doctor.specialization"
                                         :key="s"
-                                        class="inline-block text-sm font-medium text-violet-700"
+                                        class="inline-block text-sm font-medium text-orange-700"
                                     >
                                         {{ s
                                         }}<span
@@ -954,7 +954,7 @@ function formatDate(d: string | null): string {
                                     Prescription
                                 </p>
                                 <p
-                                    class="text-base font-bold text-violet-400 italic dark:text-violet-500"
+                                    class="text-base font-bold text-orange-400 italic dark:text-orange-500"
                                 >
                                     PREVIEW
                                 </p>
@@ -988,7 +988,7 @@ function formatDate(d: string | null): string {
                         <div class="px-6 py-5">
                             <div class="mb-4 flex items-center gap-2.5">
                                 <span
-                                    class="text-3xl leading-none font-bold text-violet-600 italic dark:text-violet-400"
+                                    class="text-3xl leading-none font-bold text-orange-600 italic dark:text-orange-400"
                                     >℞</span
                                 >
                                 <div

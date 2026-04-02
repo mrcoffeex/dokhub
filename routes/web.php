@@ -23,12 +23,20 @@ use Inertia\Inertia;
 
 // Public landing / home
 Route::get('/', function () {
+    $avgRating = \App\Models\DoctorReview::approved()->avg('rating');
+
     return Inertia::render('Home', [
         'featuredSpecializations' => \App\Models\Specialization::active()
             ->orderBy('sort_order')
             ->orderBy('name')
             ->limit(8)
             ->pluck('name'),
+        'stats' => [
+            'doctors'          => \App\Models\Doctor::approved()->count(),
+            'appointments'     => \App\Models\Appointment::count(),
+            'specializations'  => \App\Models\Specialization::active()->count(),
+            'avg_rating'       => $avgRating ? number_format((float) $avgRating, 1) : null,
+        ],
     ]);
 })->name('home');
 

@@ -109,7 +109,7 @@
 
     /* Tabular nums for prices, dates, stats */
     .tabular-nums,
-    [class*='font-bold'][class*='text-violet'],
+    [class*='font-bold'][class*='text-orange'],
     [class*='font-extrabold'] {
         font-variant-numeric: tabular-nums;
         font-feature-settings: 'tnum';

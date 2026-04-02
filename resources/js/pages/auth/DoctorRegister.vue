@@ -50,8 +50,8 @@ const STEPS = [
         heading: "Let's start with the basics.",
         sub: 'Tell us who you are so patients and DokHub can reach you.',
         icon: User,
-        iconBg: 'bg-violet-100 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400',
-        badge: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300',
+        iconBg: 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400',
+        badge: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
         bullets: [
             'Your name appears on your public doctor profile',
             'Contact details help us notify you about bookings',
@@ -216,7 +216,7 @@ async function handleSubmit() {
     <div class="flex h-screen overflow-hidden">
 
         <!-- ── Left branding panel ─────────────────────────────────── -->
-        <div class="relative hidden flex-col overflow-hidden bg-gradient-to-br from-violet-700 via-violet-600 to-indigo-700 lg:flex lg:w-5/12 xl:w-2/5">
+        <div class="relative hidden flex-col overflow-hidden bg-gradient-to-br from-orange-700 via-orange-600 to-indigo-700 lg:flex lg:w-5/12 xl:w-2/5">
             <div class="pointer-events-none absolute inset-0">
                 <div class="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-white/5 blur-3xl"></div>
                 <div class="absolute bottom-10 -right-16 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl"></div>
@@ -225,14 +225,10 @@ async function handleSubmit() {
             <div class="relative flex h-full flex-col justify-between p-10">
                 <!-- Logo -->
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm ring-1 ring-white/30">
-                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </div>
+                    <img src="/logo.png" alt="DokHub" class="h-10 w-auto" />
                     <div>
                         <p class="text-lg font-bold text-white">DokHub</p>
-                        <p class="text-xs text-violet-200">Healthcare Platform</p>
+                        <p class="text-xs text-orange-200">Healthcare Platform</p>
                     </div>
                 </div>
 
@@ -248,12 +244,12 @@ async function handleSubmit() {
                                         : i + 1 === step
                                             ? 'border-white bg-white/20'
                                             : 'border-white/30 bg-transparent'">
-                                    <CheckCircle2 v-if="i + 1 < step" class="h-5 w-5 text-violet-600" />
+                                    <CheckCircle2 v-if="i + 1 < step" class="h-5 w-5 text-orange-600" />
                                     <component v-else :is="s.icon" class="h-4 w-4 transition-colors"
                                         :class="i + 1 === step ? 'text-white' : 'text-white/30'" />
                                 </div>
                                 <span class="mt-1.5 text-[10px] font-semibold uppercase tracking-wide transition-colors"
-                                    :class="i + 1 === step ? 'text-white' : i + 1 < step ? 'text-violet-200' : 'text-white/30'">
+                                    :class="i + 1 === step ? 'text-white' : i + 1 < step ? 'text-orange-200' : 'text-white/30'">
                                     {{ s.label }}
                                 </span>
                             </div>
@@ -272,10 +268,10 @@ async function handleSubmit() {
                         leave-to-class="opacity-0 -translate-y-3">
                         <div :key="step">
                             <h1 class="text-3xl font-bold leading-tight text-white">{{ current.heading }}</h1>
-                            <p class="mt-3 text-sm leading-relaxed text-violet-200">{{ current.sub }}</p>
+                            <p class="mt-3 text-sm leading-relaxed text-orange-200">{{ current.sub }}</p>
                             <ul class="mt-6 space-y-2.5">
                                 <li v-for="bullet in current.bullets" :key="bullet"
-                                    class="flex items-start gap-2.5 text-sm text-violet-100">
+                                    class="flex items-start gap-2.5 text-sm text-orange-100">
                                     <span class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-white/20">
                                         <svg class="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
@@ -295,13 +291,13 @@ async function handleSubmit() {
                             { value: props.stats.rating > 0 ? props.stats.rating.toFixed(1) + '★' : 'New★', label: 'Rating' },
                         ]" :key="stat.label" class="rounded-xl bg-white/10 px-2 py-3 text-center ring-1 ring-white/10">
                             <p class="text-base font-bold text-white">{{ stat.value }}</p>
-                            <p class="text-xs text-violet-300">{{ stat.label }}</p>
+                            <p class="text-xs text-orange-300">{{ stat.label }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Back link -->
-                <Link href="/" class="inline-flex items-center gap-1.5 text-sm text-violet-200 transition-colors hover:text-white">
+                <Link href="/" class="inline-flex items-center gap-1.5 text-sm text-orange-200 transition-colors hover:text-white">
                     <ChevronLeft class="h-4 w-4" />
                     Back to home
                 </Link>
@@ -314,11 +310,7 @@ async function handleSubmit() {
             <!-- Mobile top bar -->
             <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-5 py-3 dark:border-gray-800 dark:bg-gray-900 lg:hidden">
                 <div class="flex items-center gap-2">
-                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600">
-                        <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </div>
+                    <img src="/logo.png" alt="DokHub" class="h-7 w-auto" />
                     <span class="text-sm font-bold text-gray-900 dark:text-white">DokHub</span>
                 </div>
                 <Link href="/" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400">← Home</Link>
@@ -339,10 +331,10 @@ async function handleSubmit() {
                         <!-- Progress pill -->
                         <div class="shrink-0 flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                             <div class="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
-                                <div class="h-full rounded-full bg-violet-600 transition-all duration-500"
+                                <div class="h-full rounded-full bg-orange-600 transition-all duration-500"
                                     :style="{ width: progress + '%' }"></div>
                             </div>
-                            <span class="text-xs font-semibold text-violet-600 dark:text-violet-400">{{ progress }}%</span>
+                            <span class="text-xs font-semibold text-orange-600 dark:text-orange-400">{{ progress }}%</span>
                         </div>
                     </div>
 
@@ -350,7 +342,7 @@ async function handleSubmit() {
                     <div class="mb-4 flex shrink-0 gap-1 lg:hidden">
                         <div v-for="(s, i) in STEPS" :key="i"
                             class="flex-1 rounded-full py-0.5 transition-all duration-300"
-                            :class="i + 1 <= step ? 'bg-violet-500' : 'bg-gray-200 dark:bg-gray-700'">
+                            :class="i + 1 <= step ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'">
                         </div>
                     </div>
 
@@ -405,7 +397,7 @@ async function handleSubmit() {
                                             <div class="relative">
                                                 <User class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                 <input id="name" v-model="form.name" type="text" autofocus placeholder="John Doe"
-                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.name }" />
                                             </div>
                                             <InputError :message="errors.name" class="mt-1 text-xs" />
@@ -415,7 +407,7 @@ async function handleSubmit() {
                                             <div class="relative">
                                                 <Mail class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                 <input id="email" v-model="form.email" type="email" placeholder="doctor@example.com"
-                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.email }" />
                                             </div>
                                             <InputError :message="errors.email" class="mt-1 text-xs" />
@@ -425,7 +417,7 @@ async function handleSubmit() {
                                             <div class="relative">
                                                 <Phone class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                 <input id="phone" v-model="form.phone" type="tel" placeholder="0912 345 6789"
-                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.phone }" />
                                             </div>
                                             <InputError :message="errors.phone" class="mt-1 text-xs" />
@@ -438,7 +430,7 @@ async function handleSubmit() {
                                             <div class="mb-1.5 flex items-center justify-between">
                                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Specialization</label>
                                                 <span class="text-xs font-medium"
-                                                    :class="form.specialization.length ? 'text-violet-600 dark:text-violet-400' : 'text-gray-400'">
+                                                    :class="form.specialization.length ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400'">
                                                     {{ form.specialization.length ? form.specialization.length + ' selected' : 'Select one or more' }}
                                                 </span>
                                             </div>
@@ -449,8 +441,8 @@ async function handleSubmit() {
                                                         type="button" @click="toggleSpec(spec)"
                                                         class="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all"
                                                         :class="form.specialization.includes(spec)
-                                                            ? 'border-violet-500 bg-violet-600 text-white shadow-sm'
-                                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-violet-500 dark:hover:text-violet-400'">
+                                                            ? 'border-orange-500 bg-orange-600 text-white shadow-sm'
+                                                            : 'border-gray-200 text-gray-600 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-orange-500 dark:hover:text-orange-400'">
                                                         <CheckCircle2 v-if="form.specialization.includes(spec)" class="h-3 w-3" />
                                                         {{ spec }}
                                                     </button>
@@ -463,7 +455,7 @@ async function handleSubmit() {
                                             <div class="relative">
                                                 <GraduationCap class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                 <input id="qualification" v-model="form.qualification" type="text" placeholder="e.g., MBBS, MD, Board Certified"
-                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.qualification }" />
                                             </div>
                                             <InputError :message="errors.qualification" class="mt-1 text-xs" />
@@ -478,7 +470,7 @@ async function handleSubmit() {
                                                 <div class="relative">
                                                     <Briefcase class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                     <input id="experience_years" v-model.number="form.experience_years" type="number" min="0" max="70" placeholder="10"
-                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                         :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.experience_years }" />
                                                 </div>
                                                 <InputError :message="errors.experience_years" class="mt-1 text-xs" />
@@ -488,7 +480,7 @@ async function handleSubmit() {
                                                 <div class="relative">
                                                     <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-400">₱</span>
                                                     <input id="consultation_fee" v-model.number="form.consultation_fee" type="number" min="0" step="0.01" placeholder="50.00"
-                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                         :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.consultation_fee }" />
                                                 </div>
                                                 <InputError :message="errors.consultation_fee" class="mt-1 text-xs" />
@@ -500,7 +492,7 @@ async function handleSubmit() {
                                                 <div class="relative">
                                                     <MapPin class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                     <input id="location" v-model="form.location" type="text" placeholder="City, State"
-                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                         :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.location }" />
                                                 </div>
                                                 <InputError :message="errors.location" class="mt-1 text-xs" />
@@ -512,7 +504,7 @@ async function handleSubmit() {
                                                 <div class="relative">
                                                     <Languages class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                     <input id="languages" v-model="form.languages" type="text" placeholder="English, Spanish"
-                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                         :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.languages }" />
                                                 </div>
                                                 <InputError :message="errors.languages" class="mt-1 text-xs" />
@@ -523,7 +515,7 @@ async function handleSubmit() {
                                             <div class="relative">
                                                 <FileText class="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-gray-400" />
                                                 <textarea id="bio" v-model="form.bio" rows="3" placeholder="Tell patients about your experience, approach, and specialties..."
-                                                    class="w-full resize-none rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    class="w-full resize-none rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.bio }" />
                                             </div>
                                             <InputError :message="errors.bio" class="mt-1 text-xs" />
@@ -535,7 +527,7 @@ async function handleSubmit() {
                                                     <span class="ml-1 text-xs font-normal text-gray-400">(optional)</span>
                                                 </label>
                                                 <span class="text-xs font-medium"
-                                                    :class="form.insurance.length ? 'text-violet-600 dark:text-violet-400' : 'text-gray-400'">
+                                                    :class="form.insurance.length ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400'">
                                                     {{ form.insurance.length ? form.insurance.length + ' selected' : 'None selected' }}
                                                 </span>
                                             </div>
@@ -545,8 +537,8 @@ async function handleSubmit() {
                                                         type="button" @click="toggleInsurance(ins)"
                                                         class="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all"
                                                         :class="form.insurance.includes(ins)
-                                                            ? 'border-violet-500 bg-violet-600 text-white shadow-sm'
-                                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-violet-500 dark:hover:text-violet-400'">
+                                                            ? 'border-orange-500 bg-orange-600 text-white shadow-sm'
+                                                            : 'border-gray-200 text-gray-600 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-orange-500 dark:hover:text-orange-400'">
                                                         <CheckCircle2 v-if="form.insurance.includes(ins)" class="h-3 w-3" />
                                                         {{ ins }}
                                                     </button>
@@ -568,14 +560,14 @@ async function handleSubmit() {
                                         <div>
                                             <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
                                             <PasswordInput id="password" v-model="form.password" autocomplete="new-password" placeholder="••••••••"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                 :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.password }" />
                                             <InputError :message="errors.password" class="mt-1 text-xs" />
                                         </div>
                                         <div>
                                             <label for="password_confirmation" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
                                             <PasswordInput id="password_confirmation" v-model="form.password_confirmation" autocomplete="new-password" placeholder="••••••••"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                 :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.password_confirmation }" />
                                             <InputError :message="errors.password_confirmation" class="mt-1 text-xs" />
                                         </div>
@@ -602,9 +594,9 @@ async function handleSubmit() {
                                         <!-- Legal note -->
                                         <p class="text-xs text-gray-400 dark:text-gray-500">
                                             By registering, you agree to our
-                                            <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Terms of Service</a>
+                                            <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-orange-600 dark:text-gray-400 dark:hover:text-orange-400">Terms of Service</a>
                                             and
-                                            <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-violet-600 dark:text-gray-400 dark:hover:text-violet-400">Privacy Policy</a>.
+                                            <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-gray-500 underline underline-offset-2 hover:text-orange-600 dark:text-gray-400 dark:hover:text-orange-400">Privacy Policy</a>.
                                             Your profile will be reviewed before activation.
                                         </p>
                                     </template>
@@ -624,14 +616,14 @@ async function handleSubmit() {
                         <div v-else></div>
 
                         <button v-if="step < TOTAL_STEPS" type="button" @click="nextStep"
-                            class="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-violet-200 transition hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 dark:shadow-none dark:focus:ring-offset-gray-950">
+                            class="flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-200 transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 dark:shadow-none dark:focus:ring-offset-gray-950">
                             Continue
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
                         <button v-else type="button" @click="handleSubmit" :disabled="processing"
-                            class="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-violet-200 transition hover:bg-violet-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 dark:shadow-none dark:focus:ring-offset-gray-950">
+                            class="flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-200 transition hover:bg-orange-700 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 dark:shadow-none dark:focus:ring-offset-gray-950">
                             <Spinner v-if="processing" class="h-4 w-4" />
                             {{ processing ? 'Creating profile…' : 'Complete Registration' }}
                         </button>
@@ -640,7 +632,7 @@ async function handleSubmit() {
                     <!-- Footer -->
                     <p class="mt-3 shrink-0 text-center text-sm text-gray-500 dark:text-gray-400">
                         Already have an account?
-                        <Link href="/login" class="font-semibold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">Sign in</Link>
+                        <Link href="/login" class="font-semibold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300">Sign in</Link>
                     </p>
 
                 </div>

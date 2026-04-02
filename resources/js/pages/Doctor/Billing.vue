@@ -32,7 +32,7 @@ const statusLabel = computed(() => {
 });
 
 const statusColor = computed(() => {
-    if (props.isPaidPro)  return 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300';
+    if (props.isPaidPro)  return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300';
     if (props.isInTrial)  return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300';
     return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
 });
@@ -78,7 +78,7 @@ const PAYMENT_METHODS = [
             <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <div class="flex items-center gap-4 border-b border-gray-100 px-6 py-5 dark:border-gray-800">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-                        :class="isPaidPro ? 'bg-violet-600' : isInTrial ? 'bg-amber-500' : 'bg-gray-200 dark:bg-gray-700'">
+                        :class="isPaidPro ? 'bg-orange-600' : isInTrial ? 'bg-amber-500' : 'bg-gray-200 dark:bg-gray-700'">
                         <!-- Crown icon -->
                         <svg class="h-6 w-6" :class="(isPaidPro || isInTrial) ? 'text-white' : 'text-gray-500 dark:text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l4 6 3-4 3 4 4-6v14H5V3z" />
@@ -92,7 +92,7 @@ const PAYMENT_METHODS = [
                             </span>
                         </div>
                         <!-- Active pro notice — checked first; trial_ends_at may still be future after subscribing -->
-                        <p v-if="isPaidPro" class="mt-0.5 text-sm text-violet-600 dark:text-violet-400">
+                        <p v-if="isPaidPro" class="mt-0.5 text-sm text-orange-600 dark:text-orange-400">
                             Subscribed to Pro
                             <span v-if="proExpiresAt" class="text-xs text-gray-400 dark:text-gray-500"> · expires {{ proExpiresAt }}</span>
                         </p>
@@ -148,14 +148,14 @@ const PAYMENT_METHODS = [
                 </div>
 
                 <!-- Pro -->
-                <div class="rounded-2xl border-2 border-violet-500 bg-white p-5 shadow-sm dark:bg-gray-900">
+                <div class="rounded-2xl border-2 border-orange-500 bg-white p-5 shadow-sm dark:bg-gray-900">
                     <div class="mb-4 flex items-center gap-2">
-                        <span class="rounded-lg bg-violet-600 px-2.5 py-1 text-xs font-bold text-white">PRO</span>
+                        <span class="rounded-lg bg-orange-600 px-2.5 py-1 text-xs font-bold text-white">PRO</span>
                         <span class="text-sm font-semibold text-gray-900 dark:text-white">Everything in Basic +</span>
                     </div>
                     <ul class="space-y-2.5">
                         <li v-for="f in PRO_FEATURES" :key="f.label" class="flex items-start gap-2.5">
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                             <div>
@@ -168,7 +168,7 @@ const PAYMENT_METHODS = [
             </div>
 
             <!-- Upgrade section — hide if already paid pro -->
-            <div v-if="!isPaidPro" class="overflow-hidden rounded-2xl border border-violet-200 bg-violet-50 dark:border-violet-900/40 dark:bg-violet-900/10">
+            <div v-if="!isPaidPro" class="overflow-hidden rounded-2xl border border-orange-200 bg-orange-50 dark:border-orange-900/40 dark:bg-orange-900/10">
                 <div class="px-6 pt-6">
                     <h3 class="text-base font-semibold text-gray-900 dark:text-white">
                         {{ isInTrial ? 'Lock in Pro before your trial ends' : 'Subscribe to Pro' }}
@@ -199,7 +199,7 @@ const PAYMENT_METHODS = [
                             type="button"
                             @click="checkout('monthly')"
                             :disabled="monthlyForm.processing"
-                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-xl border border-violet-600 px-4 py-2.5 text-sm font-semibold text-violet-600 transition hover:bg-violet-600 hover:text-white disabled:opacity-50 dark:border-violet-500 dark:text-violet-400 dark:hover:bg-violet-600 dark:hover:text-white"
+                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-xl border border-orange-600 px-4 py-2.5 text-sm font-semibold text-orange-600 transition hover:bg-orange-600 hover:text-white disabled:opacity-50 dark:border-orange-500 dark:text-orange-400 dark:hover:bg-orange-600 dark:hover:text-white"
                         >
                             <svg v-if="monthlyForm.processing" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -210,8 +210,8 @@ const PAYMENT_METHODS = [
                     </div>
 
                     <!-- Yearly -->
-                    <div class="relative flex flex-col gap-3 rounded-xl border-2 border-violet-500 bg-white p-5 dark:bg-gray-900">
-                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-violet-600 px-3 py-0.5 text-xs font-bold text-white">BEST VALUE</span>
+                    <div class="relative flex flex-col gap-3 rounded-xl border-2 border-orange-500 bg-white p-5 dark:bg-gray-900">
+                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-orange-600 px-3 py-0.5 text-xs font-bold text-white">BEST VALUE</span>
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Yearly</p>
                             <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
@@ -223,7 +223,7 @@ const PAYMENT_METHODS = [
                             type="button"
                             @click="checkout('yearly')"
                             :disabled="yearlyForm.processing"
-                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                            class="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50"
                         >
                             <svg v-if="yearlyForm.processing" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -236,7 +236,7 @@ const PAYMENT_METHODS = [
 
                 <p class="px-6 pb-5 text-xs text-gray-400 dark:text-gray-500">
                     Payments are processed securely. By subscribing you agree to our
-                    <a href="/terms-of-service" target="_blank" class="underline hover:text-violet-600">Terms of Service</a>.
+                    <a href="/terms-of-service" target="_blank" class="underline hover:text-orange-600">Terms of Service</a>.
                 </p>
             </div>
 

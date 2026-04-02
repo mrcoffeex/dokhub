@@ -87,10 +87,10 @@ function updatePassword() {
                     class="flex items-center gap-4 border-b border-gray-100 px-4 py-4 sm:px-6 sm:py-5 dark:border-gray-800"
                 >
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 dark:bg-violet-900/30"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-900/30"
                     >
                         <svg
-                            class="h-5 w-5 text-violet-600 dark:text-violet-400"
+                            class="h-5 w-5 text-orange-600 dark:text-orange-400"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -132,7 +132,7 @@ function updatePassword() {
                                 required
                                 autocomplete="name"
                                 placeholder="Your full name"
-                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                                 :class="{
                                     'border-red-400': profileForm.errors.name,
                                 }"
@@ -155,7 +155,7 @@ function updatePassword() {
                                 required
                                 autocomplete="email"
                                 placeholder="you@example.com"
-                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                                 :class="{
                                     'border-red-400': profileForm.errors.email,
                                 }"
@@ -178,7 +178,7 @@ function updatePassword() {
                         <button
                             type="submit"
                             :disabled="profileForm.processing"
-                            class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 focus:outline-none active:scale-95 disabled:opacity-60 dark:focus:ring-offset-gray-900"
+                            class="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:outline-none active:scale-95 disabled:opacity-60 dark:focus:ring-offset-gray-900"
                         >
                             <svg
                                 v-if="profileForm.processing"
@@ -285,7 +285,7 @@ function updatePassword() {
                                 required
                                 autocomplete="current-password"
                                 placeholder="••••••••"
-                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                                 :class="{
                                     'border-red-400':
                                         passwordForm.errors.current_password,
@@ -309,7 +309,7 @@ function updatePassword() {
                                 required
                                 autocomplete="new-password"
                                 placeholder="••••••••"
-                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                                 :class="{
                                     'border-red-400':
                                         passwordForm.errors.password,
@@ -333,7 +333,7 @@ function updatePassword() {
                                 required
                                 autocomplete="new-password"
                                 placeholder="••••••••"
-                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-violet-500 dark:focus:ring-violet-900/40"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                                 :class="{
                                     'border-red-400':
                                         passwordForm.errors

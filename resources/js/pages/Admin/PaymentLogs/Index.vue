@@ -94,9 +94,9 @@ function formatDate(iso: string): string {
                     <p class="text-xs font-medium text-gray-400 dark:text-gray-500">Total Transactions</p>
                     <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ stats.total }}</p>
                 </div>
-                <div class="rounded-2xl border border-violet-100 bg-violet-50 p-4 shadow-sm dark:border-violet-900/40 dark:bg-violet-900/10">
-                    <p class="text-xs font-medium text-violet-500">Total Revenue</p>
-                    <p class="mt-1 text-2xl font-bold text-violet-700 dark:text-violet-300">{{ formatPesos(stats.total_revenue) }}</p>
+                <div class="rounded-2xl border border-orange-100 bg-orange-50 p-4 shadow-sm dark:border-orange-900/40 dark:bg-orange-900/10">
+                    <p class="text-xs font-medium text-orange-500">Total Revenue</p>
+                    <p class="mt-1 text-2xl font-bold text-orange-700 dark:text-orange-300">{{ formatPesos(stats.total_revenue) }}</p>
                 </div>
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                     <p class="text-xs font-medium text-gray-400 dark:text-gray-500">This Month</p>
@@ -118,11 +118,11 @@ function formatDate(iso: string): string {
                     v-model="search"
                     type="search"
                     placeholder="Search doctor name or email…"
-                    class="w-64 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
+                    class="w-64 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
                 />
                 <select
                     v-model="billingPeriod"
-                    class="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    class="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                 >
                     <option value="">All periods</option>
                     <option value="monthly">Monthly</option>
@@ -130,7 +130,7 @@ function formatDate(iso: string): string {
                 </select>
                 <select
                     v-model="source"
-                    class="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    class="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                 >
                     <option value="">All sources</option>
                     <option value="return_url">Return URL</option>
@@ -184,7 +184,7 @@ function formatDate(iso: string): string {
                                     <span
                                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                                         :class="log.billing_period === 'yearly'
-                                            ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300'
+                                            ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
                                             : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'"
                                     >
                                         Pro {{ log.billing_period === 'yearly' ? 'Yearly' : 'Monthly' }}
@@ -236,7 +236,7 @@ function formatDate(iso: string): string {
                                 :href="link.url"
                                 class="rounded-lg px-3 py-1.5 text-xs font-medium transition"
                                 :class="link.active
-                                    ? 'bg-violet-600 text-white'
+                                    ? 'bg-orange-600 text-white'
                                     : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'"
                                 v-html="link.label"
                                 preserve-scroll

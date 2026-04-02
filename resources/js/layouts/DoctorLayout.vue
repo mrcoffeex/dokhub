@@ -52,11 +52,7 @@ function isActive(href: string): boolean {
                 <!-- Logo + mobile close -->
                 <div class="flex h-16 items-center justify-between border-b border-gray-100 px-6 dark:border-gray-800">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600">
-                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                        </div>
+                        <img src="/logo.png" alt="DokHub" class="h-8 w-auto" />
                         <div>
                             <p class="text-sm font-bold text-gray-900 dark:text-white">DokHub</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">Doctor Portal</p>
@@ -83,7 +79,7 @@ function isActive(href: string): boolean {
                         @click="mobileOpen = false"
                         class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
                         :class="isActive(item.href)
-                            ? 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300'
+                            ? 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
                             : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'"
                     >
                         <!-- Grid / Dashboard icon -->
@@ -144,10 +140,10 @@ function isActive(href: string): boolean {
                 </div>
                 <div
                     v-else-if="doctorPlan && !doctorPlan.hasProAccess"
-                    class="mx-3 mb-2 rounded-xl bg-violet-50 p-3 dark:bg-violet-900/20"
+                    class="mx-3 mb-2 rounded-xl bg-orange-50 p-3 dark:bg-orange-900/20"
                 >
-                    <p class="text-xs font-semibold text-violet-700 dark:text-violet-300">Upgrade to unlock all features</p>
-                    <Link href="/doctor/billing" class="mt-1 block text-xs font-medium text-violet-600 underline dark:text-violet-400">
+                    <p class="text-xs font-semibold text-orange-700 dark:text-orange-300">Upgrade to unlock all features</p>
+                    <Link href="/doctor/billing" class="mt-1 block text-xs font-medium text-orange-600 underline dark:text-orange-400">
                         View plans →
                     </Link>
                 </div>
@@ -156,7 +152,7 @@ function isActive(href: string): boolean {
                 <div class="border-t border-gray-100 p-4 dark:border-gray-800">
                     <!-- User info -->
                     <div class="mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5">
-                        <div class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white ring-2 ring-violet-100 dark:ring-violet-900/40">
+                        <div class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-600 text-sm font-bold text-white ring-2 ring-orange-100 dark:ring-orange-900/40">
                             {{ user?.name?.charAt(0)?.toUpperCase() ?? 'D' }}
                             <span class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-400 dark:border-gray-900"></span>
                         </div>
@@ -167,7 +163,7 @@ function isActive(href: string): boolean {
                                     v-if="doctorPlan"
                                     class="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none"
                                     :class="doctorPlan.isPaidPro
-                                        ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300'
+                                        ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'
                                         : doctorPlan.isInTrial
                                             ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
                                             : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'"

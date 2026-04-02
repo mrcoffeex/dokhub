@@ -96,7 +96,7 @@ const hasFilters = computed(() => !!(search.value || specialization.value || sor
 
 const specBadgeColors: Record<string, string> = {
     Cardiology:         'bg-red-50 text-red-700',
-    Neurology:          'bg-purple-50 text-purple-700',
+    Neurology:          'bg-indigo-50 text-indigo-700',
     Dermatology:        'bg-pink-50 text-pink-700',
     Orthopedics:        'bg-orange-50 text-orange-700',
     Pediatrics:         'bg-yellow-50 text-yellow-700',
@@ -107,7 +107,7 @@ const specBadgeColors: Record<string, string> = {
 
 const specAccentColors: Record<string, string> = {
     Cardiology:         'from-red-400 to-rose-500',
-    Neurology:          'from-purple-400 to-violet-500',
+    Neurology:          'from-indigo-400 to-blue-500',
     Dermatology:        'from-pink-400 to-fuchsia-500',
     Orthopedics:        'from-orange-400 to-amber-500',
     Pediatrics:         'from-yellow-400 to-orange-400',
@@ -117,15 +117,15 @@ const specAccentColors: Record<string, string> = {
 };
 
 function getSpecBadge(spec: string) {
-    return specBadgeColors[spec] ?? 'bg-violet-50 text-violet-700';
+    return specBadgeColors[spec] ?? 'bg-orange-50 text-orange-700';
 }
 
 function getSpecAccent(spec: string) {
-    return specAccentColors[spec] ?? 'from-violet-500 to-indigo-500';
+    return specAccentColors[spec] ?? 'from-orange-500 to-indigo-500';
 }
 
 const avatarGradients = [
-    'from-violet-500 to-indigo-600',
+    'from-orange-500 to-indigo-600',
     'from-sky-500 to-blue-600',
     'from-emerald-500 to-teal-600',
     'from-pink-500 to-rose-600',
@@ -151,17 +151,17 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
     <GuestLayout>
 
         <!-- ─── Hero ─── -->
-        <div class="relative overflow-hidden bg-gradient-to-br from-violet-700 via-violet-600 to-indigo-700 pb-20 pt-14">
+        <div class="relative overflow-hidden bg-gradient-to-br from-orange-700 via-orange-600 to-indigo-700 pb-20 pt-14">
             <!-- Background blobs -->
             <div class="pointer-events-none absolute inset-0 overflow-hidden">
                 <div class="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-white/5 blur-3xl"></div>
                 <div class="absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-indigo-400/20 blur-3xl"></div>
-                <div class="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-400/10 blur-2xl"></div>
+                <div class="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-400/10 blur-2xl"></div>
             </div>
 
             <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
                 <!-- Online badge -->
-                <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-violet-100 backdrop-blur-sm">
+                <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-orange-100 backdrop-blur-sm">
                     <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400"></span>
                     {{ doctors.total }} verified doctor{{ doctors.total !== 1 ? 's' : '' }} available
                 </div>
@@ -169,12 +169,12 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                 <h1 class="text-4xl font-bold leading-tight text-white sm:text-5xl">
                     Find Your Perfect Doctor
                 </h1>
-                <p class="mt-3 text-lg text-violet-200">
+                <p class="mt-3 text-lg text-orange-200">
                     Book appointments with top-rated specialists near you.
                 </p>
 
                 <!-- Search card -->
-                <div class="mt-8 overflow-hidden rounded-2xl bg-white shadow-2xl shadow-violet-900/30">
+                <div class="mt-8 overflow-hidden rounded-2xl bg-white shadow-2xl shadow-orange-900/30">
                     <div class="flex flex-col sm:flex-row">
                         <!-- Search input -->
                         <div class="relative flex-1">
@@ -195,15 +195,15 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                                 @click="findNearby"
                                 :disabled="nearbyLoading"
                                 class="flex flex-1 items-center justify-center gap-2 px-5 py-4 text-sm font-semibold transition-colors disabled:opacity-60"
-                                :class="nearbyActive ? 'text-violet-600' : 'text-gray-600 hover:text-violet-600'"
+                                :class="nearbyActive ? 'text-orange-600' : 'text-gray-600 hover:text-orange-600'"
                             >
                                 <!-- spinner -->
-                                <svg v-if="nearbyLoading" class="h-4 w-4 animate-spin text-violet-500" fill="none" viewBox="0 0 24 24">
+                                <svg v-if="nearbyLoading" class="h-4 w-4 animate-spin text-orange-500" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                 </svg>
                                 <!-- location pin -->
-                                <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" :class="nearbyActive ? 'text-violet-600' : 'text-gray-400'">
+                                <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" :class="nearbyActive ? 'text-orange-600' : 'text-gray-400'">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
@@ -213,7 +213,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                             <!-- Search button -->
                             <button
                                 @click="applyFilters"
-                                class="m-2 shrink-0 rounded-xl bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-95"
+                                class="m-2 shrink-0 rounded-xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 active:scale-95"
                             >
                                 Search
                             </button>
@@ -244,7 +244,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                         class="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-center backdrop-blur-sm"
                     >
                         <p class="text-lg font-bold text-white">{{ stat.value }}</p>
-                        <p class="text-xs text-violet-200">{{ stat.label }}</p>
+                        <p class="text-xs text-orange-200">{{ stat.label }}</p>
                     </div>
                 </div>
             </div>
@@ -259,8 +259,8 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                     @click="specialization = ''; applyFilters()"
                     class="rounded-xl border px-4 py-2 text-sm font-semibold transition-all"
                     :class="specialization === ''
-                        ? 'border-violet-300 bg-violet-600 text-white shadow-sm'
-                        : 'border-gray-200 bg-white text-gray-600 hover:border-violet-200 hover:text-violet-700'"
+                        ? 'border-orange-300 bg-orange-600 text-white shadow-sm'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-orange-200 hover:text-orange-700'"
                 >
                     All
                 </button>
@@ -270,8 +270,8 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                     @click="specialization = spec; applyFilters()"
                     class="rounded-xl border px-4 py-2 text-sm font-semibold transition-all"
                     :class="specialization === spec
-                        ? 'border-violet-300 bg-violet-600 text-white shadow-sm'
-                        : 'border-gray-200 bg-white text-gray-600 hover:border-violet-200 hover:text-violet-700'"
+                        ? 'border-orange-300 bg-orange-600 text-white shadow-sm'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-orange-200 hover:text-orange-700'"
                 >
                     {{ spec }}
                 </button>
@@ -283,14 +283,14 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                     <p class="text-sm text-gray-600">
                         <span class="font-bold text-gray-900">{{ doctors.total }}</span>
                         doctor{{ doctors.total !== 1 ? 's' : '' }} found
-                        <template v-if="specialization"> in <span class="font-semibold text-violet-700">{{ specialization }}</span></template>
+                        <template v-if="specialization"> in <span class="font-semibold text-orange-700">{{ specialization }}</span></template>
                     </p>
 
                     <!-- Nearby active chip -->
                     <button
                         v-if="nearbyActive"
                         @click="nearbyActive = false; search = ''; applyFilters()"
-                        class="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 transition hover:bg-red-50 hover:text-red-600"
+                        class="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700 transition hover:bg-red-50 hover:text-red-600"
                     >
                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -314,7 +314,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                 <!-- Sort -->
                 <select
                     v-model="sort"
-                    class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                    class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                 >
                     <option value="">Sort: Latest</option>
                     <option value="fee_asc">Fee: Low → High</option>
@@ -336,7 +336,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                 </p>
                 <button
                     @click="clearFilters"
-                    class="mt-5 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700"
+                    class="mt-5 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700"
                 >
                     Clear filters
                 </button>
@@ -348,7 +348,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                     v-for="doctor in doctors.data"
                     :key="doctor.id"
                     :href="`/doctors/${doctor.slug}`"
-                    class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-violet-200"
+                    class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-orange-200"
                 >
                     <!-- Per-specialty color accent bar -->
                     <div class="h-1 w-full bg-gradient-to-r" :class="getSpecAccent(doctor.specialization?.[0] ?? '')"></div>
@@ -381,7 +381,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
 
                             <!-- Name, specialty badge, star rating -->
                             <div class="min-w-0 flex-1">
-                                <h3 class="truncate font-bold text-gray-900 transition-colors group-hover:text-violet-700">
+                                <h3 class="truncate font-bold text-gray-900 transition-colors group-hover:text-orange-700">
                                     Dr. {{ doctor.name }}
                                 </h3>
                                 <div class="mt-1 flex flex-wrap items-center gap-1">
@@ -438,14 +438,14 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                         <!-- Info chips -->
                         <div class="mt-3 flex flex-wrap gap-1.5">
                             <span v-if="doctor.location" class="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600">
-                                <svg class="h-3 w-3 shrink-0 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-3 w-3 shrink-0 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                                 {{ doctor.location }}
                             </span>
                             <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600">
-                                <svg class="h-3 w-3 shrink-0 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-3 w-3 shrink-0 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
                                 {{ doctor.experience_years }} yrs exp.
@@ -462,7 +462,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                                     <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Consultation</p>
                                     <p class="text-2xl font-extrabold text-gray-900">₱{{ doctor.consultation_fee }}</p>
                                 </div>
-                                <span class="inline-flex items-center gap-1.5 rounded-xl bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 transition-all group-hover:bg-violet-600 group-hover:text-white group-hover:shadow-md group-hover:shadow-violet-200">
+                                <span class="inline-flex items-center gap-1.5 rounded-xl bg-orange-50 px-4 py-2.5 text-sm font-semibold text-orange-700 transition-all group-hover:bg-orange-600 group-hover:text-white group-hover:shadow-md group-hover:shadow-orange-200">
                                     Book Now
                                     <svg class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -481,7 +481,7 @@ function starType(rating: number, pos: number): 'full' | 'half' | 'empty' {
                         v-if="link.url"
                         :href="link.url"
                         class="flex h-9 min-w-[2.25rem] items-center justify-center rounded-xl px-3 text-sm font-medium transition-all active:scale-95"
-                        :class="link.active ? 'bg-violet-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-violet-50 hover:text-violet-700'"
+                        :class="link.active ? 'bg-orange-600 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-700'"
                         v-html="link.label"
                     />
                     <span v-else class="flex h-9 min-w-[2.25rem] items-center justify-center rounded-xl px-3 text-sm text-gray-300" v-html="link.label" />

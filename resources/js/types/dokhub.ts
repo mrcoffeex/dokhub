@@ -8,6 +8,16 @@ export type Specialization = {
     updated_at: string;
 };
 
+export type Insurance = {
+    id: number;
+    name: string;
+    is_active: boolean;
+    sort_order: number;
+    doctors_count: number;
+    created_at: string;
+    updated_at: string;
+};
+
 export type DoctorSchedule = {
     id: number;
     doctor_id: number;

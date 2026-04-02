@@ -28,11 +28,10 @@ const form = useForm({
 
 const props = defineProps<{
     specializations: string[];
+    insurances: string[];
 }>();
 
-const INSURANCE_OPTIONS = [
-    'PhilHealth', 'Maxicare', 'MediCard', 'Intellicare', 'Pacific Cross', 'FWD', 'Careplus', 'Sterling', 'Cocolife', 'PruLife',
-] as const;
+const insuranceOptions = props.insurances;
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -194,7 +193,7 @@ function submit() {
                                        :class="form.errors.insurance ? 'border-red-400 dark:border-red-500' : 'border-gray-200'">
                                        <div class="flex flex-wrap gap-1.5">
                                            <button
-                                               v-for="i in INSURANCE_OPTIONS" :key="i"
+                                               v-for="i in insuranceOptions" :key="i"
                                                type="button"
                                                @click="form.insurance.includes(i) ? form.insurance = form.insurance.filter(x => x !== i) : form.insurance.push(i)"
                                                class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"

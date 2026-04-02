@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Doctor;
+use App\Models\Insurance;
 use App\Models\Specialization;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -40,6 +41,7 @@ class DoctorController extends Controller
     {
         return Inertia::render('Admin/Doctors/Create', [
             'specializations' => Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+            'insurances'      => Insurance::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
         ]);
     }
 
@@ -94,6 +96,7 @@ class DoctorController extends Controller
         return Inertia::render('Admin/Doctors/Edit', [
             'doctor'          => $doctor->append('avatar_url'),
             'specializations' => Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+            'insurances'      => Insurance::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
         ]);
     }
 

@@ -16,6 +16,7 @@ import { toast } from 'vue-sonner';
 const props = defineProps<{
     doctor: Doctor;
     specializations: string[];
+    insurances: string[];
 }>();
 
 const form = useForm({
@@ -43,18 +44,7 @@ const form = useForm({
         : [],
 });
 
-const INSURANCE_OPTIONS = [
-    'PhilHealth',
-    'Maxicare',
-    'MediCard',
-    'Intellicare',
-    'Pacific Cross',
-    'FWD',
-    'Careplus',
-    'Sterling',
-    'Cocolife',
-    'PruLife',
-] as const;
+const insuranceOptions = props.insurances;
 
 const days = [
     'Sunday',
@@ -280,7 +270,7 @@ function submit() {
                                 >
                                     <div class="flex flex-wrap gap-1.5">
                                         <button
-                                            v-for="i in INSURANCE_OPTIONS"
+                                            v-for="i in insuranceOptions"
                                             :key="i"
                                             type="button"
                                             @click="

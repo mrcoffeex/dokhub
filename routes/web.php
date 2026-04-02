@@ -11,6 +11,7 @@ use App\Http\Controllers\DoctorPrescriptionsController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\DoctorScheduleController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\InsuranceController;
 use App\Http\Controllers\Admin\SpecializationController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
@@ -132,6 +133,11 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
         Route::post('/specializations', [SpecializationController::class, 'store'])->name('specializations.store');
         Route::patch('/specializations/{specialization}', [SpecializationController::class, 'update'])->name('specializations.update');
         Route::delete('/specializations/{specialization}', [SpecializationController::class, 'destroy'])->name('specializations.destroy');
+
+        Route::get('/insurances', [InsuranceController::class, 'index'])->name('insurances.index');
+        Route::post('/insurances', [InsuranceController::class, 'store'])->name('insurances.store');
+        Route::patch('/insurances/{insurance}', [InsuranceController::class, 'update'])->name('insurances.update');
+        Route::delete('/insurances/{insurance}', [InsuranceController::class, 'destroy'])->name('insurances.destroy');
 
         Route::get('/profile', function (Request $request) {
             return Inertia::render('Admin/Profile', [

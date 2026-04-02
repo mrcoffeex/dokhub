@@ -131,7 +131,7 @@ function submitDelete(ins: Insurance) {
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">All Insurance Providers -</h2>
+                            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">All Insurance Providers</h2>
                             <p class="text-xs text-gray-400 dark:text-gray-500">Add, rename, activate, or remove entries</p>
                         </div>
                     </div>

@@ -17,7 +17,7 @@ class DoctorRegistrationController extends Controller
     {
         $validated = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:doctors'],
             'phone' => ['required', 'string', 'max:20'],
             'specialization' => ['required', 'array', 'min:1'],
             'specialization.*' => ['string', 'max:100'],
@@ -27,6 +27,8 @@ class DoctorRegistrationController extends Controller
             'consultation_fee' => ['required', 'numeric', 'min:0'],
             'location' => ['required', 'string', 'max:255'],
             'languages' => ['required', 'string', 'max:500'],
+            'insurance' => ['nullable', 'array'],
+            'insurance.*' => ['string', 'max:100'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ])->validate();
 
@@ -51,6 +53,7 @@ class DoctorRegistrationController extends Controller
             'consultation_fee' => $validated['consultation_fee'],
             'location' => $validated['location'],
             'languages' => array_map('trim', explode(',', $validated['languages'])),
+            'insurance' => $validated['insurance'] ?? null,
             'status' => 'pending', // Requires admin approval
         ]);
 

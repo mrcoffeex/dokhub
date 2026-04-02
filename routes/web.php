@@ -43,6 +43,7 @@ Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
                 'rating'   => round(\App\Models\DoctorReview::where('is_approved', true)->avg('rating') ?? 0, 1),
             ],
             'specializations' => \App\Models\Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+            'insurances'      => \App\Models\Insurance::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
         ]);
     })->name('doctor');
 });

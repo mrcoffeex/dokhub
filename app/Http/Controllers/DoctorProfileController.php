@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Doctor;
+use App\Models\Insurance;
 use App\Models\Specialization;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class DoctorProfileController extends Controller
         return Inertia::render('Doctor/Profile', [
             'doctor'          => $doctor,
             'specializations' => Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+            'insurances'      => Insurance::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
         ]);
     }
 

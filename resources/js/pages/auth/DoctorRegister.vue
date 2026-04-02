@@ -12,6 +12,7 @@ import { ref, computed } from 'vue';
 const props = defineProps<{
     stats: { doctors: number; patients: number; rating: number };
     specializations: string[];
+    insurances: string[];
 }>();
 
 function formatCount(n: number): string {
@@ -28,6 +29,7 @@ const form = ref({
     email: '',
     phone: '',
     specialization: [] as string[],
+    insurance: [] as string[],
     qualification: '',
     bio: '',
     experience_years: '',
@@ -111,6 +113,14 @@ function toggleSpec(spec: string) {
     }
 }
 
+function toggleInsurance(ins: string) {
+    if (form.value.insurance.includes(ins)) {
+        form.value.insurance = form.value.insurance.filter(x => x !== ins);
+    } else {
+        form.value.insurance.push(ins);
+    }
+}
+
 function validateStep(): boolean {
     errors.value = {};
     if (step.value === 1) {
@@ -145,6 +155,20 @@ function prevStep() {
     step.value--;
 }
 
+const STEP_FIELDS: Record<number, string[]> = {
+    1: ['name', 'email', 'phone'],
+    2: ['specialization', 'qualification'],
+    3: ['experience_years', 'consultation_fee', 'location', 'languages', 'bio', 'insurance'],
+    4: ['password', 'password_confirmation'],
+};
+
+function stepForError(serverErrors: Record<string, string[]>): number {
+    for (let s = 1; s <= TOTAL_STEPS; s++) {
+        if (STEP_FIELDS[s].some((f) => serverErrors[f])) return s;
+    }
+    return TOTAL_STEPS;
+}
+
 async function handleSubmit() {
     if (!validateStep()) return;
     processing.value = true;
@@ -165,7 +189,16 @@ async function handleSubmit() {
         });
         const data = await res.json();
         if (!res.ok) {
-            errors.value = data.errors || { form: 'Registration failed' };
+            // Laravel returns errors as { field: [message, ...] } — flatten to { field: message }
+            const serverErrors: Record<string, string[]> = data.errors ?? {};
+            errors.value = Object.fromEntries(
+                Object.entries(serverErrors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
+            );
+            if (!Object.keys(errors.value).length) {
+                errors.value.form = data.message || 'Registration failed. Please try again.';
+            }
+            // Navigate to the first step that contains an errored field
+            step.value = stepForError(serverErrors);
             processing.value = false;
             return;
         }
@@ -494,6 +527,31 @@ async function handleSubmit() {
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.bio }" />
                                             </div>
                                             <InputError :message="errors.bio" class="mt-1 text-xs" />
+                                        </div>
+                                        <div>
+                                            <div class="mb-1.5 flex items-center justify-between">
+                                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Accepted Insurance
+                                                    <span class="ml-1 text-xs font-normal text-gray-400">(optional)</span>
+                                                </label>
+                                                <span class="text-xs font-medium"
+                                                    :class="form.insurance.length ? 'text-violet-600 dark:text-violet-400' : 'text-gray-400'">
+                                                    {{ form.insurance.length ? form.insurance.length + ' selected' : 'None selected' }}
+                                                </span>
+                                            </div>
+                                            <div class="h-32 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">
+                                                <div class="flex flex-wrap gap-1.5">
+                                                    <button v-for="ins in props.insurances" :key="ins"
+                                                        type="button" @click="toggleInsurance(ins)"
+                                                        class="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all"
+                                                        :class="form.insurance.includes(ins)
+                                                            ? 'border-violet-500 bg-violet-600 text-white shadow-sm'
+                                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-violet-500 dark:hover:text-violet-400'">
+                                                        <CheckCircle2 v-if="form.insurance.includes(ins)" class="h-3 w-3" />
+                                                        {{ ins }}
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </template>
 

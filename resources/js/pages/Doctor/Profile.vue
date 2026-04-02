@@ -6,11 +6,9 @@ import ClinicMapPicker from '@/components/ClinicMapPicker.vue';
 import type { Doctor } from '@/types';
 import { toast } from 'vue-sonner';
 
-const props = defineProps<{ doctor: Doctor; specializations: string[] }>();
+const props = defineProps<{ doctor: Doctor; specializations: string[]; insurances: string[] }>();
 
-const INSURANCE_OPTIONS = [
-    'PhilHealth', 'Maxicare', 'MediCard', 'Intellicare', 'Pacific Cross', 'FWD', 'Careplus', 'Sterling', 'Cocolife', 'PruLife',
-] as const;
+const insuranceOptions = props.insurances;
 
 // ── Avatar upload ─────────────────────────────────────────────
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -368,7 +366,7 @@ const initials = computed(() =>
                             :class="form.errors.insurance ? 'border-red-400 dark:border-red-500' : 'border-gray-200 dark:border-gray-700'">
                             <div class="flex flex-wrap gap-1.5">
                                 <button
-                                    v-for="s in INSURANCE_OPTIONS" :key="s"
+                                    v-for="s in insuranceOptions" :key="s"
                                     type="button"
                                     @click="form.insurance.includes(s) ? form.insurance = form.insurance.filter(x => x !== s) : form.insurance.push(s)"
                                     class="rounded-lg border px-2.5 py-1 text-xs font-medium transition"

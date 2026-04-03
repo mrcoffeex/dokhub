@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AppointmentCompleted;
+use App\Mail\AppointmentStatusConfirmed;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -65,6 +69,26 @@ class DoctorAppointmentsController extends Controller
             'confirmed_at'        => $validated['status'] === 'confirmed' ? now() : $appointment->confirmed_at,
             'cancellation_reason' => $validated['cancellation_reason'] ?? null,
         ]);
+
+        if (config('mail.default') !== 'log') {
+            try {
+                if ($validated['status'] === 'confirmed' && $previousStatus !== 'confirmed') {
+                    $appointment->load('doctor');
+                    Mail::to($appointment->patient_email)
+                        ->send(new AppointmentStatusConfirmed($appointment));
+                } elseif ($validated['status'] === 'completed' && $previousStatus !== 'completed') {
+                    $appointment->load(['doctor', 'diagnoses.prescriptions']);
+                    Mail::to($appointment->patient_email)
+                        ->send(new AppointmentCompleted($appointment));
+                }
+            } catch (\Exception $e) {
+                Log::error('Appointment status mail failed', [
+                    'appointment_id' => $appointment->id,
+                    'status'         => $validated['status'],
+                    'error'          => $e->getMessage(),
+                ]);
+            }
+        }
 
         return back()->with('success', 'Appointment status updated.');
     }

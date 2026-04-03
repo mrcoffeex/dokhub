@@ -4,6 +4,8 @@ import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
 import ThemeToggle from '@/components/ThemeToggle.vue';
 
+const APP_VERSION = import.meta.env.VITE_APP_VERSION as string | undefined;
+
 const page = usePage<PageProps>();
 const flash = computed(() => page.props.flash);
 const user = computed(() => (page.props.auth as any)?.user);
@@ -175,6 +177,8 @@ function isActive(href: string): boolean {
                             <p class="truncate text-xs text-gray-400 dark:text-gray-500">Doctor</p>
                         </div>
                     </div>
+                    <!-- Version -->
+                    <p v-if="APP_VERSION" class="mb-1 px-3 text-[11px] text-gray-300 dark:text-gray-600">v{{ APP_VERSION }}</p>
                     <!-- Sign out button -->
                     <Link
                         href="/logout"

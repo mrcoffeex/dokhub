@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment Received</title>
+    <title>Appointment Confirmed</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f6f9fc; margin: 0; padding: 40px 20px; color: #1a1a2e; }
         .container { max-width: 560px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-        .header { background: linear-gradient(135deg, #635bff 0%, #0ea5e9 100%); padding: 40px 40px 32px; color: #fff; }
+        .header { background: linear-gradient(135deg, #16a34a 0%, #0ea5e9 100%); padding: 40px 40px 32px; color: #fff; }
         .header h1 { margin: 0 0 4px; font-size: 24px; font-weight: 700; }
         .header p { margin: 0; opacity: 0.85; font-size: 15px; }
         .body { padding: 36px 40px; }
@@ -17,24 +17,24 @@
         .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
         .detail-label { font-size: 13px; color: #64748b; font-weight: 500; padding-right: 16px; }
         .detail-value { font-size: 14px; color: #1e293b; font-weight: 600; text-align: right; max-width: 60%; }
-        .ref { font-family: monospace; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 13px; margin-left: 1rem;}
-        .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 16px; font-size: 13px; color: #92400e; margin-bottom: 24px; }
+        .ref { font-family: monospace; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 13px; }
+        .note { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; font-size: 13px; color: #166534; margin-bottom: 24px; }
         .footer { background: #f8fafc; padding: 24px 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
-        .footer a { color: #635bff; text-decoration: none; }
+        .footer a { color: #16a34a; text-decoration: none; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <p style="font-size:13px;opacity:0.7;margin:0 0 8px;">DOKHUB HEALTHCARE</p>
-        <h1>Request Received!</h1>
-        <p>Your appointment request has been submitted and is awaiting confirmation.</p>
+        <h1>Appointment Confirmed!</h1>
+        <p>Your appointment has been confirmed by the doctor.</p>
     </div>
     <div class="body">
-        <div class="badge" style="background:#fffbeb;color:#92400e;border-color:#fde68a;">⏳ Pending Confirmation</div>
+        <div class="badge">✅ Confirmed</div>
 
         <p style="color:#475569;font-size:15px;margin:0 0 24px;">
-            Hi <strong>{{ $appointment->patient_name }}</strong>, your appointment request has been received. The doctor will confirm it shortly.
+            Hi <strong>{{ $appointment->patient_name }}</strong>, great news! Dr. <strong>{{ $appointment->doctor->name }}</strong> has confirmed your appointment.
         </p>
 
         <div class="detail-card">
@@ -58,20 +58,32 @@
                 <span class="detail-label">Time</span>
                 <span class="detail-value">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}</span>
             </div>
+            @if($appointment->doctor->location)
+            <div class="detail-row">
+                <span class="detail-label">Location</span>
+                <span class="detail-value">{{ $appointment->doctor->location }}</span>
+            </div>
+            @endif
             @if($appointment->reason)
             <div class="detail-row">
                 <span class="detail-label">Reason</span>
                 <span class="detail-value">{{ $appointment->reason }}</span>
             </div>
             @endif
+            @if($appointment->confirmed_at)
+            <div class="detail-row">
+                <span class="detail-label">Confirmed At</span>
+                <span class="detail-value">{{ $appointment->confirmed_at->format('M j, Y g:i A') }}</span>
+            </div>
+            @endif
         </div>
 
         <div class="note">
-            📋 Please save your reference number <strong>{{ $appointment->reference }}</strong> for future correspondence. Bring a valid ID to your appointment.
+            📅 Please arrive 10–15 minutes before your scheduled time. Bring a valid ID and any relevant medical records or previous prescriptions.
         </div>
 
         <p style="font-size:13px;color:#64748b;">
-            Need to cancel or reschedule? Reply to this email or contact us at least 24 hours before your appointment.
+            Need to cancel or reschedule? Please notify us at least 24 hours before your appointment by replying to this email or contacting the clinic directly.
         </p>
     </div>
     <div class="footer">

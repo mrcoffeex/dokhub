@@ -3,6 +3,8 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
 
+const APP_VERSION = import.meta.env.VITE_APP_VERSION as string | undefined;
+
 const page = usePage<PageProps>();
 const flash = computed(() => page.props.flash);
 const isAdmin = computed(() => (page.props.auth as any)?.isAdmin ?? false);
@@ -154,7 +156,10 @@ const mobileMenuOpen = ref(false);
                         <img src="/logo.png" alt="DokHub" class="h-7 w-auto" />
                         <span class="text-sm font-bold text-gray-900">DokHub</span>
                     </Link>
-                    <p class="text-sm text-gray-500">© {{ new Date().getFullYear() }} DokHub. All rights reserved.</p>
+                    <div class="flex items-center gap-3">
+                        <p class="text-sm text-gray-500">© {{ new Date().getFullYear() }} DokHub. All rights reserved.</p>
+                        <span v-if="APP_VERSION" class="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-400">v{{ APP_VERSION }}</span>
+                    </div>
                 </div>
             </div>
         </footer>

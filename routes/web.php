@@ -13,6 +13,7 @@ use App\Http\Controllers\DoctorScheduleController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\InsuranceController;
 use App\Http\Controllers\Admin\PaymentLogsController;
+use App\Http\Controllers\Admin\SystemLogsController;
 use App\Http\Controllers\Admin\SpecializationController;
 use App\Http\Controllers\DoctorBillingController;
 use App\Http\Controllers\PayMongoWebhookController;
@@ -162,6 +163,8 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
         Route::delete('/insurances/{insurance}', [InsuranceController::class, 'destroy'])->name('insurances.destroy');
 
         Route::get('/payment-logs', [PaymentLogsController::class, 'index'])->name('payment-logs.index');
+
+        Route::get('/system-logs', [SystemLogsController::class, 'index'])->name('system-logs.index');
 
         Route::get('/profile', function (Request $request) {
             return Inertia::render('Admin/Profile', [

@@ -48,7 +48,7 @@
             </div>
             <div class="detail-row">
                 <span class="detail-label">Specialization</span>
-                <span class="detail-value">{{ $appointment->doctor->specialization }}</span>
+                <span class="detail-value">{{ is_array($appointment->doctor->specialization) ? implode(', ', $appointment->doctor->specialization) : $appointment->doctor->specialization }}</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Date</span>

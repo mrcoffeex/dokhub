@@ -88,13 +88,15 @@ class AppointmentController extends Controller
             'status'    => 'pending',
         ]);
 
-        if (app()->isProduction()) {
+        $appointment->load('doctor');
+
+        if (config('mail.default') !== 'log') {
             try {
                 Mail::to($appointment->patient_email)
                     ->send(new AppointmentConfirmation($appointment));
             } catch (\Exception $e) {
                 // Mail failure should not block the booking confirmation
-                \Illuminate\Support\Facades\Log::error('Appointment confirmation mail failed', [
+                Log::error('Appointment confirmation mail failed', [
                     'appointment_id' => $appointment->id,
                     'error' => $e->getMessage(),
                 ]);

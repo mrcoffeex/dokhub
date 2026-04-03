@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Doctor;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -14,18 +14,21 @@ return new class extends Migration
             $table->string('slug')->nullable()->unique()->after('name');
         });
 
-        // Populate slugs for any existing records
-        foreach (Doctor::all() as $doctor) {
+        // Populate slugs using raw DB queries — never use Eloquent models in
+        // migrations because the model's current traits (e.g. SoftDeletes) may
+        // reference columns that don't exist yet at this point in the chain.
+        $doctors = DB::table('doctors')->select('id', 'name')->get();
+
+        foreach ($doctors as $doctor) {
             $base = Str::slug($doctor->name);
             $slug = $base;
-            $i = 2;
+            $i    = 2;
 
-            while (Doctor::where('slug', $slug)->where('id', '!=', $doctor->id)->exists()) {
+            while (DB::table('doctors')->where('slug', $slug)->where('id', '!=', $doctor->id)->exists()) {
                 $slug = $base . '-' . $i++;
             }
 
-            $doctor->slug = $slug;
-            $doctor->saveQuietly();
+            DB::table('doctors')->where('id', $doctor->id)->update(['slug' => $slug]);
         }
     }
 

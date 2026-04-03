@@ -6,6 +6,7 @@ use App\Mail\AppointmentConfirmation;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -16,6 +17,10 @@ class AppointmentController extends Controller
     {
         abort_unless($doctor->isApproved(), 404);
 
+        $captchaConfigured = app()->isProduction()
+            && config('services.hcaptcha.secret')
+            && config('services.hcaptcha.sitekey');
+
         $validated = $request->validate([
             'patient_name'     => ['required', 'string', 'max:100'],
             'patient_email'    => ['required', 'email', 'max:150'],
@@ -23,7 +28,18 @@ class AppointmentController extends Controller
             'appointment_date' => ['required', 'date', 'after_or_equal:today'],
             'appointment_time' => ['required', 'date_format:H:i'],
             'reason'           => ['nullable', 'string', 'max:500'],
+            'hcaptcha_token'   => $captchaConfigured ? ['required', 'string'] : ['nullable', 'string'],
         ]);
+
+        if ($captchaConfigured) {
+            $captchaResponse = Http::asForm()->post('https://hcaptcha.com/siteverify', [
+                'secret'   => config('services.hcaptcha.secret'),
+                'response' => $validated['hcaptcha_token'],
+            ]);
+            if (! ($captchaResponse->json('success') ?? false)) {
+                return back()->withErrors(['hcaptcha_token' => 'Human verification failed. Please try again.']);
+            }
+        }
 
         // Check visitor hasn't exceeded 5 bookings today (across all doctors)
         $dailyBookings = Appointment::where('patient_email', $validated['patient_email'])

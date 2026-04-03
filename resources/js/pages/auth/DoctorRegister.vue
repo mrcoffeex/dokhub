@@ -3,11 +3,15 @@ import { Head, Link } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Spinner } from '@/components/ui/spinner';
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import {
     User, Mail, Phone, Stethoscope, GraduationCap, Briefcase,
     MapPin, FileText, Languages, Lock, ChevronLeft, CheckCircle2,
 } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+
+const IS_PRODUCTION = import.meta.env.PROD;
+const HCAPTCHA_SITEKEY = import.meta.env.VITE_HCAPTCHA_SITEKEY as string;
 
 const props = defineProps<{
     stats: { doctors: number; patients: number; rating: number };
@@ -45,6 +49,8 @@ const form = ref({
 
 const processing = ref(false);
 const errors = ref<Record<string, string>>({});
+const regCaptchaRef = ref<InstanceType<typeof VueHcaptcha> | null>(null);
+const regCaptchaToken = ref('');
 
 const STEPS = [
     {
@@ -195,6 +201,14 @@ function stepForError(serverErrors: Record<string, string[]>): number {
 
 async function handleSubmit() {
     if (!validateStep()) return;
+    if (IS_PRODUCTION && HCAPTCHA_SITEKEY && !regCaptchaToken.value) {
+        regCaptchaRef.value?.execute();
+        return;
+    }
+    await doSubmit();
+}
+
+async function doSubmit() {
     processing.value = true;
     errors.value = {};
     try {
@@ -214,6 +228,7 @@ async function handleSubmit() {
         // Ensure numeric fields are proper numbers; floor experience_years to integer
         payload.experience_years = (payload.experience_years !== '' && !isNaN(Number(payload.experience_years))) ? Math.floor(Number(payload.experience_years)) : payload.experience_years;
         payload.consultation_fee = (payload.consultation_fee !== '' && !isNaN(Number(payload.consultation_fee))) ? Number(payload.consultation_fee) : payload.consultation_fee;
+        payload.hcaptcha_token = regCaptchaToken.value;
         const res = await fetch('/auth/signup/doctor', {
             method: 'POST',
             headers,
@@ -231,14 +246,27 @@ async function handleSubmit() {
             }
             // Navigate to the first step that contains an errored field
             step.value = stepForError(serverErrors);
+            regCaptchaRef.value?.reset();
+            regCaptchaToken.value = '';
             processing.value = false;
             return;
         }
         window.location.href = '/auth/doctor-signup-success';
     } catch (err: any) {
         errors.value.form = err.message || 'An error occurred';
+        regCaptchaRef.value?.reset();
+        regCaptchaToken.value = '';
         processing.value = false;
     }
+}
+
+function onRegCaptchaVerified(token: string) {
+    regCaptchaToken.value = token;
+    doSubmit();
+}
+
+function onRegCaptchaExpired() {
+    regCaptchaToken.value = '';
 }
 </script>
 
@@ -684,6 +712,19 @@ async function handleSubmit() {
                                                     <span>{{ form.location || '—' }}</span>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <!-- hCaptcha (production only, invisible — registration) -->
+                                        <div v-if="IS_PRODUCTION && HCAPTCHA_SITEKEY" class="mt-4">
+                                            <VueHcaptcha
+                                                ref="regCaptchaRef"
+                                                :sitekey="HCAPTCHA_SITEKEY"
+                                                size="invisible"
+                                                @verify="onRegCaptchaVerified"
+                                                @expired="onRegCaptchaExpired"
+                                                @error="onRegCaptchaExpired"
+                                            />
+                                            <p v-if="errors.hcaptcha_token" class="mt-1 text-xs text-red-500">{{ errors.hcaptcha_token }}</p>
                                         </div>
 
                                         <!-- Legal note -->

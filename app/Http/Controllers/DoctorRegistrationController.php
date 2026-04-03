@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -21,6 +22,23 @@ class DoctorRegistrationController extends Controller
     {
         $googlePending = session('google_pending_doctor');
         $isGoogleSignup = ! empty($googlePending);
+
+        $captchaConfigured = app()->isProduction()
+            && config('services.hcaptcha.secret')
+            && config('services.hcaptcha.sitekey');
+
+        if ($captchaConfigured) {
+            $captchaResponse = Http::asForm()->post('https://hcaptcha.com/siteverify', [
+                'secret'   => config('services.hcaptcha.secret'),
+                'response' => $request->input('hcaptcha_token', ''),
+            ]);
+            if (! ($captchaResponse->json('success') ?? false)) {
+                return response()->json([
+                    'message' => 'Human verification failed. Please try again.',
+                    'errors'  => ['hcaptcha_token' => ['Human verification failed. Please try again.']],
+                ], 422);
+            }
+        }
 
         $rules = [
             'name'             => ['required', 'string', 'max:255'],

@@ -143,9 +143,29 @@ const form = useForm({
     appointment_date: '',
     appointment_time: '',
     reason: '',
+    hcaptcha_token: '',
 });
 
 const step = ref<1 | 2>(1);
+const bookingCaptchaRef = ref<InstanceType<typeof VueHcaptcha> | null>(null);
+
+function onBookingCaptchaVerified(token: string) {
+    form.hcaptcha_token = token;
+    form.post(`/doctors/${props.doctor.slug}/book`, {
+        onError: () => {
+            bookingCaptchaRef.value?.reset();
+            form.hcaptcha_token = '';
+            toast.error('Booking failed', {
+                description: 'Please review your details and try again.',
+                duration: 5000,
+            });
+        },
+    });
+}
+
+function onBookingCaptchaExpired() {
+    form.hcaptcha_token = '';
+}
 
 function goToStep2() {
     if (!selectedDate.value || !selectedTime.value) return;
@@ -155,8 +175,14 @@ function goToStep2() {
 }
 
 function submitBooking() {
+    if (IS_PRODUCTION && HCAPTCHA_SITEKEY && !form.hcaptcha_token) {
+        bookingCaptchaRef.value?.execute();
+        return;
+    }
     form.post(`/doctors/${props.doctor.slug}/book`, {
         onError: () => {
+            bookingCaptchaRef.value?.reset();
+            form.hcaptcha_token = '';
             toast.error('Booking failed', {
                 description: 'Please review your details and try again.',
                 duration: 5000,
@@ -533,6 +559,19 @@ function ratingBarWidth(star: number): string {
                             <!-- Error if slot was taken -->
                             <div v-if="form.errors.appointment_time" class="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
                                 {{ form.errors.appointment_time }}
+                            </div>
+
+                            <!-- hCaptcha (production only, invisible — booking) -->
+                            <div v-if="IS_PRODUCTION && HCAPTCHA_SITEKEY" class="mt-4">
+                                <VueHcaptcha
+                                    ref="bookingCaptchaRef"
+                                    :sitekey="HCAPTCHA_SITEKEY"
+                                    size="invisible"
+                                    @verify="onBookingCaptchaVerified"
+                                    @expired="onBookingCaptchaExpired"
+                                    @error="onBookingCaptchaExpired"
+                                />
+                                <p v-if="form.errors.hcaptcha_token" class="mt-1 text-xs text-red-500">{{ form.errors.hcaptcha_token }}</p>
                             </div>
 
                             <div class="mt-6 flex items-center justify-between">

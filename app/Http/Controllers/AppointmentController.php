@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,10 +37,18 @@ class AppointmentController extends Controller
                 'secret'   => config('services.hcaptcha.secret'),
                 'response' => $validated['hcaptcha_token'],
             ]);
-            if (! ($captchaResponse->json('success') ?? false)) {
+            $captchaBody = $captchaResponse->json();
+            if (! ($captchaBody['success'] ?? false)) {
+                Log::warning('hCaptcha verification failed (booking)', [
+                    'error-codes' => $captchaBody['error-codes'] ?? [],
+                    'http_status' => $captchaResponse->status(),
+                ]);
                 return back()->withErrors(['hcaptcha_token' => 'Human verification failed. Please try again.']);
             }
         }
+
+        // Strip non-model fields before create
+        $bookingData = collect($validated)->except('hcaptcha_token')->all();
 
         // Check visitor hasn't exceeded 5 bookings today (across all doctors)
         $dailyBookings = Appointment::where('patient_email', $validated['patient_email'])
@@ -73,7 +82,7 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::create([
-            ...$validated,
+            ...$bookingData,
             'doctor_id' => $doctor->id,
             'reference' => Appointment::generateReference(),
             'status'    => 'pending',

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -32,7 +33,12 @@ class DoctorRegistrationController extends Controller
                 'secret'   => config('services.hcaptcha.secret'),
                 'response' => $request->input('hcaptcha_token', ''),
             ]);
-            if (! ($captchaResponse->json('success') ?? false)) {
+            $captchaBody = $captchaResponse->json();
+            if (! ($captchaBody['success'] ?? false)) {
+                Log::warning('hCaptcha verification failed (doctor registration)', [
+                    'error-codes' => $captchaBody['error-codes'] ?? [],
+                    'http_status' => $captchaResponse->status(),
+                ]);
                 return response()->json([
                     'message' => 'Human verification failed. Please try again.',
                     'errors'  => ['hcaptcha_token' => ['Human verification failed. Please try again.']],

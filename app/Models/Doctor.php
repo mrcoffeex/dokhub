@@ -170,7 +170,7 @@ class Doctor extends Model
     {
         if ($this->avatar) {
             /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-            $disk = Storage::disk('public');
+            $disk = Storage::disk(config('filesystems.avatar_disk'));
             return $disk->url($this->avatar);
         }
 

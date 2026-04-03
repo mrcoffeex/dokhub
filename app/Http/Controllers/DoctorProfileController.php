@@ -71,11 +71,13 @@ class DoctorProfileController extends Controller
             'avatar' => ['required', 'image', 'max:2048', 'mimes:jpg,jpeg,png,webp'],
         ]);
 
+        $disk = config('filesystems.avatar_disk');
+
         if ($doctor->avatar) {
-            Storage::disk('public')->delete($doctor->avatar);
+            Storage::disk($disk)->delete($doctor->avatar);
         }
 
-        $path = $request->file('avatar')->store('avatars', 'public');
+        $path = $request->file('avatar')->storePublicly('avatars', ['disk' => $disk]);
         $doctor->update(['avatar' => $path]);
 
         return back()->with('status', 'Photo updated successfully.');
@@ -87,7 +89,7 @@ class DoctorProfileController extends Controller
         abort_unless($doctor, 403);
 
         if ($doctor->avatar) {
-            Storage::disk('public')->delete($doctor->avatar);
+            Storage::disk(config('filesystems.avatar_disk'))->delete($doctor->avatar);
             $doctor->update(['avatar' => null]);
         }
 

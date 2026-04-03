@@ -16,6 +16,13 @@ return [
     'default' => env('FILESYSTEM_DISK', 'local'),
 
     /*
+    | Avatar storage disk. Use 'public' for local development and 's3' on
+    | Laravel Cloud (or any S3-compatible object storage in production).
+    | Set AVATAR_DISK=s3 in your production environment variables.
+    */
+    'avatar_disk' => env('AVATAR_DISK', 'public'),
+
+    /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
@@ -56,6 +63,7 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],

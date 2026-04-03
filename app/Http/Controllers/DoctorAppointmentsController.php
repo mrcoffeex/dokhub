@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AppointmentCancelled;
 use App\Mail\AppointmentCompleted;
 use App\Mail\AppointmentStatusConfirmed;
 use App\Models\Appointment;
@@ -80,6 +81,10 @@ class DoctorAppointmentsController extends Controller
                     $appointment->load(['doctor', 'diagnoses.prescriptions']);
                     Mail::to($appointment->patient_email)
                         ->send(new AppointmentCompleted($appointment));
+                } elseif ($validated['status'] === 'cancelled' && $previousStatus !== 'cancelled') {
+                    $appointment->load('doctor');
+                    Mail::to($appointment->patient_email)
+                        ->send(new AppointmentCancelled($appointment));
                 }
             } catch (\Exception $e) {
                 Log::error('Appointment status mail failed', [

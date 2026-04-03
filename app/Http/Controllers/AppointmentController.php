@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\AppointmentConfirmation;
+use App\Mail\AppointmentReceived;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
@@ -93,7 +93,7 @@ class AppointmentController extends Controller
         if (config('mail.default') !== 'log') {
             try {
                 Mail::to($appointment->patient_email)
-                    ->send(new AppointmentConfirmation($appointment));
+                    ->send(new AppointmentReceived($appointment));
             } catch (\Exception $e) {
                 // Mail failure should not block the booking confirmation
                 Log::error('Appointment confirmation mail failed', [

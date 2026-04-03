@@ -26,7 +26,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <p style="font-size:13px;opacity:0.7;margin:0 0 8px;">DOKHUB HEALTHCARE</p>
+        <p style="font-size:13px;opacity:0.7;margin:0 0 8px;">DOKHUB APP</p>
         <h1>Appointment Confirmed!</h1>
         <p>Your appointment has been confirmed by the doctor.</p>
     </div>

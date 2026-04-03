@@ -12,6 +12,9 @@ const props = defineProps<{
     trialDaysRemaining: number;
     trialEndsAt: string | null;
     proExpiresAt: string | null;
+    monthlyPriceCents: number;
+    annualPriceCents: number;
+    annualSavingsCents: number;
 }>();
 
 const monthlyForm = useForm({ billing_period: 'monthly' });
@@ -50,6 +53,18 @@ const BASIC_FEATURES = [
     { label: 'Schedule management', desc: 'Set your availability and slots' },
     { label: 'Profile & photo', desc: 'Customise your public-facing profile' },
 ];
+
+function formatPesos(centavos: number): string {
+    return '₱' + (centavos / 100).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+}
+
+const monthlyLabel  = computed(() => formatPesos(props.monthlyPriceCents));
+const annualLabel   = computed(() => formatPesos(props.annualPriceCents));
+const savingsLabel  = computed(() => formatPesos(props.annualSavingsCents));
+const savingsPct    = computed(() => {
+    const full = props.monthlyPriceCents * 12;
+    return full ? Math.round((props.annualSavingsCents / full) * 100) : 0;
+});
 
 /** Payment methods accepted via PayMongo checkout */
 const PAYMENT_METHODS = [
@@ -193,7 +208,7 @@ const PAYMENT_METHODS = [
                     <div class="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Monthly</p>
-                            <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">₱499 <span class="text-sm font-normal text-gray-400">/ mo</span></p>
+                            <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ monthlyLabel }} <span class="text-sm font-normal text-gray-400">/ mo</span></p>
                         </div>
                         <button
                             type="button"
@@ -215,9 +230,9 @@ const PAYMENT_METHODS = [
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Yearly</p>
                             <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-                                ₱4,499 <span class="text-sm font-normal text-gray-400">/ yr</span>
+                                {{ annualLabel }} <span class="text-sm font-normal text-gray-400">/ yr</span>
                             </p>
-                            <p class="text-xs text-emerald-600 dark:text-emerald-400">Save ₱1,489 vs monthly</p>
+                            <p v-if="annualSavingsCents > 0" class="text-xs text-emerald-600 dark:text-emerald-400">Save {{ savingsLabel }} vs monthly ({{ savingsPct }}% off)</p>
                         </div>
                         <button
                             type="button"
@@ -251,23 +266,64 @@ const PAYMENT_METHODS = [
                         <p v-if="proExpiresAt" class="text-xs text-emerald-600 dark:text-emerald-400">Renews on {{ proExpiresAt }}</p>
                     </div>
                 </div>
-                <!-- Extend option -->
-                <div class="mt-4 flex flex-wrap gap-3">
+                <!-- Extend options -->
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <!-- +1 Month -->
                     <button
                         type="button"
                         @click="checkout('monthly')"
-                        :disabled="monthlyForm.processing"
-                        class="rounded-xl border border-emerald-300 px-4 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50 dark:border-emerald-700 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
+                        :disabled="monthlyForm.processing || yearlyForm.processing"
+                        class="group flex items-center gap-4 rounded-xl border border-emerald-200 bg-white px-4 py-3.5 text-left transition hover:border-emerald-400 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-800 dark:bg-gray-900 dark:hover:border-emerald-600"
                     >
-                        Extend +1 month (₱499)
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">Extend</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">+1 Month</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <p class="text-sm font-bold text-emerald-700 dark:text-emerald-300">{{ monthlyLabel }}</p>
+                            <div v-if="monthlyForm.processing" class="flex items-center justify-end gap-1 text-xs text-gray-400">
+                                <svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                                <span>Redirecting</span>
+                            </div>
+                        </div>
                     </button>
+
+                    <!-- +1 Year -->
                     <button
                         type="button"
                         @click="checkout('yearly')"
-                        :disabled="yearlyForm.processing"
-                        class="rounded-xl border border-emerald-300 px-4 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50 dark:border-emerald-700 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
+                        :disabled="monthlyForm.processing || yearlyForm.processing"
+                        class="group relative flex items-center gap-4 rounded-xl border-2 border-emerald-400 bg-white px-4 py-3.5 text-left transition hover:border-emerald-500 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-700 dark:bg-gray-900 dark:hover:border-emerald-500"
                     >
-                        Extend +1 year (₱4,499)
+                        <span class="absolute -top-2.5 left-3 rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Best value</span>
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">Extend</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">+1 Year</p>
+                            <p class="text-xs text-emerald-600 dark:text-emerald-400">Save {{ savingsLabel }}</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <p class="text-sm font-bold text-emerald-700 dark:text-emerald-300">{{ annualLabel }}</p>
+                            <div v-if="yearlyForm.processing" class="flex items-center justify-end gap-1 text-xs text-gray-400">
+                                <svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                                <span>Redirecting</span>
+                            </div>
+                        </div>
                     </button>
                 </div>
             </div>

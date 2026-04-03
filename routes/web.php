@@ -14,7 +14,9 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\InsuranceController;
 use App\Http\Controllers\Admin\PaymentLogsController;
 use App\Http\Controllers\Admin\SystemLogsController;
+use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SpecializationController;
+use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\DoctorBillingController;
 use App\Http\Controllers\PayMongoWebhookController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -47,6 +49,7 @@ Route::inertia('/privacy-policy', 'legal/PrivacyPolicy')->name('legal.privacy');
 
 // Doctor registration routes
 Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
+    Route::post('doctor', \App\Http\Controllers\DoctorRegistrationController::class)->name('doctor.register');
     Route::get('doctor', function () {
         return Inertia::render('auth/DoctorRegister', [
             'stats' => [
@@ -54,8 +57,9 @@ Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
                 'patients' => \App\Models\Patient::count(),
                 'rating'   => round(\App\Models\DoctorReview::where('is_approved', true)->avg('rating') ?? 0, 1),
             ],
-            'specializations' => \App\Models\Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
-            'insurances'      => \App\Models\Insurance::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+            'specializations'  => \App\Models\Specialization::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+            'insurances'       => \App\Models\Insurance::active()->orderBy('sort_order')->orderBy('name')->pluck('name'),
+            'googlePending'    => session('google_pending_doctor'),
         ]);
     })->name('doctor');
 });
@@ -64,6 +68,12 @@ Route::inertia('/auth/doctor-signup-success', 'auth/DoctorSignupSuccess')->name(
 
 // PayMongo webhook — no auth, CSRF excluded in bootstrap/app.php
 Route::post('paymongo/webhook', [PayMongoWebhookController::class, 'handle'])->name('paymongo.webhook');
+
+// Google OAuth
+Route::get('auth/google/{intent}', [SocialAuthController::class, 'redirect'])
+    ->where('intent', 'login|doctor')
+    ->name('auth.google.redirect');
+Route::get('auth/google/callback', [SocialAuthController::class, 'callback'])->name('auth.google.callback');
 
 // Public doctor listing & booking (no auth required)
 Route::prefix('doctors')->name('doctors.')->group(function () {
@@ -165,6 +175,9 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
         Route::get('/payment-logs', [PaymentLogsController::class, 'index'])->name('payment-logs.index');
 
         Route::get('/system-logs', [SystemLogsController::class, 'index'])->name('system-logs.index');
+
+        Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.index');
+        Route::put('/pricing', [PricingController::class, 'update'])->name('pricing.update');
 
         Route::get('/profile', function (Request $request) {
             return Inertia::render('Admin/Profile', [

@@ -157,50 +157,60 @@ function deviceIcon(d: string): string {
             </div>
 
             <!-- Filters -->
-            <div class="flex flex-wrap items-center gap-3">
-                <input
-                    v-model="search"
-                    type="search"
-                    placeholder="Search path, IP, user…"
-                    class="w-56 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
-                />
-                <select
-                    v-model="methodFilter"
-                    class="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                >
-                    <option value="">All methods</option>
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="PUT">PUT</option>
-                    <option value="PATCH">PATCH</option>
-                    <option value="DELETE">DELETE</option>
-                </select>
-                <select
-                    v-model="causerType"
-                    class="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                >
-                    <option value="">All visitors</option>
-                    <option value="user">Authenticated</option>
-                    <option value="guest">Guest</option>
-                </select>
-                <select
-                    v-model="device"
-                    class="rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                >
-                    <option value="">All devices</option>
-                    <option value="Desktop">Desktop</option>
-                    <option value="Mobile">Mobile</option>
-                    <option value="Tablet">Tablet</option>
-                    <option value="Robot">Bot / Crawler</option>
-                </select>
-                <div class="flex items-center gap-2">
-                    <input type="date" v-model="dateFrom"
-                        class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+            <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                <!-- Search — full width on mobile -->
+                <div class="relative w-full sm:w-56">
+                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                        v-model="search"
+                        type="search"
+                        placeholder="Search path, IP, user…"
+                        class="w-full rounded-xl border border-gray-200 bg-white py-2 pl-9 pr-3.5 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
                     />
-                    <span class="text-xs text-gray-400">to</span>
-                    <input type="date" v-model="dateTo"
-                        class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                    />
+                </div>
+
+                <!-- Selects + date range — scrollable row on mobile -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-0.5 sm:flex-wrap sm:overflow-visible sm:pb-0">
+                    <select
+                        v-model="methodFilter"
+                        class="shrink-0 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    >
+                        <option value="">All methods</option>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    <select
+                        v-model="causerType"
+                        class="shrink-0 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    >
+                        <option value="">All visitors</option>
+                        <option value="user">Authenticated</option>
+                        <option value="guest">Guest</option>
+                    </select>
+                    <select
+                        v-model="device"
+                        class="shrink-0 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    >
+                        <option value="">All devices</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Mobile">Mobile</option>
+                        <option value="Tablet">Tablet</option>
+                        <option value="Robot">Bot / Crawler</option>
+                    </select>
+                    <div class="flex shrink-0 items-center gap-2">
+                        <input type="date" v-model="dateFrom"
+                            class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                        />
+                        <span class="text-xs text-gray-400">to</span>
+                        <input type="date" v-model="dateTo"
+                            class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                        />
+                    </div>
                 </div>
             </div>
 

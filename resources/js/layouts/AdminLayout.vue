@@ -12,11 +12,12 @@ const navItems = [
     { label: 'Dashboard',       href: '/admin',                  icon: 'grid' },
     { label: 'Doctors',         href: '/admin/doctors',           icon: 'users' },
     { label: 'Appointments',    href: '/admin/appointments',      icon: 'calendar' },
-    { label: 'Spam Detection',  href: '/admin/spam-detection',    icon: 'shield' },
     { label: 'Specializations', href: '/admin/specializations',   icon: 'tag' },
     { label: 'Insurance',       href: '/admin/insurances',        icon: 'credit-card' },
+    { label: 'Pricing',         href: '/admin/pricing',            icon: 'tag' },
     { label: 'Payment Logs',    href: '/admin/payment-logs',      icon: 'receipt' },
-    { label: 'System Logs',     href: '/admin/system-logs',       icon: 'logs' },
+    { label: 'System Logs',     href: '/admin/system-logs',        icon: 'logs' },
+    { label: 'Spam Detection',  href: '/admin/spam-detection',    icon: 'shield' },
     { label: 'Profile',         href: '/admin/profile',           icon: 'user' },
 ];
 
@@ -106,8 +107,9 @@ const sidebarOpen = ref(false);
 
                     <div class="pt-4">
                         <div class="border-t border-gray-100 pt-4 dark:border-gray-800">
-                            <Link
+                            <a
                                 href="/"
+                                target="_blank"
                                 @click="sidebarOpen = false"
                                 class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
                             >
@@ -115,7 +117,7 @@ const sidebarOpen = ref(false);
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
                                 View Public Site
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </nav>

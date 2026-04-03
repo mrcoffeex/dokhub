@@ -13,7 +13,10 @@ const props = defineProps<{
     stats: { doctors: number; patients: number; rating: number };
     specializations: string[];
     insurances: string[];
+    googlePending?: { google_id: string; name: string; email: string; avatar: string | null } | null;
 }>();
+
+const isGoogleSignup = computed(() => !! props.googlePending);
 
 function formatCount(n: number): string {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1) + 'M+';
@@ -25,8 +28,8 @@ const step = ref(1);
 const TOTAL_STEPS = 4;
 
 const form = ref({
-    name: '',
-    email: '',
+    name: props.googlePending?.name ?? '',
+    email: props.googlePending?.email ?? '',
     phone: '',
     specialization: [] as string[],
     insurance: [] as string[],
@@ -102,7 +105,24 @@ const STEPS = [
     },
 ];
 
-const current = computed(() => STEPS[step.value - 1]);
+const currentStepConfig = computed(() => {
+    const base = STEPS[step.value - 1];
+    if (step.value === 4 && isGoogleSignup.value) {
+        return {
+            ...base,
+            subtitle: 'Review your Google-connected account',
+            sub: 'Your identity is verified via Google. Just submit your application for review.',
+            bullets: [
+                'Your Google account is securely linked',
+                'No password required — sign in with Google',
+                'Your profile is reviewed within 24 hours',
+            ],
+        };
+    }
+    return base;
+});
+
+const current = computed(() => currentStepConfig.value);
 const progress = computed(() => Math.round(((step.value - 1) / (TOTAL_STEPS - 1)) * 100));
 
 function toggleSpec(spec: string) {
@@ -131,13 +151,17 @@ function validateStep(): boolean {
         if (!form.value.specialization.length) errors.value.specialization = 'Select at least one specialization';
         if (!form.value.qualification.trim()) errors.value.qualification = 'Qualification is required';
     } else if (step.value === 3) {
-        if (form.value.experience_years === '') errors.value.experience_years = 'Required';
-        if (form.value.consultation_fee === '') errors.value.consultation_fee = 'Required';
+        const yrs = Number(form.value.experience_years);
+        const fee = Number(form.value.consultation_fee);
+        if (form.value.experience_years === '' || isNaN(yrs)) errors.value.experience_years = 'Required';
+        else if (!Number.isInteger(yrs) || yrs < 0 || yrs > 70) errors.value.experience_years = 'Must be a whole number between 0 and 70';
+        if (form.value.consultation_fee === '' || isNaN(fee)) errors.value.consultation_fee = 'Required';
         if (!form.value.location.trim()) errors.value.location = 'Location is required';
         if (!form.value.languages.trim()) errors.value.languages = 'At least one language is required';
         if (!form.value.bio.trim()) errors.value.bio = 'Professional bio is required';
-    } else if (step.value === 4) {
+    } else if (step.value === 4 && !isGoogleSignup.value) {
         if (!form.value.password) errors.value.password = 'Password is required';
+        else if (form.value.password.length < 8) errors.value.password = 'Password must be at least 8 characters';
         if (!form.value.password_confirmation) errors.value.password_confirmation = 'Please confirm your password';
         if (form.value.password && form.value.password_confirmation && form.value.password !== form.value.password_confirmation) {
             errors.value.password_confirmation = 'Passwords do not match';
@@ -182,10 +206,18 @@ async function handleSubmit() {
         if (csrfToken) {
             headers['X-CSRF-Token'] = csrfToken;
         }
-        const res = await fetch('/api/doctor-register', {
+        const payload = { ...form.value } as any;
+        if (isGoogleSignup.value) {
+            delete payload.password;
+            delete payload.password_confirmation;
+        }
+        // Ensure numeric fields are proper numbers; floor experience_years to integer
+        payload.experience_years = (payload.experience_years !== '' && !isNaN(Number(payload.experience_years))) ? Math.floor(Number(payload.experience_years)) : payload.experience_years;
+        payload.consultation_fee = (payload.consultation_fee !== '' && !isNaN(Number(payload.consultation_fee))) ? Number(payload.consultation_fee) : payload.consultation_fee;
+        const res = await fetch('/auth/signup/doctor', {
             method: 'POST',
             headers,
-            body: JSON.stringify(form.value),
+            body: JSON.stringify(payload),
         });
         const data = await res.json();
         if (!res.ok) {
@@ -392,13 +424,53 @@ async function handleSubmit() {
 
                                     <!-- ── Step 1: Personal ── -->
                                     <template v-if="step === 1">
+
+                                        <!-- Google-connected banner -->
+                                        <div v-if="isGoogleSignup" class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-800/40 dark:bg-emerald-900/20">
+                                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-300">Signed in with Google</p>
+                                                <p class="truncate text-xs text-emerald-600 dark:text-emerald-400">{{ googlePending?.email }}</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Google sign-up button (only shown when NOT coming from Google) -->
+                                        <template v-else>
+                                            <a
+                                                href="/auth/google/doctor"
+                                                class="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                                            >
+                                                <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                                </svg>
+                                                Continue with Google
+                                            </a>
+                                            <div class="relative flex items-center gap-3">
+                                                <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                                                <span class="text-xs font-medium text-gray-400 dark:text-gray-500">or fill in manually</span>
+                                                <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                                            </div>
+                                        </template>
+
                                         <div>
                                             <label for="name" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Full name</label>
                                             <div class="relative">
                                                 <User class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                 <input id="name" v-model="form.name" type="text" autofocus placeholder="John Doe"
+                                                    :readonly="isGoogleSignup"
                                                     class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
-                                                    :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.name }" />
+                                                    :class="[
+                                                        { 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.name },
+                                                        { 'cursor-not-allowed bg-gray-50 text-gray-500 dark:bg-gray-800/60 dark:text-gray-400': isGoogleSignup }
+                                                    ]" />
                                             </div>
                                             <InputError :message="errors.name" class="mt-1 text-xs" />
                                         </div>
@@ -407,8 +479,12 @@ async function handleSubmit() {
                                             <div class="relative">
                                                 <Mail class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                 <input id="email" v-model="form.email" type="email" placeholder="doctor@example.com"
+                                                    :readonly="isGoogleSignup"
                                                     class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
-                                                    :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.email }" />
+                                                    :class="[
+                                                        { 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.email },
+                                                        { 'cursor-not-allowed bg-gray-50 text-gray-500 dark:bg-gray-800/60 dark:text-gray-400': isGoogleSignup }
+                                                    ]" />
                                             </div>
                                             <InputError :message="errors.email" class="mt-1 text-xs" />
                                         </div>
@@ -469,7 +545,7 @@ async function handleSubmit() {
                                                 <label for="experience_years" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Years of Experience</label>
                                                 <div class="relative">
                                                     <Briefcase class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                                                    <input id="experience_years" v-model.number="form.experience_years" type="number" min="0" max="70" placeholder="10"
+                                                    <input id="experience_years" v-model.number="form.experience_years" type="number" min="0" max="70" step="1" placeholder="10"
                                                         class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                                                         :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.experience_years }" />
                                                 </div>
@@ -557,20 +633,39 @@ async function handleSubmit() {
                                             <p class="text-sm font-medium text-red-700 dark:text-red-400">{{ errors.form }}</p>
                                         </div>
 
-                                        <div>
-                                            <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                                            <PasswordInput id="password" v-model="form.password" autocomplete="new-password" placeholder="••••••••"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
-                                                :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.password }" />
-                                            <InputError :message="errors.password" class="mt-1 text-xs" />
-                                        </div>
-                                        <div>
-                                            <label for="password_confirmation" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
-                                            <PasswordInput id="password_confirmation" v-model="form.password_confirmation" autocomplete="new-password" placeholder="••••••••"
-                                                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
-                                                :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.password_confirmation }" />
-                                            <InputError :message="errors.password_confirmation" class="mt-1 text-xs" />
-                                        </div>
+                                        <!-- Google sign-up: no password needed -->
+                                        <template v-if="isGoogleSignup">
+                                            <div class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3.5 dark:border-emerald-800/40 dark:bg-emerald-900/20">
+                                                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                                </svg>
+                                                <div>
+                                                    <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-300">Google account connected</p>
+                                                    <p class="text-xs text-emerald-600 dark:text-emerald-400">{{ googlePending?.email }} · No password required</p>
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                        <!-- Standard sign-up: password fields -->
+                                        <template v-else>
+                                            <div>
+                                                <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                                                <PasswordInput id="password" v-model="form.password" autocomplete="new-password" placeholder="••••••••"
+                                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.password }" />
+                                                <InputError :message="errors.password" class="mt-1 text-xs" />
+                                            </div>
+                                            <div>
+                                                <label for="password_confirmation" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
+                                                <PasswordInput id="password_confirmation" v-model="form.password_confirmation" autocomplete="new-password" placeholder="••••••••"
+                                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                                                    :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.password_confirmation }" />
+                                                <InputError :message="errors.password_confirmation" class="mt-1 text-xs" />
+                                            </div>
+                                        </template>
 
                                         <!-- Profile summary -->
                                         <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/60">

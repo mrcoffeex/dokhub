@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use App\Models\PaymentLog;
+use App\Models\PricingSetting;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,16 +18,20 @@ class DoctorBillingController extends Controller
 {
     public function index(Request $request): Response
     {
-        $doctor = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        $doctor  = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        $pricing = PricingSetting::current();
 
         return Inertia::render('Doctor/Billing', [
-            'plan'               => $doctor->plan,
-            'isInTrial'          => $doctor->isInTrial(),
-            'isPaidPro'          => $doctor->isPaidPro(),
-            'hasProAccess'       => $doctor->hasProAccess(),
-            'trialDaysRemaining' => $doctor->trialDaysRemaining(),
-            'trialEndsAt'        => $doctor->trial_ends_at?->toDateString(),
-            'proExpiresAt'       => $doctor->pro_expires_at?->toDateString(),
+            'plan'                => $doctor->plan,
+            'isInTrial'           => $doctor->isInTrial(),
+            'isPaidPro'           => $doctor->isPaidPro(),
+            'hasProAccess'        => $doctor->hasProAccess(),
+            'trialDaysRemaining'  => $doctor->trialDaysRemaining(),
+            'trialEndsAt'         => $doctor->trial_ends_at?->toDateString(),
+            'proExpiresAt'        => $doctor->pro_expires_at?->toDateString(),
+            'monthlyPriceCents'   => $pricing->monthly_price_cents,
+            'annualPriceCents'    => $pricing->annual_price_cents,
+            'annualSavingsCents'  => $pricing->annualSavingsCents(),
         ]);
     }
 
@@ -44,8 +49,9 @@ class DoctorBillingController extends Controller
 
         $doctor = Doctor::where('user_id', $request->user()->id)->firstOrFail();
 
+        $pricing  = PricingSetting::current();
         $isYearly = $validated['billing_period'] === 'yearly';
-        $amount   = $isYearly ? 449900 : 49900; // centavos: ₱4,499 / ₱499
+        $amount   = $isYearly ? $pricing->annual_price_cents : $pricing->monthly_price_cents;
         $label    = $isYearly ? 'Yearly' : 'Monthly';
 
         try {

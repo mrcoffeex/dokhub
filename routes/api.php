@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Controllers\DoctorRegistrationController;
 use Illuminate\Support\Facades\Route;
-
-Route::post('/doctor-register', DoctorRegistrationController::class);
 
 // Medicine autocomplete — Philippine local DB first, RxNorm supplements if needed
 Route::get('/medicines/search', function (\Illuminate\Http\Request $request) {

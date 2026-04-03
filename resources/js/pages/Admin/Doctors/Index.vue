@@ -105,8 +105,9 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
 
         <!-- Toolbar -->
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex flex-1 gap-2">
-                <div class="relative flex-1 max-w-xs">
+            <div class="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+                <!-- Search — full width on mobile, capped on desktop -->
+                <div class="relative w-full sm:max-w-xs">
                     <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -118,8 +119,8 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                         class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
                     />
                 </div>
-                <!-- Status filter chips -->
-                <div class="flex flex-wrap gap-1.5">
+                <!-- Status filter chips — scrollable row on mobile -->
+                <div class="flex gap-1.5 overflow-x-auto pb-0.5 sm:flex-wrap sm:overflow-visible sm:pb-0">
                     <button
                         v-for="opt in [
                             { value: '', label: 'All' },
@@ -129,7 +130,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                         ]"
                         :key="opt.value"
                         @click="status = opt.value; applyFilters()"
-                        class="rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-150"
+                        class="shrink-0 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-150"
                         :class="status === opt.value
                             ? 'border-orange-300 bg-orange-600 text-white shadow-sm dark:border-orange-700'
                             : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300'"
@@ -138,7 +139,7 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                     </button>
                 </div>
             </div>
-            <Link href="/admin/doctors/create" class="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 active:scale-95">
+            <Link href="/admin/doctors/create" class="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 active:scale-95 sm:w-auto">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>

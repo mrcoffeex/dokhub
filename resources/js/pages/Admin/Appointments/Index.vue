@@ -59,24 +59,25 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
         </template>
 
         <!-- Filters toolbar -->
-        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex flex-wrap items-center gap-2">
-                <!-- Search -->
-                <div class="relative">
-                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input
-                        v-model="search"
-                        @input="onSearch"
-                        type="text"
-                        placeholder="Search patient, reference..."
-                        class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 sm:w-64 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
-                    />
-                </div>
+        <div class="mb-6 flex flex-col gap-3">
+            <!-- Search — full width on mobile -->
+            <div class="relative w-full sm:max-w-sm">
+                <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                    v-model="search"
+                    @input="onSearch"
+                    type="text"
+                    placeholder="Search patient, reference..."
+                    class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                />
+            </div>
 
+            <!-- Status chips + date — scrollable row on mobile -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-0.5 sm:flex-wrap sm:overflow-visible sm:pb-0">
                 <!-- Status filter chips -->
-                <div class="flex flex-wrap gap-1.5">
+                <div class="flex gap-1.5">
                     <button
                         v-for="opt in [
                             { value: '', label: 'All' },
@@ -87,7 +88,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                         ]"
                         :key="opt.value"
                         @click="status = opt.value; applyFilters()"
-                        class="rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-150"
+                        class="shrink-0 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-150"
                         :class="status === opt.value
                             ? 'border-orange-300 bg-orange-600 text-white shadow-sm dark:border-orange-700'
                             : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300'"
@@ -97,7 +98,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; do
                 </div>
 
                 <!-- Date filter -->
-                <div class="relative flex items-center">
+                <div class="relative shrink-0 flex items-center">
                     <input
                         v-model="date"
                         @change="applyFilters"

@@ -24,16 +24,18 @@ class DoctorReviewController extends Controller
             ]);
         }
 
+        $captchaConfigured = app()->isProduction() && config('services.hcaptcha.secret') && config('services.hcaptcha.sitekey');
+
         $validated = $request->validate([
             'patient_name'    => ['required', 'string', 'max:100'],
             'patient_email'   => ['required', 'email', 'max:150'],
             'rating'          => ['required', 'integer', 'min:1', 'max:5'],
             'comment'         => ['nullable', 'string', 'max:1000'],
-            'hcaptcha_token'  => app()->isProduction() ? ['required', 'string'] : ['nullable', 'string'],
+            'hcaptcha_token'  => $captchaConfigured ? ['required', 'string'] : ['nullable', 'string'],
         ]);
 
-        // --- hCaptcha server-side verification (production only) ---
-        if (app()->isProduction()) {
+        // --- hCaptcha server-side verification (production only, when keys are set) ---
+        if ($captchaConfigured) {
             try {
                 $captchaResponse = Http::timeout(10)->asForm()->post('https://hcaptcha.com/siteverify', [
                     'secret'   => config('services.hcaptcha.secret'),

@@ -186,7 +186,7 @@ function onCaptchaExpired() {
 }
 
 function submitReview() {
-    if (IS_PRODUCTION && !reviewForm.hcaptcha_token) {
+    if (IS_PRODUCTION && HCAPTCHA_SITEKEY && !reviewForm.hcaptcha_token) {
         hcaptchaRef.value?.execute();
         return;
     }
@@ -673,8 +673,8 @@ function ratingBarWidth(star: number): string {
                                     class="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100" />
                             </div>
 
-                            <!-- hCaptcha widget (production only) -->
-                            <div v-if="IS_PRODUCTION">
+                            <!-- hCaptcha widget (production only, requires VITE_HCAPTCHA_SITEKEY) -->
+                            <div v-if="IS_PRODUCTION && HCAPTCHA_SITEKEY">
                                 <VueHcaptcha
                                     ref="hcaptchaRef"
                                     :sitekey="HCAPTCHA_SITEKEY"
@@ -690,7 +690,7 @@ function ratingBarWidth(star: number): string {
 
                             <button
                                 type="submit"
-                                :disabled="reviewForm.processing || reviewForm.rating === 0 || (IS_PRODUCTION && !reviewForm.hcaptcha_token)"
+                                :disabled="reviewForm.processing || reviewForm.rating === 0 || (IS_PRODUCTION && !!HCAPTCHA_SITEKEY && !reviewForm.hcaptcha_token)"
                                 class="w-full rounded-xl bg-orange-600 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50"
                             >
                                 {{ reviewForm.processing ? 'Submitting...' : 'Submit Review' }}

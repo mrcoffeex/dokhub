@@ -15,9 +15,9 @@
         .detail-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px; margin-bottom: 24px; }
         .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
         .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .detail-label { font-size: 13px; color: #64748b; font-weight: 500; }
+        .detail-label { font-size: 13px; color: #64748b; font-weight: 500; padding-right: 16px; }
         .detail-value { font-size: 14px; color: #1e293b; font-weight: 600; text-align: right; max-width: 60%; }
-        .ref { font-family: monospace; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 13px; }
+        .ref { font-family: monospace; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 13px; margin-left: 1rem;}
         .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 16px; font-size: 13px; color: #92400e; margin-bottom: 24px; }
         .footer { background: #f8fafc; padding: 24px 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
         .footer a { color: #635bff; text-decoration: none; }

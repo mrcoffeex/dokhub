@@ -20,6 +20,7 @@ const navItems = [
     { label: 'Schedule',     href: '/doctor/schedule',     icon: 'clock' },
     { label: 'My Profile',   href: '/doctor/profile',      icon: 'user' },
     { label: 'Billing',      href: '/doctor/billing',      icon: 'credit-card' },
+    { label: 'Poster',       href: '/doctor/poster',       icon: 'printer' },
 ];
 
 function isActive(href: string): boolean {
@@ -107,6 +108,10 @@ function isActive(href: string): boolean {
                         <!-- Credit-card icon -->
                         <svg v-else-if="item.icon === 'credit-card'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <!-- Printer icon -->
+                        <svg v-else-if="item.icon === 'printer'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
                         {{ item.label }}
                     </Link>

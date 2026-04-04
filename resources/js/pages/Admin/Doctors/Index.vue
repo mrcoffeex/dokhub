@@ -86,6 +86,38 @@ function clearPreview() {
     previewDoctor.value = null;
 }
 
+// ID documents modal
+const idPreviewDoctor = ref<Doctor | null>(null);
+const idLightboxIndex = ref<number | null>(null);
+
+function openIdPreview(doctor: Doctor) {
+    idPreviewDoctor.value = doctor;
+    idLightboxIndex.value = null;
+}
+function closeIdPreview() {
+    idPreviewDoctor.value = null;
+    idLightboxIndex.value = null;
+}
+function openLightbox(i: number) {
+    idLightboxIndex.value = i;
+}
+function closeLightbox() {
+    idLightboxIndex.value = null;
+}
+function lightboxPrev() {
+    if (idLightboxIndex.value === null || !idPreviewDoctor.value?.id_documents) return;
+    const len = idPreviewDoctor.value.id_documents.length;
+    idLightboxIndex.value = (idLightboxIndex.value - 1 + len) % len;
+}
+function lightboxNext() {
+    if (idLightboxIndex.value === null || !idPreviewDoctor.value?.id_documents) return;
+    const len = idPreviewDoctor.value.id_documents.length;
+    idLightboxIndex.value = (idLightboxIndex.value + 1) % len;
+}
+function idDocUrl(doctor: Doctor, path: string) {
+    return `/admin/doctors/${doctor.slug}/id-docs/${path.split('/').pop()}`;
+}
+
 const statusLabels: Record<string, { bg: string; text: string; dot: string; label: string }> = {
     approved:  { bg: 'bg-emerald-50 dark:bg-emerald-900/20',  text: 'text-emerald-700 dark:text-emerald-400',  dot: 'bg-emerald-500',  label: 'Approved' },
     pending:   { bg: 'bg-amber-50 dark:bg-amber-900/20',   text: 'text-amber-700 dark:text-amber-400',   dot: 'bg-amber-500',   label: 'Pending' },
@@ -283,6 +315,17 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
                                             </div>
                                         </DialogContent>
                                     </Dialog>
+                                    <!-- ID Documents (icon only, only when doctor has submitted IDs) -->
+                                    <button
+                                        v-if="doctor.id_documents && doctor.id_documents.length"
+                                        @click="openIdPreview(doctor)"
+                                        title="View submitted IDs"
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-indigo-50 hover:text-indigo-600 active:scale-95 dark:hover:bg-indigo-900/20 dark:hover:text-indigo-400"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                        </svg>
+                                    </button>
                                     <!-- Delete (icon only) -->
                                     <button
                                         @click="destroy(doctor)"
@@ -356,6 +399,123 @@ const statusLabels: Record<string, { bg: string; text: string; dot: string; labe
             </div>
         </div>
     </AdminLayout>
+
+    <!-- ID Documents Modal -->
+    <Teleport to="body">
+        <Transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0"
+            leave-active-class="transition ease-in duration-150"
+            leave-to-class="opacity-0"
+        >
+            <div v-if="idPreviewDoctor" class="fixed inset-0 z-50 flex items-center justify-center p-4" @click.self="closeIdPreview">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+                <div class="relative w-full max-w-2xl rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40">
+                                <svg class="h-4 w-4 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white">Government ID Documents</p>
+                                <p class="text-xs text-gray-400">Dr. {{ idPreviewDoctor.name }} · {{ idPreviewDoctor.id_documents!.length }} file{{ idPreviewDoctor.id_documents!.length !== 1 ? 's' : '' }}</p>
+                            </div>
+                        </div>
+                        <button @click="closeIdPreview" class="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Status banner -->
+                    <div v-if="idPreviewDoctor.status === 'pending'" class="mx-5 mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-700 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-400">
+                        ⚠ This doctor is pending approval. Review the IDs below before approving.
+                    </div>
+
+                    <!-- Grid of thumbnails -->
+                    <div class="grid grid-cols-2 gap-4 p-5 sm:grid-cols-3">
+                        <button
+                            v-for="(path, i) in idPreviewDoctor.id_documents"
+                            :key="i"
+                            type="button"
+                            @click="openLightbox(i)"
+                            class="group relative aspect-[4/3] overflow-hidden rounded-xl border border-gray-200 bg-gray-100 transition hover:border-indigo-400 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                        >
+                            <img
+                                :src="idDocUrl(idPreviewDoctor, path)"
+                                :alt="`ID document ${i + 1}`"
+                                class="h-full w-full object-cover transition group-hover:scale-105"
+                            />
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/20">
+                                <svg class="h-8 w-8 scale-75 text-white opacity-0 drop-shadow transition group-hover:scale-100 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                </svg>
+                            </div>
+                            <span class="absolute right-2 top-2 rounded-full bg-black/50 px-2 py-0.5 text-[10px] font-semibold text-white">{{ i + 1 }}</span>
+                        </button>
+                    </div>
+
+                    <!-- Footer actions -->
+                    <div class="flex items-center justify-between border-t border-gray-100 px-5 py-3.5 dark:border-gray-800">
+                        <a
+                            :href="`/admin/doctors/${idPreviewDoctor.slug}/edit`"
+                            class="text-xs font-medium text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                        >Open full editor →</a>
+                        <button
+                            v-if="idPreviewDoctor.status !== 'approved'"
+                            @click="approve(idPreviewDoctor); closeIdPreview()"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 active:scale-95"
+                        >
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Approve Doctor
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Full-size lightbox overlay -->
+                <Transition
+                    enter-active-class="transition ease-out duration-150"
+                    enter-from-class="opacity-0 scale-95"
+                    enter-to-class="opacity-100 scale-100"
+                    leave-active-class="transition ease-in duration-100"
+                    leave-from-class="opacity-100 scale-100"
+                    leave-to-class="opacity-0 scale-95"
+                >
+                    <div v-if="idLightboxIndex !== null" class="absolute inset-0 z-10 flex items-center justify-center" @click.self="closeLightbox">
+                        <div class="relative flex max-h-[90vh] max-w-[90vw] flex-col items-center">
+                            <img
+                                :src="idDocUrl(idPreviewDoctor, idPreviewDoctor.id_documents![idLightboxIndex])"
+                                :alt="`ID document ${idLightboxIndex + 1}`"
+                                class="max-h-[80vh] max-w-[85vw] rounded-2xl object-contain shadow-2xl"
+                            />
+                            <!-- Nav arrows -->
+                            <button v-if="idPreviewDoctor.id_documents!.length > 1" @click.stop="lightboxPrev"
+                                class="absolute left-0 top-1/2 -translate-x-12 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/40">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                            </button>
+                            <button v-if="idPreviewDoctor.id_documents!.length > 1" @click.stop="lightboxNext"
+                                class="absolute right-0 top-1/2 translate-x-12 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/40">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </button>
+                            <!-- Close + counter -->
+                            <div class="mt-3 flex items-center gap-3">
+                                <span class="text-sm text-white/70">{{ idLightboxIndex + 1 }} / {{ idPreviewDoctor.id_documents!.length }}</span>
+                                <button @click="closeLightbox" class="rounded-lg bg-white/20 px-3 py-1 text-xs font-medium text-white transition hover:bg-white/30">Close</button>
+                                <a :href="idDocUrl(idPreviewDoctor, idPreviewDoctor.id_documents![idLightboxIndex])" target="_blank" rel="noopener noreferrer" class="rounded-lg bg-white/20 px-3 py-1 text-xs font-medium text-white transition hover:bg-white/30">Open full ↗</a>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+        </Transition>
+    </Teleport>
 
     <!-- Create User Account Modal -->
     <Teleport to="body">

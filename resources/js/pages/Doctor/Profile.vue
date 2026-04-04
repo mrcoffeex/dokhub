@@ -3,7 +3,7 @@ import { Head, useForm, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import ClinicMapPicker from '@/components/ClinicMapPicker.vue';
-import type { Doctor } from '@/types';
+import type { Doctor, EducationEntry, AffiliationEntry, CertificationEntry } from '@/types';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{ doctor: Doctor; specializations: string[]; insurances: string[] }>();
@@ -73,6 +73,9 @@ const form = useForm({
     bio:              props.doctor.bio ?? '',
     experience_years: props.doctor.experience_years ?? '',
     consultation_fee: props.doctor.consultation_fee ?? '',
+    appointment_modes: Array.isArray(props.doctor.appointment_modes) && props.doctor.appointment_modes.length
+        ? [...props.doctor.appointment_modes]
+        : (['in_person', 'online'] as ('in_person' | 'online')[]),
     location:         props.doctor.location ?? '',
     latitude:         props.doctor.latitude ?? null as number | null,
     longitude:        props.doctor.longitude ?? null as number | null,
@@ -109,6 +112,30 @@ function submit() {
 const initials = computed(() =>
     props.doctor.name?.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase() ?? '?'
 );
+
+// ── Credentials form ─────────────────────────────────────────────
+const credentialsForm = useForm({
+    education:      (props.doctor.education      ?? []).map((e: EducationEntry)      => ({ ...e })) as EducationEntry[],
+    affiliations:   (props.doctor.affiliations   ?? []).map((a: AffiliationEntry)   => ({ ...a })) as AffiliationEntry[],
+    certifications: (props.doctor.certifications ?? []).map((c: CertificationEntry) => ({ ...c })) as CertificationEntry[],
+});
+
+function addEducation()            { credentialsForm.education.push({ degree: '', institution: '', year: '' }); }
+function removeEducation(i: number){ credentialsForm.education.splice(i, 1); }
+
+function addAffiliation()            { credentialsForm.affiliations.push({ name: '', role: '' }); }
+function removeAffiliation(i: number){ credentialsForm.affiliations.splice(i, 1); }
+
+function addCertification()            { credentialsForm.certifications.push({ name: '', issuer: '', year: '' }); }
+function removeCertification(i: number){ credentialsForm.certifications.splice(i, 1); }
+
+function saveCredentials() {
+    credentialsForm.patch('/doctor/profile/credentials', {
+        preserveScroll: true,
+        onSuccess: () => toast.success('Credentials updated', { description: 'Your changes have been saved.', duration: 4000 }),
+        onError:   () => toast.error('Could not save credentials', { description: 'Please review the highlighted fields.', duration: 5000 }),
+    });
+}
 </script>
 
 <template>
@@ -412,6 +439,85 @@ const initials = computed(() =>
                         <p v-if="form.errors.consultation_fee" class="mt-1 text-xs text-red-500">{{ form.errors.consultation_fee }}</p>
                     </div>
 
+                    <!-- Consultation modes -->
+                    <div class="sm:col-span-2">
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Consultation Modes</label>
+                        <p class="mb-3 text-xs text-gray-400 dark:text-gray-500">Select the types of consultation you offer to patients.</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Clinic Visit toggle -->
+                            <button
+                                type="button"
+                                @click="() => {
+                                    const i = form.appointment_modes.indexOf('in_person');
+                                    if (i === -1) form.appointment_modes.push('in_person');
+                                    else if (form.appointment_modes.length > 1) form.appointment_modes.splice(i, 1);
+                                }"
+                                class="group relative flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-all duration-150"
+                                :class="form.appointment_modes.includes('in_person')
+                                    ? 'border-orange-500 bg-orange-50 dark:border-orange-500 dark:bg-orange-950/30'
+                                    : 'border-gray-200 bg-white hover:border-orange-200 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-700'"
+                            >
+                                <span
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors"
+                                    :class="form.appointment_modes.includes('in_person') ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500'"
+                                >
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold" :class="form.appointment_modes.includes('in_person') ? 'text-orange-700 dark:text-orange-300' : 'text-gray-800 dark:text-gray-200'">Clinic Visit</p>
+                                    <p class="text-xs" :class="form.appointment_modes.includes('in_person') ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500'">In-person appointment</p>
+                                </div>
+                                <span
+                                    class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors"
+                                    :class="form.appointment_modes.includes('in_person') ? 'bg-orange-500 text-white' : 'border-2 border-gray-300 dark:border-gray-600'"
+                                >
+                                    <svg v-if="form.appointment_modes.includes('in_person')" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </span>
+                            </button>
+
+                            <!-- Online consultation toggle -->
+                            <button
+                                type="button"
+                                @click="() => {
+                                    const i = form.appointment_modes.indexOf('online');
+                                    if (i === -1) form.appointment_modes.push('online');
+                                    else if (form.appointment_modes.length > 1) form.appointment_modes.splice(i, 1);
+                                }"
+                                class="group relative flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-all duration-150"
+                                :class="form.appointment_modes.includes('online')
+                                    ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-950/30'
+                                    : 'border-gray-200 bg-white hover:border-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-indigo-700'"
+                            >
+                                <span
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors"
+                                    :class="form.appointment_modes.includes('online') ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500'"
+                                >
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold" :class="form.appointment_modes.includes('online') ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-800 dark:text-gray-200'">Online</p>
+                                    <p class="text-xs" :class="form.appointment_modes.includes('online') ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'">Video or phone call</p>
+                                </div>
+                                <span
+                                    class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors"
+                                    :class="form.appointment_modes.includes('online') ? 'bg-indigo-600 text-white' : 'border-2 border-gray-300 dark:border-gray-600'"
+                                >
+                                    <svg v-if="form.appointment_modes.includes('online')" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                        <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">At least one mode must be selected.</p>
+                        <p v-if="form.errors.appointment_modes" class="mt-1 text-xs text-red-500">{{ form.errors.appointment_modes }}</p>
+                    </div>
+
                     <!-- Location + Map Pin -->
                     <div class="sm:col-span-2">
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Location / Clinic Address</label>
@@ -480,6 +586,179 @@ const initials = computed(() =>
                     </button>
                 </div>
             </form>
+
+            <!-- ── Education ─────────────────────────────────────────────── -->
+            <div class="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <div>
+                        <h2 class="font-semibold text-gray-900 dark:text-white">Education</h2>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Degrees and academic qualifications.</p>
+                    </div>
+                    <button type="button" @click="addEducation"
+                        class="flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-700 transition hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-400 dark:hover:bg-orange-950/60">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add
+                    </button>
+                </div>
+
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <div v-if="credentialsForm.education.length === 0" class="px-6 py-8 text-center">
+                        <p class="text-sm text-gray-400 dark:text-gray-600">No education entries yet. Click "Add" to get started.</p>
+                    </div>
+                    <div v-for="(entry, idx) in credentialsForm.education" :key="idx" class="grid gap-4 p-6 sm:grid-cols-3">
+                        <div class="sm:col-span-1">
+                            <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Degree <span class="text-red-500">*</span></label>
+                            <input v-model="entry.degree" type="text" placeholder="e.g. MD, MBBS" required
+                                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                                :class="{ 'border-red-400': credentialsForm.errors['education.' + idx + '.degree'] }" />
+                            <p v-if="credentialsForm.errors['education.' + idx + '.degree']" class="mt-1 text-xs text-red-500">{{ credentialsForm.errors['education.' + idx + '.degree'] }}</p>
+                        </div>
+                        <div class="sm:col-span-1">
+                            <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Institution <span class="text-red-500">*</span></label>
+                            <input v-model="entry.institution" type="text" placeholder="University / School" required
+                                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                                :class="{ 'border-red-400': credentialsForm.errors['education.' + idx + '.institution'] }" />
+                            <p v-if="credentialsForm.errors['education.' + idx + '.institution']" class="mt-1 text-xs text-red-500">{{ credentialsForm.errors['education.' + idx + '.institution'] }}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex-1">
+                                <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Year</label>
+                                <input v-model.number="entry.year" type="number" :min="1900" :max="new Date().getFullYear() + 1" placeholder="2020"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                                    :class="{ 'border-red-400': credentialsForm.errors['education.' + idx + '.year'] }" />
+                            </div>
+                            <button type="button" @click="removeEducation(idx)" title="Remove"
+                                class="mt-[1.625rem] flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-red-100 text-red-400 transition hover:bg-red-50 dark:border-red-900/40 dark:hover:bg-red-900/20">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end border-t border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <button type="button" :disabled="credentialsForm.processing" @click="saveCredentials"
+                        class="rounded-xl bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 disabled:opacity-60 dark:focus:ring-offset-gray-900">
+                        <span v-if="credentialsForm.processing">Saving…</span>
+                        <span v-else>Save Education</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── Affiliations ──────────────────────────────────────────────── -->
+            <div class="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <div>
+                        <h2 class="font-semibold text-gray-900 dark:text-white">Affiliations</h2>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Hospitals, clinics, or professional bodies.</p>
+                    </div>
+                    <button type="button" @click="addAffiliation"
+                        class="flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-700 transition hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-400 dark:hover:bg-orange-950/60">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add
+                    </button>
+                </div>
+
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <div v-if="credentialsForm.affiliations.length === 0" class="px-6 py-8 text-center">
+                        <p class="text-sm text-gray-400 dark:text-gray-600">No affiliations yet. Click "Add" to get started.</p>
+                    </div>
+                    <div v-for="(entry, idx) in credentialsForm.affiliations" :key="idx" class="grid gap-4 p-6 sm:grid-cols-2">
+                        <div>
+                            <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Organization / Hospital <span class="text-red-500">*</span></label>
+                            <input v-model="entry.name" type="text" placeholder="e.g. St. Luke's Medical Center" required
+                                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                                :class="{ 'border-red-400': credentialsForm.errors['affiliations.' + idx + '.name'] }" />
+                            <p v-if="credentialsForm.errors['affiliations.' + idx + '.name']" class="mt-1 text-xs text-red-500">{{ credentialsForm.errors['affiliations.' + idx + '.name'] }}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex-1">
+                                <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Role / Position</label>
+                                <input v-model="entry.role" type="text" placeholder="e.g. Attending Physician"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40" />
+                            </div>
+                            <button type="button" @click="removeAffiliation(idx)" title="Remove"
+                                class="mt-[1.625rem] flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-red-100 text-red-400 transition hover:bg-red-50 dark:border-red-900/40 dark:hover:bg-red-900/20">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end border-t border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <button type="button" :disabled="credentialsForm.processing" @click="saveCredentials"
+                        class="rounded-xl bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 disabled:opacity-60 dark:focus:ring-offset-gray-900">
+                        <span v-if="credentialsForm.processing">Saving…</span>
+                        <span v-else>Save Affiliations</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── Certifications ────────────────────────────────────────────── -->
+            <div class="rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <div>
+                        <h2 class="font-semibold text-gray-900 dark:text-white">Certifications</h2>
+                        <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Board certifications and professional credentials.</p>
+                    </div>
+                    <button type="button" @click="addCertification"
+                        class="flex items-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-700 transition hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-400 dark:hover:bg-orange-950/60">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add
+                    </button>
+                </div>
+
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <div v-if="credentialsForm.certifications.length === 0" class="px-6 py-8 text-center">
+                        <p class="text-sm text-gray-400 dark:text-gray-600">No certifications yet. Click "Add" to get started.</p>
+                    </div>
+                    <div v-for="(entry, idx) in credentialsForm.certifications" :key="idx" class="grid gap-4 p-6 sm:grid-cols-3">
+                        <div class="sm:col-span-1">
+                            <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Certification Name <span class="text-red-500">*</span></label>
+                            <input v-model="entry.name" type="text" placeholder="e.g. Board Certified Cardiologist" required
+                                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                                :class="{ 'border-red-400': credentialsForm.errors['certifications.' + idx + '.name'] }" />
+                            <p v-if="credentialsForm.errors['certifications.' + idx + '.name']" class="mt-1 text-xs text-red-500">{{ credentialsForm.errors['certifications.' + idx + '.name'] }}</p>
+                        </div>
+                        <div class="sm:col-span-1">
+                            <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Issuing Organization</label>
+                            <input v-model="entry.issuer" type="text" placeholder="e.g. PRC, AMA"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40" />
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex-1">
+                                <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-400">Year</label>
+                                <input v-model.number="entry.year" type="number" :min="1900" :max="new Date().getFullYear() + 1" placeholder="2022"
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:ring-orange-900/40"
+                                    :class="{ 'border-red-400': credentialsForm.errors['certifications.' + idx + '.year'] }" />
+                            </div>
+                            <button type="button" @click="removeCertification(idx)" title="Remove"
+                                class="mt-[1.625rem] flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-red-100 text-red-400 transition hover:bg-red-50 dark:border-red-900/40 dark:hover:bg-red-900/20">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end border-t border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <button type="button" :disabled="credentialsForm.processing" @click="saveCredentials"
+                        class="rounded-xl bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 disabled:opacity-60 dark:focus:ring-offset-gray-900">
+                        <span v-if="credentialsForm.processing">Saving…</span>
+                        <span v-else>Save Certifications</span>
+                    </button>
+                </div>
+            </div>
 
         </div>
     </DoctorLayout>

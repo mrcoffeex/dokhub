@@ -60,6 +60,10 @@
                 <span class="detail-label">Time</span>
                 <span class="detail-value">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}</span>
             </div>
+            <div class="detail-row">
+                <span class="detail-label">Type</span>
+                <span class="detail-value">{{ $appointment->appointment_type === 'online' ? '💻 Online Consultation' : '🏥 Clinic Visit' }}</span>
+            </div>
             @if($appointment->reason)
             <div class="detail-row">
                 <span class="detail-label">Reason for Visit</span>

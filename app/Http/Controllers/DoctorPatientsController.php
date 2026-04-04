@@ -49,6 +49,8 @@ class DoctorPatientsController extends Controller
         $patient->load([
             'diagnoses' => fn($q) => $q->with('appointment:id,reference,appointment_date')->latest(),
             'prescriptions' => fn($q) => $q->with('diagnosis:id,title')->latest(),
+            'vitals' => fn($q) => $q->orderByDesc('recorded_at'),
+            'records' => fn($q) => $q->latest(),
         ]);
 
         $appointments = Appointment::where('doctor_id', $doctor->id)

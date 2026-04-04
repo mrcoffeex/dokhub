@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -60,6 +61,8 @@ class DoctorRegistrationController extends Controller
             'languages'        => ['required', 'string', 'max:500'],
             'insurance'        => ['nullable', 'array'],
             'insurance.*'      => ['string', 'max:100'],
+            'id_documents'     => ['required', 'array', 'min:1', 'max:5'],
+            'id_documents.*'   => ['required', 'file', 'mimes:jpeg,jpg,png', 'max:5120'],
         ];
 
         if (! $isGoogleSignup) {
@@ -106,7 +109,7 @@ class DoctorRegistrationController extends Controller
         }
 
         // Create doctor profile with pending status
-        Doctor::create([
+        $doctor = Doctor::create([
             'user_id'          => $user->id,
             'name'             => $validated['name'],
             'email'            => $validated['email'],
@@ -123,6 +126,15 @@ class DoctorRegistrationController extends Controller
             'trial_ends_at'    => null,
             'status'           => 'pending',
         ]);
+
+        // Store uploaded ID documents in private disk
+        $paths = [];
+        foreach ($request->file('id_documents', []) as $file) {
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs("id-docs/{$doctor->id}", $filename, 'local');
+            $paths[] = "id-docs/{$doctor->id}/{$filename}";
+        }
+        $doctor->update(['id_documents' => $paths]);
 
         // Clear the Google session data now that the account is created
         session()->forget('google_pending_doctor');

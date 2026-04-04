@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\DoctorApproved;
 use App\Models\Doctor;
 use App\Models\Insurance;
 use App\Models\Specialization;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -158,6 +161,7 @@ class DoctorController extends Controller
 
     public function approve(Doctor $doctor)
     {
+        $wasApproved = $doctor->status === 'approved';
         $updates = ['status' => 'approved'];
 
         // Start the 15-day Pro trial on first approval (not on re-approval after suspension).
@@ -166,6 +170,11 @@ class DoctorController extends Controller
         }
 
         $doctor->update($updates);
+
+        if (! $wasApproved) {
+            Mail::to($doctor->email)->send(new DoctorApproved($doctor));
+        }
+
         return back()->with('success', "Dr. {$doctor->name} has been approved.");
     }
 
@@ -206,5 +215,18 @@ class DoctorController extends Controller
         $doctor->update(['user_id' => $user->id]);
 
         return back()->with('success', "User account created for Dr. {$doctor->name}.");
+    }
+
+    public function serveIdDocument(Doctor $doctor, string $filename)
+    {
+        // Prevent path traversal
+        $filename = basename($filename);
+        $path = "id-docs/{$doctor->id}/{$filename}";
+
+        abort_unless(Storage::disk('local')->exists($path), 404);
+
+        $fullPath = Storage::disk('local')->path($path);
+
+        return response()->file($fullPath);
     }
 }

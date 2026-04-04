@@ -2,7 +2,7 @@
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
-import type { Patient, Diagnosis, Appointment, Doctor } from '@/types';
+import type { Patient, Diagnosis, Appointment, Doctor, PatientVital, PatientRecord } from '@/types';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
@@ -12,8 +12,25 @@ const props = defineProps<{
 }>();
 
 // ---- Tabs ----
-type Tab = 'overview' | 'diagnoses' | 'prescriptions' | 'appointments';
+type Tab = 'overview' | 'vitals' | 'diagnoses' | 'prescriptions' | 'appointments' | 'records';
 const activeTab = ref<Tab>('overview');
+
+const tabs: { key: Tab; label: string }[] = [
+    { key: 'overview',      label: 'Overview' },
+    { key: 'vitals',        label: 'Vitals' },
+    { key: 'diagnoses',     label: 'Diagnoses' },
+    { key: 'prescriptions', label: 'Prescriptions' },
+    { key: 'appointments',  label: 'Appointments' },
+    { key: 'records',       label: 'Records' },
+];
+
+function tabCount(key: Tab): number | null {
+    if (key === 'diagnoses')     return props.patient.diagnoses?.length ?? 0;
+    if (key === 'prescriptions') return props.patient.prescriptions?.length ?? 0;
+    if (key === 'vitals')        return props.patient.vitals?.length ?? 0;
+    if (key === 'records')       return props.patient.records?.length ?? 0;
+    return null;
+}
 
 // ---- Patient edit ----
 const editingInfo = ref(false);
@@ -118,23 +135,201 @@ function deleteDiag(d: Diagnosis) {
     });
 }
 
-// ---- Helpers ----
+// ---- Vitals form ----
+const showVitalForm = ref(false);
+const editingVitalId = ref<number | null>(null);
+const vitalForm = useForm({
+    recorded_at:              new Date().toISOString().slice(0, 16),
+    blood_pressure_systolic:  '' as string | number,
+    blood_pressure_diastolic: '' as string | number,
+    heart_rate:               '' as string | number,
+    temperature:              '' as string | number,
+    weight:                   '' as string | number,
+    height:                   '' as string | number,
+    oxygen_saturation:        '' as string | number,
+    notes:                    '',
+});
+
+function toLocalInput(iso: string): string {
+    const d = new Date(iso);
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function openNewVital() {
+    vitalForm.reset();
+    vitalForm.recorded_at = new Date().toISOString().slice(0, 16);
+    editingVitalId.value = null;
+    showVitalForm.value = true;
+}
+
+function openEditVital(v: PatientVital) {
+    vitalForm.recorded_at              = toLocalInput(v.recorded_at);
+    vitalForm.blood_pressure_systolic  = v.blood_pressure_systolic  ?? '';
+    vitalForm.blood_pressure_diastolic = v.blood_pressure_diastolic ?? '';
+    vitalForm.heart_rate               = v.heart_rate               ?? '';
+    vitalForm.temperature              = v.temperature              ?? '';
+    vitalForm.weight                   = v.weight                   ?? '';
+    vitalForm.height                   = v.height                   ?? '';
+    vitalForm.oxygen_saturation        = v.oxygen_saturation        ?? '';
+    vitalForm.notes                    = v.notes                    ?? '';
+    editingVitalId.value               = v.id;
+    showVitalForm.value                = true;
+    activeTab.value                    = 'vitals';
+}
+
+function submitVital() {
+    if (editingVitalId.value) {
+        vitalForm.put(`/doctor/patients/${props.patient.id}/vitals/${editingVitalId.value}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                showVitalForm.value = false;
+                vitalForm.reset();
+                editingVitalId.value = null;
+                toast.success('Vitals updated', { duration: 4000 });
+            },
+            onError: () => toast.error('Could not update vitals', { duration: 5000 }),
+        });
+    } else {
+        vitalForm.post(`/doctor/patients/${props.patient.id}/vitals`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                showVitalForm.value = false;
+                vitalForm.reset();
+                toast.success('Vitals recorded', { duration: 4000 });
+            },
+            onError: () => toast.error('Could not record vitals', { duration: 5000 }),
+        });
+    }
+}
+
+function deleteVital(v: PatientVital) {
+    if (!confirm('Delete this vitals record?')) return;
+    router.delete(`/doctor/patients/${props.patient.id}/vitals/${v.id}`, {
+        preserveScroll: true,
+        onSuccess: () => toast.success('Vitals deleted', { duration: 3000 }),
+        onError:   () => toast.error('Could not delete', { duration: 4000 }),
+    });
+}
+
+const latestVital = computed<PatientVital | null>(() => (props.patient.vitals ?? [])[0] ?? null);
+
+// ---- Vital status helpers ----
+type VitalStatus = { label: string; textCls: string; bgCls: string };
+
+function bpStatus(s: number | null, d: number | null): VitalStatus {
+    if (!s || !d) return { label: '—', textCls: 'text-gray-400', bgCls: 'bg-gray-50 dark:bg-gray-800' };
+    if (s >= 140 || d >= 90) return { label: 'High',     textCls: 'text-red-600 dark:text-red-400',       bgCls: 'bg-red-50 dark:bg-red-900/20' };
+    if (s >= 130 || d >= 80) return { label: 'Stage 1',  textCls: 'text-orange-600 dark:text-orange-400',  bgCls: 'bg-orange-50 dark:bg-orange-900/20' };
+    if (s >= 120)            return { label: 'Elevated', textCls: 'text-amber-600 dark:text-amber-400',    bgCls: 'bg-amber-50 dark:bg-amber-900/20' };
+    return { label: 'Normal', textCls: 'text-emerald-600 dark:text-emerald-400', bgCls: 'bg-emerald-50 dark:bg-emerald-900/20' };
+}
+
+function hrStatus(hr: number | null): VitalStatus {
+    if (!hr)      return { label: '—',      textCls: 'text-gray-400',                              bgCls: 'bg-gray-50 dark:bg-gray-800' };
+    if (hr < 60)  return { label: 'Low',    textCls: 'text-amber-600 dark:text-amber-400',         bgCls: 'bg-amber-50 dark:bg-amber-900/20' };
+    if (hr > 100) return { label: 'High',   textCls: 'text-orange-600 dark:text-orange-400',       bgCls: 'bg-orange-50 dark:bg-orange-900/20' };
+    return { label: 'Normal', textCls: 'text-emerald-600 dark:text-emerald-400', bgCls: 'bg-emerald-50 dark:bg-emerald-900/20' };
+}
+
+function tempStatus(t: number | null): VitalStatus {
+    if (!t)        return { label: '—',          textCls: 'text-gray-400',                        bgCls: 'bg-gray-50 dark:bg-gray-800' };
+    if (t >= 38)   return { label: 'Fever',      textCls: 'text-red-600 dark:text-red-400',       bgCls: 'bg-red-50 dark:bg-red-900/20' };
+    if (t >= 37.3) return { label: 'Low-grade',  textCls: 'text-amber-600 dark:text-amber-400',   bgCls: 'bg-amber-50 dark:bg-amber-900/20' };
+    if (t < 36.1)  return { label: 'Subnormal',  textCls: 'text-blue-600 dark:text-blue-400',     bgCls: 'bg-blue-50 dark:bg-blue-900/20' };
+    return { label: 'Normal', textCls: 'text-emerald-600 dark:text-emerald-400', bgCls: 'bg-emerald-50 dark:bg-emerald-900/20' };
+}
+
+function spo2Status(o: number | null): VitalStatus {
+    if (!o)     return { label: '—',        textCls: 'text-gray-400',                            bgCls: 'bg-gray-50 dark:bg-gray-800' };
+    if (o < 90) return { label: 'Critical', textCls: 'text-red-600 dark:text-red-400',           bgCls: 'bg-red-50 dark:bg-red-900/20' };
+    if (o < 95) return { label: 'Low',      textCls: 'text-amber-600 dark:text-amber-400',       bgCls: 'bg-amber-50 dark:bg-amber-900/20' };
+    return { label: 'Normal', textCls: 'text-emerald-600 dark:text-emerald-400', bgCls: 'bg-emerald-50 dark:bg-emerald-900/20' };
+}
+
+function calcBMI(w: number | null, h: number | null): string | null {
+    if (!w || !h) return null;
+    return (w / ((h / 100) ** 2)).toFixed(1);
+}
+
+// ---- General helpers ----
 function formatDate(d: string | null, time = false): string {
     if (!d) return '—';
     const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
-    if (time) opts.hour = '2-digit', opts.minute = '2-digit';
+    if (time) { opts.hour = '2-digit'; opts.minute = '2-digit'; }
     return new Date(d.includes('T') ? d : d + 'T00:00:00').toLocaleDateString('en-US', opts);
 }
+
+function formatVitalDate(iso: string): string {
+    return new Date(iso).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true,
+    });
+}
+
 function initials(name: string): string {
     return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 }
+
 const statusConfig: Record<string, { label: string; cls: string }> = {
-    pending:   { label: 'Pending',   cls: 'bg-amber-100 text-amber-700' },
-    confirmed: { label: 'Confirmed', cls: 'bg-emerald-100 text-emerald-700' },
-    cancelled: { label: 'Cancelled', cls: 'bg-red-100 text-red-700' },
-    completed: { label: 'Completed', cls: 'bg-sky-100 text-sky-700' },
+    pending:   { label: 'Pending',   cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
+    confirmed: { label: 'Confirmed', cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
+    cancelled: { label: 'Cancelled', cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+    completed: { label: 'Completed', cls: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300' },
 };
+
 const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed', 'completed'].includes(a.status)));
+
+// ---- Patient records ----
+const showRecordForm = ref(false);
+const recordForm = useForm({
+    file:  null as File | null,
+    name:  '',
+});
+
+function onFileChange(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file  = input.files?.[0] ?? null;
+    recordForm.file = file;
+    if (file && !recordForm.name) {
+        recordForm.name = file.name.replace(/\.[^.]+$/, '');
+    }
+}
+
+function submitRecord() {
+    recordForm.post(`/doctor/patients/${props.patient.id}/records`, {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            recordForm.reset();
+            showRecordForm.value = false;
+            toast.success('Record uploaded', { duration: 4000 });
+        },
+        onError: () => toast.error('Upload failed', { duration: 5000 }),
+    });
+}
+
+function deleteRecord(r: PatientRecord) {
+    if (!confirm(`Delete "${r.name}"?`)) return;
+    router.delete(`/doctor/patients/${props.patient.id}/records/${r.id}`, {
+        preserveScroll: true,
+        onSuccess: () => toast.success('Record deleted', { duration: 3000 }),
+        onError:   () => toast.error('Could not delete', { duration: 4000 }),
+    });
+}
+
+function formatBytes(bytes: number): string {
+    if (bytes < 1024)        return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function fileIcon(mime: string): string {
+    if (mime === 'application/pdf')                return '📄';
+    if (mime.startsWith('image/'))                 return '🖼️';
+    if (mime.includes('word') || mime.includes('document')) return '📝';
+    return '📎';
+}
 </script>
 
 <template>
@@ -155,22 +350,44 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
         <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
             <!-- LEFT: Patient card -->
             <div class="shrink-0 lg:w-72">
-                <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
-                    <!-- Avatar + Name -->
-                    <div class="flex flex-col items-center gap-3 border-b border-gray-100 p-6 dark:border-gray-800">
-                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-indigo-600 text-xl font-bold text-white shadow">
-                            {{ initials(patient.name) }}
+                <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                    <!-- Gradient header -->
+                    <div class="relative bg-gradient-to-br from-orange-500 via-orange-600 to-indigo-600 px-5 pb-14 pt-5">
+                        <span class="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10"></span>
+                        <span class="pointer-events-none absolute bottom-2 right-12 h-10 w-10 rounded-full bg-white/10"></span>
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-lg font-bold text-white ring-2 ring-white/30 shadow-lg">
+                                {{ initials(patient.name) }}
+                            </div>
+                            <button
+                                @click="editingInfo = !editingInfo"
+                                class="flex items-center gap-1 rounded-lg bg-white/20 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/30"
+                            >
+                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                {{ editingInfo ? 'Cancel' : 'Edit' }}
+                            </button>
                         </div>
-                        <div class="text-center">
-                            <h2 class="text-base font-bold text-gray-900 dark:text-white">{{ patient.name }}</h2>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ patient.email }}</p>
+                        <div class="relative mt-2.5">
+                            <h2 class="text-base font-bold leading-tight text-white">{{ patient.name }}</h2>
+                            <p class="text-xs text-orange-100">{{ patient.email }}</p>
                         </div>
-                        <button @click="editingInfo = !editingInfo" class="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:border-orange-300 hover:text-orange-700 dark:border-gray-700 dark:text-gray-400 dark:hover:text-orange-400">
-                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            {{ editingInfo ? 'Cancel' : 'Edit Info' }}
-                        </button>
+                    </div>
+                    <!-- Floating stats row -->
+                    <div class="relative -mt-6 mx-4 mb-4 flex gap-2">
+                        <div class="flex-1 rounded-xl bg-white p-2.5 text-center shadow-md dark:bg-gray-800">
+                            <p class="text-[10px] font-medium text-gray-400 dark:text-gray-500">Visits</p>
+                            <p class="text-lg font-bold leading-tight text-gray-800 dark:text-white">{{ appointments.length }}</p>
+                        </div>
+                        <div class="flex-1 rounded-xl bg-white p-2.5 text-center shadow-md dark:bg-gray-800">
+                            <p class="text-[10px] font-medium text-gray-400 dark:text-gray-500">Diagnoses</p>
+                            <p class="text-lg font-bold leading-tight text-indigo-600 dark:text-indigo-400">{{ patient.diagnoses?.length ?? 0 }}</p>
+                        </div>
+                        <div class="flex-1 rounded-xl bg-white p-2.5 text-center shadow-md dark:bg-gray-800">
+                            <p class="text-[10px] font-medium text-gray-400 dark:text-gray-500">Rx</p>
+                            <p class="text-lg font-bold leading-tight text-emerald-600 dark:text-emerald-400">{{ patient.prescriptions?.length ?? 0 }}</p>
+                        </div>
                     </div>
 
                     <!-- Edit form -->
@@ -321,19 +538,24 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
             <!-- RIGHT: Tabs -->
             <div class="flex-1 min-w-0">
                 <!-- Tab nav -->
-                <div class="mb-4 flex gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
+                <div class="mb-4 flex gap-1 overflow-x-auto rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
                     <button
-                        v-for="tab in (['overview', 'diagnoses', 'prescriptions', 'appointments'] as const)"
-                        :key="tab"
-                        @click="activeTab = tab"
-                        class="flex-1 rounded-lg py-2 text-xs font-semibold capitalize transition-all"
-                        :class="activeTab === tab
+                        v-for="tab in tabs"
+                        :key="tab.key"
+                        @click="activeTab = tab.key"
+                        class="flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all"
+                        :class="activeTab === tab.key
                             ? 'bg-white shadow-sm text-orange-700 dark:bg-gray-900 dark:text-orange-300'
                             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
                     >
-                        {{ tab }}
-                        <span v-if="tab === 'diagnoses'" class="ml-1 text-gray-400">({{ patient.diagnoses?.length ?? 0 }})</span>
-                        <span v-if="tab === 'prescriptions'" class="ml-1 text-gray-400">({{ patient.prescriptions?.length ?? 0 }})</span>
+                        {{ tab.label }}
+                        <span
+                            v-if="tabCount(tab.key) !== null"
+                            class="rounded-full px-1.5 py-0.5 text-[10px] leading-none tabular-nums"
+                            :class="activeTab === tab.key
+                                ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-300'
+                                : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'"
+                        >{{ tabCount(tab.key) }}</span>
                     </button>
                 </div>
 
@@ -376,6 +598,43 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                         </Link>
                     </div>
 
+                    <!-- Latest vitals summary card -->
+                    <div v-if="latestVital" class="sm:col-span-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                        <div class="mb-3 flex items-center justify-between">
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Latest Vitals</p>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ formatVitalDate(latestVital.recorded_at) }}</span>
+                                <button @click="activeTab = 'vitals'" class="text-xs font-medium text-orange-500 hover:underline">View all →</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                            <div v-if="latestVital.blood_pressure_systolic" :class="bpStatus(latestVital.blood_pressure_systolic, latestVital.blood_pressure_diastolic).bgCls" class="rounded-xl px-3 py-2.5 text-center">
+                                <p class="text-[10px] font-medium text-gray-400">Blood Pressure</p>
+                                <p :class="bpStatus(latestVital.blood_pressure_systolic, latestVital.blood_pressure_diastolic).textCls" class="mt-0.5 text-sm font-bold">{{ latestVital.blood_pressure_systolic }}/{{ latestVital.blood_pressure_diastolic }}</p>
+                                <p class="text-[10px] text-gray-400">mmHg</p>
+                            </div>
+                            <div v-if="latestVital.heart_rate" :class="hrStatus(latestVital.heart_rate).bgCls" class="rounded-xl px-3 py-2.5 text-center">
+                                <p class="text-[10px] font-medium text-gray-400">Heart Rate</p>
+                                <p :class="hrStatus(latestVital.heart_rate).textCls" class="mt-0.5 text-sm font-bold">{{ latestVital.heart_rate }}</p>
+                                <p class="text-[10px] text-gray-400">bpm</p>
+                            </div>
+                            <div v-if="latestVital.temperature" :class="tempStatus(latestVital.temperature).bgCls" class="rounded-xl px-3 py-2.5 text-center">
+                                <p class="text-[10px] font-medium text-gray-400">Temperature</p>
+                                <p :class="tempStatus(latestVital.temperature).textCls" class="mt-0.5 text-sm font-bold">{{ latestVital.temperature }}°C</p>
+                                <p :class="tempStatus(latestVital.temperature).textCls" class="text-[10px] font-medium">{{ tempStatus(latestVital.temperature).label }}</p>
+                            </div>
+                            <div v-if="latestVital.oxygen_saturation" :class="spo2Status(latestVital.oxygen_saturation).bgCls" class="rounded-xl px-3 py-2.5 text-center">
+                                <p class="text-[10px] font-medium text-gray-400">SpO₂</p>
+                                <p :class="spo2Status(latestVital.oxygen_saturation).textCls" class="mt-0.5 text-sm font-bold">{{ latestVital.oxygen_saturation }}%</p>
+                                <p class="text-[10px] text-gray-400">oxygen</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="sm:col-span-3 flex items-center justify-between rounded-2xl border border-dashed border-gray-200 bg-white px-5 py-4 dark:border-gray-700 dark:bg-gray-900">
+                        <p class="text-sm text-gray-400 dark:text-gray-500">No vitals recorded yet.</p>
+                        <button @click="activeTab = 'vitals'; openNewVital()" class="text-xs font-semibold text-orange-600 hover:underline dark:text-orange-400">+ Record Vitals</button>
+                    </div>
+
                     <!-- Recent diagnosis -->
                     <div v-if="(patient.diagnoses?.length ?? 0) > 0" class="sm:col-span-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900">
                         <p class="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">Latest Diagnosis</p>
@@ -390,6 +649,203 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                             <p v-if="patient.diagnoses![0].treatment" class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                                 <span class="font-medium text-gray-600 dark:text-gray-300">Treatment:</span> {{ patient.diagnoses![0].treatment }}
                             </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VITALS TAB -->
+                <div v-else-if="activeTab === 'vitals'">
+                    <!-- Latest vitals summary -->
+                    <div v-if="latestVital" class="mb-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                        <div class="mb-3 flex items-center justify-between">
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Latest Vitals</p>
+                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ formatVitalDate(latestVital.recorded_at) }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+                            <div v-if="latestVital.blood_pressure_systolic" :class="bpStatus(latestVital.blood_pressure_systolic, latestVital.blood_pressure_diastolic).bgCls" class="rounded-xl p-3 text-center">
+                                <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Blood Pressure</p>
+                                <p :class="bpStatus(latestVital.blood_pressure_systolic, latestVital.blood_pressure_diastolic).textCls" class="mt-1 text-xl font-bold leading-tight">{{ latestVital.blood_pressure_systolic }}/{{ latestVital.blood_pressure_diastolic }}</p>
+                                <p class="text-[10px] text-gray-400">mmHg</p>
+                                <span :class="bpStatus(latestVital.blood_pressure_systolic, latestVital.blood_pressure_diastolic).textCls" class="mt-1 block text-[10px] font-semibold uppercase">{{ bpStatus(latestVital.blood_pressure_systolic, latestVital.blood_pressure_diastolic).label }}</span>
+                            </div>
+                            <div v-if="latestVital.heart_rate" :class="hrStatus(latestVital.heart_rate).bgCls" class="rounded-xl p-3 text-center">
+                                <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Heart Rate</p>
+                                <p :class="hrStatus(latestVital.heart_rate).textCls" class="mt-1 text-xl font-bold leading-tight">{{ latestVital.heart_rate }}</p>
+                                <p class="text-[10px] text-gray-400">bpm</p>
+                                <span :class="hrStatus(latestVital.heart_rate).textCls" class="mt-1 block text-[10px] font-semibold uppercase">{{ hrStatus(latestVital.heart_rate).label }}</span>
+                            </div>
+                            <div v-if="latestVital.temperature" :class="tempStatus(latestVital.temperature).bgCls" class="rounded-xl p-3 text-center">
+                                <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Temperature</p>
+                                <p :class="tempStatus(latestVital.temperature).textCls" class="mt-1 text-xl font-bold leading-tight">{{ latestVital.temperature }}</p>
+                                <p class="text-[10px] text-gray-400">°C</p>
+                                <span :class="tempStatus(latestVital.temperature).textCls" class="mt-1 block text-[10px] font-semibold uppercase">{{ tempStatus(latestVital.temperature).label }}</span>
+                            </div>
+                            <div v-if="latestVital.oxygen_saturation" :class="spo2Status(latestVital.oxygen_saturation).bgCls" class="rounded-xl p-3 text-center">
+                                <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">SpO₂</p>
+                                <p :class="spo2Status(latestVital.oxygen_saturation).textCls" class="mt-1 text-xl font-bold leading-tight">{{ latestVital.oxygen_saturation }}%</p>
+                                <p class="text-[10px] text-gray-400">oxygen</p>
+                                <span :class="spo2Status(latestVital.oxygen_saturation).textCls" class="mt-1 block text-[10px] font-semibold uppercase">{{ spo2Status(latestVital.oxygen_saturation).label }}</span>
+                            </div>
+                            <div v-if="latestVital.weight" class="rounded-xl bg-sky-50 p-3 text-center dark:bg-sky-900/20">
+                                <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Weight</p>
+                                <p class="mt-1 text-xl font-bold leading-tight text-sky-600 dark:text-sky-400">{{ latestVital.weight }}</p>
+                                <p class="text-[10px] text-gray-400">kg</p>
+                                <span v-if="calcBMI(latestVital.weight, latestVital.height)" class="mt-1 block text-[10px] font-semibold text-sky-500 dark:text-sky-400">BMI {{ calcBMI(latestVital.weight, latestVital.height) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Header + Record button -->
+                    <div class="mb-4 flex items-center justify-between">
+                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Vitals History</p>
+                        <button @click="openNewVital" class="flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-orange-700">
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Record Vitals
+                        </button>
+                    </div>
+
+                    <!-- Vitals form -->
+                    <form v-if="showVitalForm" @submit.prevent="submitVital" class="mb-5 rounded-2xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-900/20 space-y-4">
+                        <h3 class="text-sm font-semibold text-orange-800 dark:text-orange-200">{{ editingVitalId ? 'Edit Vitals Record' : 'New Vitals Entry' }}</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Date &amp; Time <span class="text-red-500">*</span></label>
+                            <input
+                                v-model="vitalForm.recorded_at"
+                                type="datetime-local"
+                                required
+                                :class="vitalForm.errors.recorded_at ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100"
+                            />
+                        </div>
+                        <!-- BP + HR -->
+                        <div class="grid gap-3 sm:grid-cols-3">
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Blood Pressure (mmHg)</label>
+                                <div class="flex items-start gap-2">
+                                    <div class="flex-1">
+                                        <input v-model="vitalForm.blood_pressure_systolic" type="number" min="40" max="300" placeholder="Systolic"
+                                            :class="vitalForm.errors.blood_pressure_systolic ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                            class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                                        <p class="mt-0.5 text-center text-[10px] text-gray-400">systolic</p>
+                                    </div>
+                                    <span class="mt-2 font-bold text-gray-400">/</span>
+                                    <div class="flex-1">
+                                        <input v-model="vitalForm.blood_pressure_diastolic" type="number" min="20" max="200" placeholder="Diastolic"
+                                            :class="vitalForm.errors.blood_pressure_diastolic ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                            class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                                        <p class="mt-0.5 text-center text-[10px] text-gray-400">diastolic</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Heart Rate (bpm)</label>
+                                <input v-model="vitalForm.heart_rate" type="number" min="20" max="300" placeholder="e.g. 72"
+                                    :class="vitalForm.errors.heart_rate ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                            </div>
+                        </div>
+                        <!-- Temp + SpO2 + Weight + Height -->
+                        <div class="grid gap-3 sm:grid-cols-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Temp (°C)</label>
+                                <input v-model="vitalForm.temperature" type="number" min="30" max="45" step="0.1" placeholder="36.5"
+                                    :class="vitalForm.errors.temperature ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">SpO₂ (%)</label>
+                                <input v-model="vitalForm.oxygen_saturation" type="number" min="50" max="100" step="0.1" placeholder="98"
+                                    :class="vitalForm.errors.oxygen_saturation ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Weight (kg)</label>
+                                <input v-model="vitalForm.weight" type="number" min="1" max="500" step="0.1" placeholder="65.0"
+                                    :class="vitalForm.errors.weight ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Height (cm)</label>
+                                <input v-model="vitalForm.height" type="number" min="30" max="300" step="0.1" placeholder="170"
+                                    :class="vitalForm.errors.height ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                            </div>
+                        </div>
+                        <!-- Notes -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Notes</label>
+                            <textarea v-model="vitalForm.notes" rows="2" placeholder="Additional observations…"
+                                :class="vitalForm.errors.notes ? 'border-red-400' : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                class="w-full resize-none rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-orange-100" />
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" :disabled="vitalForm.processing" class="rounded-xl bg-orange-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50">
+                                {{ editingVitalId ? 'Update' : 'Save Vitals' }}
+                            </button>
+                            <button type="button" @click="showVitalForm = false" class="rounded-xl border border-gray-200 px-5 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Empty state -->
+                    <div v-if="(patient.vitals?.length ?? 0) === 0 && !showVitalForm" class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white py-16 text-center dark:border-gray-700 dark:bg-gray-900">
+                        <svg class="h-10 w-10 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <p class="mt-3 text-sm font-medium text-gray-600 dark:text-gray-400">No vitals recorded yet</p>
+                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Click "Record Vitals" to add the first entry</p>
+                    </div>
+
+                    <!-- Vitals history -->
+                    <div class="space-y-3">
+                        <div v-for="vital in patient.vitals" :key="vital.id"
+                            class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                            <div class="flex items-start justify-between gap-3">
+                                <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ formatVitalDate(vital.recorded_at) }}</p>
+                                <div class="flex shrink-0 gap-1.5">
+                                    <button @click="openEditVital(vital)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 transition hover:border-orange-300 hover:text-orange-600 dark:border-gray-700">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button @click="deleteVital(vital)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 transition hover:border-red-300 hover:text-red-500 dark:border-gray-700">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-2.5 flex flex-wrap gap-2">
+                                <span v-if="vital.blood_pressure_systolic"
+                                    :class="[bpStatus(vital.blood_pressure_systolic, vital.blood_pressure_diastolic).textCls, bpStatus(vital.blood_pressure_systolic, vital.blood_pressure_diastolic).bgCls]"
+                                    class="rounded-lg px-2.5 py-1 text-xs font-semibold">
+                                    BP {{ vital.blood_pressure_systolic }}/{{ vital.blood_pressure_diastolic }} mmHg
+                                    <span class="ml-1 opacity-70">({{ bpStatus(vital.blood_pressure_systolic, vital.blood_pressure_diastolic).label }})</span>
+                                </span>
+                                <span v-if="vital.heart_rate"
+                                    :class="[hrStatus(vital.heart_rate).textCls, hrStatus(vital.heart_rate).bgCls]"
+                                    class="rounded-lg px-2.5 py-1 text-xs font-semibold">
+                                    HR {{ vital.heart_rate }} bpm
+                                </span>
+                                <span v-if="vital.temperature"
+                                    :class="[tempStatus(vital.temperature).textCls, tempStatus(vital.temperature).bgCls]"
+                                    class="rounded-lg px-2.5 py-1 text-xs font-semibold">
+                                    {{ vital.temperature }}°C · {{ tempStatus(vital.temperature).label }}
+                                </span>
+                                <span v-if="vital.oxygen_saturation"
+                                    :class="[spo2Status(vital.oxygen_saturation).textCls, spo2Status(vital.oxygen_saturation).bgCls]"
+                                    class="rounded-lg px-2.5 py-1 text-xs font-semibold">
+                                    SpO₂ {{ vital.oxygen_saturation }}%
+                                </span>
+                                <span v-if="vital.weight"
+                                    class="rounded-lg bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-600 dark:bg-sky-900/20 dark:text-sky-400">
+                                    {{ vital.weight }} kg<span v-if="vital.height"> · BMI {{ calcBMI(vital.weight, vital.height) }}</span>
+                                </span>
+                            </div>
+                            <p v-if="vital.notes" class="mt-2 text-xs italic text-gray-500 dark:text-gray-400">{{ vital.notes }}</p>
                         </div>
                     </div>
                 </div>
@@ -652,6 +1108,105 @@ const confirmedAppts = computed(() => props.appointments.filter(a => ['confirmed
                             <span :class="statusConfig[appt.status]?.cls" class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium">
                                 {{ statusConfig[appt.status]?.label }}
                             </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECORDS TAB -->
+                <div v-else-if="activeTab === 'records'">
+                    <div class="mb-4 flex items-center justify-between">
+                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Patient Records</p>
+                        <button
+                            @click="showRecordForm = !showRecordForm"
+                            class="flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-orange-700"
+                        >
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            {{ showRecordForm ? 'Cancel' : 'Upload Record' }}
+                        </button>
+                    </div>
+
+                    <!-- Upload form -->
+                    <form
+                        v-if="showRecordForm"
+                        @submit.prevent="submitRecord"
+                        class="mb-4 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm dark:border-orange-900/30 dark:bg-gray-900 space-y-3"
+                    >
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                File <span class="text-red-500">*</span>
+                                <span class="ml-1 font-normal text-gray-400">(PDF, image, Word, TXT — max 10 MB)</span>
+                            </label>
+                            <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt"
+                                @change="onFileChange"
+                                class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 file:mr-3 file:rounded-md file:border-0 file:bg-orange-50 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-orange-700 hover:file:bg-orange-100"
+                            />
+                            <p v-if="recordForm.errors.file" class="mt-1 text-xs text-red-500">{{ recordForm.errors.file }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Label (optional)</label>
+                            <input
+                                v-model="recordForm.name"
+                                type="text"
+                                placeholder="e.g. Lab Result June 2026"
+                                :class="recordForm.errors.name
+                                    ? 'border-red-400 focus:border-red-400 dark:border-red-500'
+                                    : 'border-gray-200 focus:border-orange-400 dark:border-gray-700'"
+                                class="w-full rounded-lg border px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100 outline-none"
+                            />
+                            <p v-if="recordForm.errors.name" class="mt-1 text-xs text-red-500">{{ recordForm.errors.name }}</p>
+                        </div>
+                        <button
+                            type="submit"
+                            :disabled="recordForm.processing || !recordForm.file"
+                            class="w-full rounded-xl bg-orange-600 py-2 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50"
+                        >
+                            {{ recordForm.processing ? 'Uploading…' : 'Upload' }}
+                        </button>
+                    </form>
+
+                    <!-- Records list -->
+                    <div v-if="(patient.records?.length ?? 0) === 0 && !showRecordForm" class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white py-16 dark:border-gray-700 dark:bg-gray-900 text-center">
+                        <svg class="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="mt-3 text-sm text-gray-500">No records uploaded yet.</p>
+                        <button @click="showRecordForm = true" class="mt-2 text-xs font-semibold text-orange-600 hover:underline dark:text-orange-400">+ Upload first record</button>
+                    </div>
+                    <div v-else class="space-y-2">
+                        <div
+                            v-for="rec in patient.records"
+                            :key="rec.id"
+                            class="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+                        >
+                            <span class="text-2xl leading-none select-none">{{ fileIcon(rec.mime_type) }}</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="truncate text-sm font-medium text-gray-800 dark:text-gray-100">{{ rec.name }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500">{{ rec.original_name }} · {{ formatBytes(rec.file_size) }} · {{ formatDate(rec.created_at) }}</p>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <a
+                                    :href="`/doctor/patients/${patient.id}/records/${rec.id}/download`"
+                                    class="flex items-center gap-1 rounded-lg bg-gray-100 px-2.5 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                                >
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Download
+                                </a>
+                                <button
+                                    @click="deleteRecord(rec)"
+                                    class="flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+                                >
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

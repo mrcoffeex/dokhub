@@ -7,8 +7,9 @@ import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import {
     User, Mail, Phone, Stethoscope, GraduationCap, Briefcase,
     MapPin, FileText, Languages, Lock, ChevronLeft, CheckCircle2,
+    IdCard, Camera, X, Upload,
 } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
 
 const IS_PRODUCTION = import.meta.env.PROD;
 const HCAPTCHA_SITEKEY = import.meta.env.VITE_HCAPTCHA_SITEKEY as string;
@@ -30,6 +31,80 @@ function formatCount(n: number): string {
 
 const step = ref(1);
 const TOTAL_STEPS = 4;
+
+// ── ID Document upload state ─────────────────────────────────────────────────
+const idFiles = ref<File[]>([]);
+const idPreviews = ref<string[]>([]);
+
+function onIdFilePick(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const picked = Array.from(input.files ?? []);
+    addIdFiles(picked);
+    input.value = '';
+}
+
+function addIdFiles(files: File[]) {
+    for (const file of files) {
+        if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) continue;
+        if (file.size > 5 * 1024 * 1024) continue;
+        if (idFiles.value.length >= 5) break;
+        idFiles.value.push(file);
+        idPreviews.value.push(URL.createObjectURL(file));
+    }
+}
+
+function removeIdFile(i: number) {
+    URL.revokeObjectURL(idPreviews.value[i]);
+    idFiles.value.splice(i, 1);
+    idPreviews.value.splice(i, 1);
+}
+
+// Camera capture
+const showCamera = ref(false);
+const cameraStream = ref<MediaStream | null>(null);
+const videoRef = ref<HTMLVideoElement | null>(null);
+const cameraError = ref('');
+
+async function openCamera() {
+    cameraError.value = '';
+    try {
+        cameraStream.value = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        showCamera.value = true;
+        // nextTick not needed - the v-if will mount the video once showCamera is true
+        // We use a watcher-like approach via the setter
+    } catch {
+        cameraError.value = 'Could not access camera. Please allow camera permission or upload a file instead.';
+    }
+}
+
+function onVideoMounted(el: HTMLVideoElement | null) {
+    if (el && cameraStream.value) {
+        el.srcObject = cameraStream.value;
+        el.play();
+    }
+}
+
+function captureFromCamera() {
+    if (!videoRef.value) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.value.videoWidth;
+    canvas.height = videoRef.value.videoHeight;
+    canvas.getContext('2d')!.drawImage(videoRef.value, 0, 0);
+    canvas.toBlob((blob) => {
+        if (!blob) return;
+        const file = new File([blob], `capture-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        addIdFiles([file]);
+        closeCamera();
+    }, 'image/jpeg', 0.9);
+}
+
+function closeCamera() {
+    cameraStream.value?.getTracks().forEach(t => t.stop());
+    cameraStream.value = null;
+    showCamera.value = false;
+}
+
+onBeforeUnmount(closeCamera);
 
 const form = ref({
     name: props.googlePending?.name ?? '',
@@ -69,16 +144,16 @@ const STEPS = [
     },
     {
         label: 'Credentials',
-        subtitle: 'Specialization & qualifications',
+        subtitle: 'Specialization, qualifications & ID',
         heading: 'What are your specialties?',
-        sub: 'Your credentials help patients find the right doctor for their needs.',
+        sub: 'Your credentials help patients find the right doctor. Upload a valid government-issued ID for verification.',
         icon: Stethoscope,
         iconBg: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400',
         badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
         bullets: [
             'Profiles with verified specializations rank higher',
             'Patients search by specialty to find you',
-            'You can update credentials anytime from settings',
+            'ID upload is required for account verification',
         ],
     },
     {
@@ -156,6 +231,7 @@ function validateStep(): boolean {
     } else if (step.value === 2) {
         if (!form.value.specialization.length) errors.value.specialization = 'Select at least one specialization';
         if (!form.value.qualification.trim()) errors.value.qualification = 'Qualification is required';
+        if (!idFiles.value.length) errors.value.id_documents = 'At least one government-issued ID is required';
     } else if (step.value === 3) {
         const yrs = Number(form.value.experience_years);
         const fee = Number(form.value.consultation_fee);
@@ -187,7 +263,7 @@ function prevStep() {
 
 const STEP_FIELDS: Record<number, string[]> = {
     1: ['name', 'email', 'phone'],
-    2: ['specialization', 'qualification'],
+    2: ['specialization', 'qualification', 'id_documents'],
     3: ['experience_years', 'consultation_fee', 'location', 'languages', 'bio', 'insurance'],
     4: ['password', 'password_confirmation'],
 };
@@ -212,27 +288,43 @@ async function doSubmit() {
     processing.value = true;
     errors.value = {};
     try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
         };
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (csrfToken) {
-            headers['X-CSRF-Token'] = csrfToken;
+        if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+
+        const fd = new FormData();
+        // Scalar fields
+        fd.append('name', form.value.name);
+        fd.append('email', form.value.email);
+        fd.append('phone', form.value.phone);
+        fd.append('qualification', form.value.qualification);
+        fd.append('bio', form.value.bio);
+        fd.append('location', form.value.location);
+        fd.append('languages', form.value.languages);
+        const expYrs = (form.value.experience_years !== '' && !isNaN(Number(form.value.experience_years)))
+            ? Math.floor(Number(form.value.experience_years)) : form.value.experience_years;
+        const fee = (form.value.consultation_fee !== '' && !isNaN(Number(form.value.consultation_fee)))
+            ? Number(form.value.consultation_fee) : form.value.consultation_fee;
+        fd.append('experience_years', String(expYrs));
+        fd.append('consultation_fee', String(fee));
+        // Arrays
+        form.value.specialization.forEach(s => fd.append('specialization[]', s));
+        form.value.insurance.forEach(i => fd.append('insurance[]', i));
+        // Files
+        idFiles.value.forEach(f => fd.append('id_documents[]', f));
+        // Auth fields
+        if (!isGoogleSignup.value) {
+            fd.append('password', form.value.password);
+            fd.append('password_confirmation', form.value.password_confirmation);
         }
-        const payload = { ...form.value } as any;
-        if (isGoogleSignup.value) {
-            delete payload.password;
-            delete payload.password_confirmation;
-        }
-        // Ensure numeric fields are proper numbers; floor experience_years to integer
-        payload.experience_years = (payload.experience_years !== '' && !isNaN(Number(payload.experience_years))) ? Math.floor(Number(payload.experience_years)) : payload.experience_years;
-        payload.consultation_fee = (payload.consultation_fee !== '' && !isNaN(Number(payload.consultation_fee))) ? Number(payload.consultation_fee) : payload.consultation_fee;
-        payload.hcaptcha_token = regCaptchaToken.value;
+        if (regCaptchaToken.value) fd.append('hcaptcha_token', regCaptchaToken.value);
+
         const res = await fetch('/auth/signup/doctor', {
             method: 'POST',
             headers,
-            body: JSON.stringify(payload),
+            body: fd,
         });
         const data = await res.json();
         if (!res.ok) {
@@ -563,6 +655,76 @@ function onRegCaptchaExpired() {
                                                     :class="{ 'border-red-400 focus:border-red-400 focus:ring-red-100': errors.qualification }" />
                                             </div>
                                             <InputError :message="errors.qualification" class="mt-1 text-xs" />
+                                        </div>
+
+                                        <!-- ── ID Document Upload ── -->
+                                        <div>
+                                            <div class="mb-1.5 flex items-center justify-between">
+                                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Government-issued ID
+                                                    <span class="text-red-500">*</span>
+                                                </label>
+                                                <span class="text-xs text-gray-400">JPEG / PNG · max 5 MB each · up to 5 files</span>
+                                            </div>
+
+                                            <!-- Previews -->
+                                            <div v-if="idPreviews.length" class="mb-3 grid grid-cols-3 gap-2">
+                                                <div v-for="(src, i) in idPreviews" :key="i" class="group relative aspect-[4/3] overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+                                                    <img :src="src" class="h-full w-full object-cover" />
+                                                    <button type="button" @click="removeIdFile(i)"
+                                                        class="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition group-hover:opacity-100 hover:bg-red-600">
+                                                        <X class="h-3 w-3" />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Upload / camera area -->
+                                            <div class="flex gap-2" :class="{ 'opacity-50 pointer-events-none': idFiles.length >= 5 }">
+                                                <label class="flex flex-1 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed bg-gray-50 py-4 transition hover:border-orange-400 hover:bg-orange-50/50 dark:bg-gray-800 dark:hover:border-orange-500 dark:hover:bg-orange-950/20"
+                                                    :class="errors.id_documents ? 'border-red-400' : 'border-gray-200 dark:border-gray-700'">
+                                                    <Upload class="h-5 w-5 text-gray-400" />
+                                                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Upload file</span>
+                                                    <input type="file" accept="image/jpeg,image/png" multiple class="hidden" @change="onIdFilePick" />
+                                                </label>
+                                                <button type="button" @click="openCamera"
+                                                    class="flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-5 py-4 transition hover:border-orange-400 hover:bg-orange-50/50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-orange-500 dark:hover:bg-orange-950/20">
+                                                    <Camera class="h-5 w-5 text-gray-400" />
+                                                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Camera</span>
+                                                </button>
+                                            </div>
+                                            <p v-if="cameraError" class="mt-1 text-xs text-red-500">{{ cameraError }}</p>
+                                            <InputError :message="errors.id_documents" class="mt-1 text-xs" />
+
+                                            <!-- Camera modal -->
+                                            <Transition
+                                                enter-active-class="transition duration-200 ease-out"
+                                                enter-from-class="opacity-0 scale-95"
+                                                enter-to-class="opacity-100 scale-100"
+                                                leave-active-class="transition duration-150 ease-in"
+                                                leave-from-class="opacity-100 scale-100"
+                                                leave-to-class="opacity-0 scale-95">
+                                                <div v-if="showCamera" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" @click.self="closeCamera">
+                                                    <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl dark:bg-gray-900">
+                                                        <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
+                                                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Capture ID</p>
+                                                            <button type="button" @click="closeCamera" class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                                                <X class="h-4 w-4" />
+                                                            </button>
+                                                        </div>
+                                                        <div class="p-4">
+                                                            <video :ref="(el) => { videoRef = el as HTMLVideoElement; onVideoMounted(el as HTMLVideoElement); }"
+                                                                autoplay playsinline muted
+                                                                class="w-full rounded-xl bg-black" />
+                                                        </div>
+                                                        <div class="border-t border-gray-100 px-4 pb-4 dark:border-gray-800">
+                                                            <button type="button" @click="captureFromCamera"
+                                                                class="w-full rounded-xl bg-orange-600 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700">
+                                                                Capture Photo
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Transition>
                                         </div>
                                     </template>
 

@@ -136,7 +136,14 @@ function selectDate(date: string) {
 }
 
 // --- Booking form ---
+const offeredTypes = computed<('in_person' | 'online')[]>(() =>
+    Array.isArray(props.doctor.appointment_modes) && props.doctor.appointment_modes.length
+        ? props.doctor.appointment_modes as ('in_person' | 'online')[]
+        : ['in_person', 'online']
+);
+
 const form = useForm({
+    appointment_type: (offeredTypes.value[0] ?? 'in_person') as 'in_person' | 'online',
     patient_name: '',
     patient_email: '',
     patient_phone: '',
@@ -388,7 +395,7 @@ function ratingBarWidth(star: number): string {
                                     <span v-if="step === 1">1</span>
                                     <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
                                 </div>
-                                <span class="text-sm font-medium" :class="step === 1 ? 'text-gray-900' : 'text-gray-500'">Select Date & Time</span>
+                                <span class="text-sm font-medium" :class="step === 1 ? 'text-gray-900' : 'text-gray-500'">Appointment Type &amp; Schedule</span>
                             </div>
                             <div class="mx-4 h-px flex-1 bg-gray-200" />
                             <div class="flex items-center gap-3">
@@ -401,6 +408,106 @@ function ratingBarWidth(star: number): string {
 
                         <!-- Step 1: Calendar + Time Slots -->
                         <div v-if="step === 1" class="p-6">
+
+                            <!-- Appointment type selector (only shown when doctor offers both modes) -->
+                            <div v-if="offeredTypes.length > 1" class="mb-7">
+                                <h3 class="mb-3 text-sm font-semibold text-gray-900">How would you like to consult?</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <!-- In-person -->
+                                    <button
+                                        type="button"
+                                        @click="form.appointment_type = 'in_person'"
+                                        class="group relative flex flex-col items-center gap-2.5 rounded-2xl border-2 px-4 py-5 text-center transition-all duration-200"
+                                        :class="form.appointment_type === 'in_person'
+                                            ? 'border-orange-500 bg-orange-50 shadow-md shadow-orange-100'
+                                            : 'border-gray-200 bg-white hover:border-orange-200 hover:bg-orange-50/50'"
+                                    >
+                                        <span
+                                            class="flex h-12 w-12 items-center justify-center rounded-2xl transition-colors"
+                                            :class="form.appointment_type === 'in_person' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600'"
+                                        >
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="text-sm font-bold" :class="form.appointment_type === 'in_person' ? 'text-orange-700' : 'text-gray-800'">
+                                                Clinic Visit
+                                            </p>
+                                            <p class="mt-0.5 text-xs leading-tight" :class="form.appointment_type === 'in_person' ? 'text-orange-500' : 'text-gray-400'">
+                                                Visit the doctor in person
+                                            </p>
+                                        </div>
+                                        <!-- Selected checkmark -->
+                                        <span v-if="form.appointment_type === 'in_person'" class="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white">
+                                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </span>
+                                    </button>
+
+                                    <!-- Online consultation -->
+                                    <button
+                                        type="button"
+                                        @click="form.appointment_type = 'online'"
+                                        class="group relative flex flex-col items-center gap-2.5 rounded-2xl border-2 px-4 py-5 text-center transition-all duration-200"
+                                        :class="form.appointment_type === 'online'
+                                            ? 'border-indigo-500 bg-indigo-50 shadow-md shadow-indigo-100'
+                                            : 'border-gray-200 bg-white hover:border-indigo-200 hover:bg-indigo-50/50'"
+                                    >
+                                        <span
+                                            class="flex h-12 w-12 items-center justify-center rounded-2xl transition-colors"
+                                            :class="form.appointment_type === 'online' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'"
+                                        >
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="text-sm font-bold" :class="form.appointment_type === 'online' ? 'text-indigo-700' : 'text-gray-800'">
+                                                Online Consultation
+                                            </p>
+                                            <p class="mt-0.5 text-xs leading-tight" :class="form.appointment_type === 'online' ? 'text-indigo-500' : 'text-gray-400'">
+                                                Video or phone call
+                                            </p>
+                                        </div>
+                                        <!-- Selected checkmark -->
+                                        <span v-if="form.appointment_type === 'online'" class="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white">
+                                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+                                <p v-if="form.errors.appointment_type" class="mt-1.5 text-xs text-red-500">{{ form.errors.appointment_type }}</p>
+                            </div>
+
+                            <!-- Single-mode notice (when doctor only offers one type) -->
+                            <div v-else class="mb-7 flex items-center gap-3 rounded-xl border px-4 py-3"
+                                :class="form.appointment_type === 'online'
+                                    ? 'border-indigo-200 bg-indigo-50'
+                                    : 'border-orange-200 bg-orange-50'"
+                            >
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                                    :class="form.appointment_type === 'online' ? 'bg-indigo-600 text-white' : 'bg-orange-500 text-white'"
+                                >
+                                    <svg v-if="form.appointment_type === 'online'" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    <svg v-else class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </span>
+                                <div>
+                                    <p class="text-sm font-semibold" :class="form.appointment_type === 'online' ? 'text-indigo-700' : 'text-orange-700'">
+                                        {{ form.appointment_type === 'online' ? 'Online Consultation' : 'Clinic Visit' }}
+                                    </p>
+                                    <p class="text-xs" :class="form.appointment_type === 'online' ? 'text-indigo-500' : 'text-orange-500'">
+                                        {{ form.appointment_type === 'online' ? 'This doctor offers online consultations only.' : 'This doctor offers in-person clinic visits only.' }}
+                                    </p>
+                                </div>
+                            </div>
+
                             <!-- Calendar -->
                             <div>
                                 <div class="mb-4 flex items-center justify-between">
@@ -487,15 +594,29 @@ function ratingBarWidth(star: number): string {
                         <!-- Step 2: Patient Details Form -->
                         <form v-if="step === 2" @submit.prevent="submitBooking" class="p-6">
                             <!-- Selected appointment summary -->
-                            <div class="mb-6 flex items-center justify-between rounded-xl bg-orange-50 px-4 py-3">
-                                <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wide text-orange-500">Your Appointment</p>
-                                    <p class="mt-0.5 text-sm font-semibold text-orange-900">
-                                        {{ formatSelectedDate(selectedDate, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) }}
-                                        at {{ formatTime(selectedTime) }}
-                                    </p>
+                            <div class="mb-6 rounded-xl px-4 py-3" :class="form.appointment_type === 'online' ? 'bg-indigo-50' : 'bg-orange-50'">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" :class="form.appointment_type === 'online' ? 'bg-indigo-600 text-white' : 'bg-orange-500 text-white'">
+                                            <svg v-if="form.appointment_type === 'online'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                            </svg>
+                                            <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <p class="text-xs font-semibold uppercase tracking-wide" :class="form.appointment_type === 'online' ? 'text-indigo-500' : 'text-orange-500'">
+                                                {{ form.appointment_type === 'online' ? 'Online Consultation' : 'Clinic Visit' }}
+                                            </p>
+                                            <p class="mt-0.5 text-sm font-semibold" :class="form.appointment_type === 'online' ? 'text-indigo-900' : 'text-orange-900'">
+                                                {{ formatSelectedDate(selectedDate, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) }}
+                                                at {{ formatTime(selectedTime) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button type="button" @click="step = 1" class="shrink-0 text-xs font-semibold" :class="form.appointment_type === 'online' ? 'text-indigo-600 hover:text-indigo-700' : 'text-orange-600 hover:text-orange-700'">Change</button>
                                 </div>
-                                <button type="button" @click="step = 1" class="text-xs font-semibold text-orange-600 hover:text-orange-700">Change</button>
                             </div>
 
                             <div class="space-y-4">

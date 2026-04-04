@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class PatientRecord extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'doctor_id',
+        'patient_id',
+        'name',
+        'original_name',
+        'file_path',
+        'mime_type',
+        'file_size',
+    ];
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(Doctor::class);
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+}

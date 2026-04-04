@@ -7,6 +7,8 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DoctorDashboardController;
 use App\Http\Controllers\DoctorDiagnosisController;
 use App\Http\Controllers\DoctorPatientsController;
+use App\Http\Controllers\DoctorPatientVitalsController;
+use App\Http\Controllers\DoctorPatientRecordsController;
 use App\Http\Controllers\DoctorPrescriptionsController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\DoctorScheduleController;
@@ -18,6 +20,7 @@ use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SpecializationController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\DoctorBillingController;
+use App\Http\Controllers\DoctorPosterController;
 use App\Http\Controllers\PayMongoWebhookController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
@@ -106,6 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('doctor/appointments/{appointment}/add-patient', [DoctorAppointmentsController::class, 'addPatient'])->name('doctor.appointments.add-patient');
     Route::get('doctor/profile', [DoctorProfileController::class, 'edit'])->name('doctor.profile.edit');
     Route::patch('doctor/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
+    Route::patch('doctor/profile/credentials', [DoctorProfileController::class, 'updateCredentials'])->name('doctor.profile.credentials');
     Route::post('doctor/profile/avatar', [DoctorProfileController::class, 'uploadAvatar'])->name('doctor.profile.avatar');
     Route::delete('doctor/profile/avatar', [DoctorProfileController::class, 'deleteAvatar'])->name('doctor.profile.avatar.delete');
     Route::get('doctor/schedule', [DoctorScheduleController::class, 'edit'])->name('doctor.schedule.edit');
@@ -115,6 +119,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('doctor/billing', [DoctorBillingController::class, 'index'])->name('doctor.billing');
     Route::post('doctor/billing/checkout', [DoctorBillingController::class, 'checkout'])->name('doctor.billing.checkout');
     Route::get('doctor/billing/return', [DoctorBillingController::class, 'checkoutReturn'])->name('doctor.billing.return');
+    Route::get('doctor/poster', [DoctorPosterController::class, 'show'])->name('doctor.poster');
 
     // Patients (Pro only)
     Route::middleware('pro')->group(function () {
@@ -129,10 +134,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'update'])->name('doctor.diagnoses.update');
         Route::delete('doctor/patients/{patient}/diagnoses/{diagnosis}', [DoctorDiagnosisController::class, 'destroy'])->name('doctor.diagnoses.destroy');
 
+        // Vitals
+        Route::post('doctor/patients/{patient}/vitals', [DoctorPatientVitalsController::class, 'store'])->name('doctor.vitals.store');
+        Route::put('doctor/patients/{patient}/vitals/{vital}', [DoctorPatientVitalsController::class, 'update'])->name('doctor.vitals.update');
+        Route::delete('doctor/patients/{patient}/vitals/{vital}', [DoctorPatientVitalsController::class, 'destroy'])->name('doctor.vitals.destroy');
+
         // Prescriptions
         Route::get('doctor/patients/{patient}/prescriptions/create', [DoctorPrescriptionsController::class, 'create'])->name('doctor.prescriptions.create');
         Route::post('doctor/patients/{patient}/prescriptions', [DoctorPrescriptionsController::class, 'store'])->name('doctor.prescriptions.store');
         Route::get('doctor/prescriptions/{prescription}', [DoctorPrescriptionsController::class, 'show'])->name('doctor.prescriptions.show');
+
+        // Patient records
+        Route::post('doctor/patients/{patient}/records', [DoctorPatientRecordsController::class, 'store'])->name('doctor.records.store');
+        Route::delete('doctor/patients/{patient}/records/{record}', [DoctorPatientRecordsController::class, 'destroy'])->name('doctor.records.destroy');
+        Route::get('doctor/patients/{patient}/records/{record}/download', [DoctorPatientRecordsController::class, 'download'])->name('doctor.records.download');
     });
 });
 
@@ -153,6 +168,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
             Route::patch('/{doctor}/suspend', [Admin\DoctorController::class, 'suspend'])->name('suspend');
             Route::post('/{doctor}/create-user-account', [Admin\DoctorController::class, 'createUserAccount'])->name('createUserAccount');
             Route::delete('/{doctor}', [Admin\DoctorController::class, 'destroy'])->name('destroy');
+            Route::get('/{doctor}/id-docs/{filename}', [Admin\DoctorController::class, 'serveIdDocument'])->name('id-docs.serve')->where('filename', '[^/]+');
         });
 
         Route::prefix('appointments')->name('appointments.')->group(function () {

@@ -37,6 +37,11 @@ class Doctor extends Model
         'latitude',
         'longitude',
         'languages',
+        'education',
+        'affiliations',
+        'certifications',
+        'id_documents',
+        'appointment_modes',
     ];
 
     protected $appends = ['avatar_url'];
@@ -80,6 +85,11 @@ class Doctor extends Model
             'specialization'   => 'array',
             'insurance'        => 'array',
             'languages'        => 'array',
+            'education'        => 'array',
+            'affiliations'     => 'array',
+            'certifications'     => 'array',
+            'id_documents'       => 'array',
+            'appointment_modes'  => 'array',
             'consultation_fee' => 'decimal:2',
             'latitude'         => 'float',
             'longitude'        => 'float',

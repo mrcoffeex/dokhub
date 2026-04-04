@@ -476,6 +476,55 @@ function submit() {
                     </button>
                 </div>
             </form>
+
+            <!-- ── ID Documents panel (read-only, for admin review) ── -->
+            <div v-if="doctor.id_documents && doctor.id_documents.length"
+                class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div class="mb-4 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                    </svg>
+                    <h2 class="font-semibold text-gray-900 dark:text-white">Submitted ID Documents</h2>
+                    <span class="ml-auto rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+                        {{ doctor.id_documents.length }} file{{ doctor.id_documents.length !== 1 ? 's' : '' }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <a
+                        v-for="(path, i) in doctor.id_documents"
+                        :key="i"
+                        :href="`/admin/doctors/${doctor.slug}/id-docs/${path.split('/').pop()}`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-gray-200 bg-gray-100 transition hover:border-orange-400 dark:border-gray-700 dark:bg-gray-800"
+                        :title="`View ID document ${i + 1}`"
+                    >
+                        <img
+                            :src="`/admin/doctors/${doctor.slug}/id-docs/${path.split('/').pop()}`"
+                            :alt="`ID document ${i + 1}`"
+                            class="h-full w-full object-cover transition group-hover:scale-105"
+                        />
+                        <div class="absolute inset-0 flex items-end bg-gradient-to-t from-black/40 to-transparent p-2 opacity-0 transition group-hover:opacity-100">
+                            <span class="text-xs font-medium text-white">Open full size ↗</span>
+                        </div>
+                        <div class="absolute right-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-600 shadow dark:bg-gray-900/90 dark:text-gray-300">
+                            ID {{ i + 1 }}
+                        </div>
+                    </a>
+                </div>
+
+                <p v-if="doctor.status === 'pending'" class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-400">
+                    ⚠ Review the ID documents above before approving this doctor's account.
+                </p>
+            </div>
+
+            <div v-else-if="doctor.status === 'pending'"
+                class="rounded-2xl border border-red-100 bg-red-50 p-5 shadow-sm dark:border-red-900/40 dark:bg-red-950/20">
+                <p class="text-sm font-medium text-red-700 dark:text-red-400">⚠ No ID documents were submitted with this registration.</p>
+            </div>
+
         </div>
     </AdminLayout>
 </template>

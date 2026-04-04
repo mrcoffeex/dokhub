@@ -23,6 +23,7 @@ class AppointmentController extends Controller
             && config('services.hcaptcha.sitekey');
 
         $validated = $request->validate([
+            'appointment_type' => ['required', 'in:in_person,online'],
             'patient_name'     => ['required', 'string', 'max:100'],
             'patient_email'    => ['required', 'email', 'max:150'],
             'patient_phone'    => ['required', 'string', 'max:25'],

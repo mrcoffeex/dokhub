@@ -48,8 +48,10 @@ class DoctorProfileController extends Controller
             'location'          => ['nullable', 'string', 'max:255'],
             'latitude'          => ['nullable', 'numeric', 'between:-90,90'],
             'longitude'         => ['nullable', 'numeric', 'between:-180,180'],
-            'languages'         => ['nullable', 'array'],
-            'languages.*'       => ['string', 'max:100'],
+            'languages'           => ['nullable', 'array'],
+            'languages.*'         => ['string', 'max:100'],
+            'appointment_modes'   => ['nullable', 'array'],
+            'appointment_modes.*' => ['string', 'in:in_person,online'],
         ]);
 
         $doctor->update($validated);
@@ -94,5 +96,31 @@ class DoctorProfileController extends Controller
         }
 
         return back()->with('status', 'Photo removed.');
+    }
+
+    public function updateCredentials(Request $request): RedirectResponse
+    {
+        $doctor = $request->user()->doctor;
+        abort_unless($doctor, 403);
+
+        $year = (int) date('Y');
+
+        $validated = $request->validate([
+            'education'                  => ['nullable', 'array'],
+            'education.*.degree'         => ['required', 'string', 'max:200'],
+            'education.*.institution'    => ['required', 'string', 'max:200'],
+            'education.*.year'           => ['nullable', 'integer', 'min:1900', 'max:' . ($year + 1)],
+            'affiliations'               => ['nullable', 'array'],
+            'affiliations.*.name'        => ['required', 'string', 'max:200'],
+            'affiliations.*.role'        => ['nullable', 'string', 'max:200'],
+            'certifications'             => ['nullable', 'array'],
+            'certifications.*.name'      => ['required', 'string', 'max:200'],
+            'certifications.*.issuer'    => ['nullable', 'string', 'max:200'],
+            'certifications.*.year'      => ['nullable', 'integer', 'min:1900', 'max:' . ($year + 1)],
+        ]);
+
+        $doctor->update($validated);
+
+        return back()->with('credentials_status', 'Credentials updated successfully.');
     }
 }

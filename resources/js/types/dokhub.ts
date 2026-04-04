@@ -28,6 +28,23 @@ export type DoctorSchedule = {
     is_active: boolean;
 };
 
+export type EducationEntry = {
+    degree: string;
+    institution: string;
+    year?: number | string | null;
+};
+
+export type AffiliationEntry = {
+    name: string;
+    role?: string | null;
+};
+
+export type CertificationEntry = {
+    name: string;
+    issuer?: string | null;
+    year?: number | string | null;
+};
+
 export type Doctor = {
     id: number;
     user_id: number | null;
@@ -48,6 +65,11 @@ export type Doctor = {
     longitude: number | null;
     languages: string[] | null;
     insurance?: string[] | null;
+    appointment_modes?: ('in_person' | 'online')[] | null;
+    education?: EducationEntry[] | null;
+    affiliations?: AffiliationEntry[] | null;
+    certifications?: CertificationEntry[] | null;
+    id_documents?: string[] | null;
     schedules?: DoctorSchedule[];
     appointments_count?: number;
     reviews_count?: number;
@@ -59,6 +81,7 @@ export type Doctor = {
 export type Appointment = {
     id: number;
     reference: string;
+    appointment_type: 'in_person' | 'online';
     doctor_id: number;
     doctor?: Doctor;
     patient_name: string;
@@ -89,6 +112,34 @@ export type ReviewStats = {
     counts: Record<number, number>;
 };
 
+export type PatientRecord = {
+    id: number;
+    doctor_id: number;
+    patient_id: number;
+    name: string;
+    original_name: string;
+    mime_type: string;
+    file_size: number;
+    created_at: string;
+    updated_at: string;
+};
+
+export type PatientVital = {
+    id: number;
+    patient_id: number;
+    recorded_at: string;
+    blood_pressure_systolic: number | null;
+    blood_pressure_diastolic: number | null;
+    heart_rate: number | null;
+    temperature: number | null;
+    weight: number | null;
+    height: number | null;
+    oxygen_saturation: number | null;
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
 export type Patient = {
     id: number;
     doctor_id: number;
@@ -104,6 +155,8 @@ export type Patient = {
     first_seen_at: string | null;
     diagnoses?: Diagnosis[];
     prescriptions?: Prescription[];
+    vitals?: PatientVital[];
+    records?: PatientRecord[];
     diagnoses_count?: number;
     prescriptions_count?: number;
     created_at: string;

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\PatientVital;
 
 class Patient extends Model
 {
@@ -46,6 +47,16 @@ class Patient extends Model
     public function prescriptions(): HasMany
     {
         return $this->hasMany(Prescription::class);
+    }
+
+    public function vitals(): HasMany
+    {
+        return $this->hasMany(PatientVital::class);
+    }
+
+    public function records(): HasMany
+    {
+        return $this->hasMany(PatientRecord::class);
     }
 
     public function getAgeAttribute(): ?int

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
@@ -10,10 +11,11 @@ use Inertia\Response;
 
 class DoctorDashboardController extends Controller
 {
+    use ResolvesCurrentDoctor;
+
     public function __invoke(Request $request): Response
     {
-        $user = $request->user();
-        $doctor = Doctor::where('user_id', $user->id)->firstOrFail();
+        $doctor = $this->getDoctor($request);
 
         return Inertia::render('DoctorDashboard', [
             'doctor' => $doctor,

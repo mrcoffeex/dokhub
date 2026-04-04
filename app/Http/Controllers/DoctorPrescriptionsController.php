@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Diagnosis;
 use App\Models\Doctor;
 use App\Models\Patient;
@@ -12,13 +13,11 @@ use Inertia\Response;
 
 class DoctorPrescriptionsController extends Controller
 {
-    private function getDoctor(Request $request): Doctor
-    {
-        return Doctor::where('user_id', $request->user()->id)->firstOrFail();
-    }
+    use ResolvesCurrentDoctor;
 
     public function create(Request $request, Patient $patient): Response
     {
+        $this->assertOwner($request);
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
 
@@ -37,6 +36,7 @@ class DoctorPrescriptionsController extends Controller
 
     public function store(Request $request, Patient $patient)
     {
+        $this->assertOwner($request);
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
 
@@ -65,6 +65,7 @@ class DoctorPrescriptionsController extends Controller
 
     public function show(Request $request, Prescription $prescription): Response
     {
+        $this->assertPermission($request, 'prescriptions.view');
         $doctor = $this->getDoctor($request);
         abort_unless($prescription->doctor_id === $doctor->id, 403);
 

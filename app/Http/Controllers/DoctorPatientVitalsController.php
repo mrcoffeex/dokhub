@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\PatientVital;
@@ -10,13 +11,11 @@ use Illuminate\Http\Request;
 
 class DoctorPatientVitalsController extends Controller
 {
-    private function getDoctor(Request $request): Doctor
-    {
-        return Doctor::where('user_id', $request->user()->id)->firstOrFail();
-    }
+    use ResolvesCurrentDoctor;
 
     public function store(Request $request, Patient $patient): RedirectResponse
     {
+        $this->assertPermission($request, 'vitals.manage');
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
 
@@ -39,6 +38,7 @@ class DoctorPatientVitalsController extends Controller
 
     public function update(Request $request, Patient $patient, PatientVital $vital): RedirectResponse
     {
+        $this->assertPermission($request, 'vitals.manage');
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
         abort_unless($vital->patient_id === $patient->id, 403);
@@ -62,6 +62,7 @@ class DoctorPatientVitalsController extends Controller
 
     public function destroy(Request $request, Patient $patient, PatientVital $vital): RedirectResponse
     {
+        $this->assertPermission($request, 'vitals.manage');
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
         abort_unless($vital->patient_id === $patient->id, 403);

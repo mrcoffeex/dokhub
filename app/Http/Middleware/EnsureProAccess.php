@@ -12,6 +12,11 @@ class EnsureProAccess
     {
         $doctor = $request->user()?->doctor;
 
+        // For sub-users, resolve the doctor through their profile
+        if (! $doctor && $request->user()?->isSubUser()) {
+            $doctor = $request->user()->subUserProfile?->doctor;
+        }
+
         if (!$doctor || !$doctor->hasProAccess()) {
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([

@@ -4,6 +4,7 @@ import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Doctor, Appointment } from '@/types';
 import { ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { usePermissions } from '@/composables/usePermissions';
 
 const props = defineProps<{
     doctor: Doctor;
@@ -140,6 +141,12 @@ const actionConfig: Record<string, { next: { label: string; status: 'confirmed' 
     completed: { next: [] },
     cancelled: { next: [] },
 };
+
+const { can } = usePermissions();
+
+function visibleActions(appt: Appointment) {
+    return (actionConfig[appt.status]?.next ?? []).filter(() => can('appointments.manage'));
+}
 </script>
 
 <template>
@@ -292,15 +299,16 @@ const actionConfig: Record<string, { next: { label: string; status: 'confirmed' 
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-1.5">
                                     <button
+                                        v-if="can('patients.create')"
                                         @click="addPatient(appt)"
                                         class="rounded-lg border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-700 transition-colors hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800"
                                         title="Add to patients"
                                     >
                                         + Add Patient
                                     </button>
-                                    <span v-if="!actionConfig[appt.status]?.next?.length" class="text-xs text-gray-300 dark:text-gray-700">—</span>
+                                    <span v-if="!visibleActions(appt).length" class="text-xs text-gray-300 dark:text-gray-700">—</span>
                                     <button
-                                        v-for="action in actionConfig[appt.status]?.next"
+                                        v-for="action in visibleActions(appt)"
                                         :key="action.status"
                                         @click="updateStatus(appt, action.status)"
                                         class="rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors"

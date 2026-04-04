@@ -136,6 +136,11 @@ class Doctor extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function subUsers(): HasMany
+    {
+        return $this->hasMany(DoctorSubUser::class);
+    }
+
     public function reviews(): HasMany
     {
         return $this->hasMany(DoctorReview::class);

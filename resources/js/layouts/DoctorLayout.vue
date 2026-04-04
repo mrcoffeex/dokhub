@@ -10,18 +10,27 @@ const page = usePage<PageProps>();
 const flash = computed(() => page.props.flash);
 const user = computed(() => (page.props.auth as any)?.user);
 const doctorPlan = computed(() => page.props.doctor_plan);
+const subUserRole = computed(() => page.props.sub_user_context ?? null);
+const isOwner = computed(() => subUserRole.value === null);
 
 const mobileOpen = ref(false);
 
-const navItems = [
-    { label: 'Dashboard',    href: '/doctor-dashboard',    icon: 'grid' },
-    { label: 'Appointments', href: '/doctor/appointments', icon: 'calendar' },
-    { label: 'Patients',     href: '/doctor/patients',     icon: 'users' },
-    { label: 'Schedule',     href: '/doctor/schedule',     icon: 'clock' },
-    { label: 'My Profile',   href: '/doctor/profile',      icon: 'user' },
-    { label: 'Billing',      href: '/doctor/billing',      icon: 'credit-card' },
-    { label: 'Poster',       href: '/doctor/poster',       icon: 'printer' },
+const allNavItems = [
+    { label: 'Dashboard',    href: '/doctor-dashboard',    icon: 'grid',        ownerOnly: false },
+    { label: 'Analytics',    href: '/doctor/analytics',   icon: 'chart',       ownerOnly: false },
+    { label: 'Appointments', href: '/doctor/appointments', icon: 'calendar',    ownerOnly: false },
+    { label: 'Patients',     href: '/doctor/patients',     icon: 'users',       ownerOnly: false },
+    { label: 'Inventory',    href: '/doctor/inventory',    icon: 'inventory',   ownerOnly: false },
+    { label: 'Schedule',     href: '/doctor/schedule',     icon: 'clock',       ownerOnly: true  },
+    { label: 'My Profile',   href: '/doctor/profile',      icon: 'user',        ownerOnly: true  },
+    { label: 'Sub-Users',    href: '/doctor/sub-users',    icon: 'team',        ownerOnly: true  },
+    { label: 'Poster',       href: '/doctor/poster',       icon: 'printer',     ownerOnly: true  },
+    { label: 'Billing',      href: '/doctor/billing',      icon: 'credit-card', ownerOnly: true  },
 ];
+
+const navItems = computed(() =>
+    allNavItems.filter(item => !item.ownerOnly || isOwner.value)
+);
 
 function isActive(href: string): boolean {
     const path = window.location.pathname;
@@ -113,6 +122,18 @@ function isActive(href: string): boolean {
                         <svg v-else-if="item.icon === 'printer'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
+                        <!-- Inventory icon -->
+                        <svg v-else-if="item.icon === 'inventory'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <!-- Team / Sub-users icon -->
+                        <svg v-else-if="item.icon === 'team'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <!-- Chart / Analytics icon -->
+                        <svg v-else-if="item.icon === 'chart'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                         {{ item.label }}
                     </Link>
 
@@ -179,7 +200,9 @@ function isActive(href: string): boolean {
                                     {{ doctorPlan.isPaidPro ? 'Pro' : doctorPlan.isInTrial ? 'Trial' : 'Basic' }}
                                 </span>
                             </div>
-                            <p class="truncate text-xs text-gray-400 dark:text-gray-500">Doctor</p>
+                            <p class="truncate text-xs text-gray-400 dark:text-gray-500">
+                                {{ subUserRole ? (subUserRole === 'secretary' ? 'Secretary' : 'Nurse') : 'Doctor' }}
+                            </p>
                         </div>
                     </div>
                     <!-- Version -->

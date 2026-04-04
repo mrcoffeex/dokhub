@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Mail\AppointmentCancelled;
 use App\Mail\AppointmentCompleted;
 use App\Mail\AppointmentStatusConfirmed;
 use App\Models\Appointment;
-use App\Models\Doctor;
 use App\Models\Patient;
+use App\Services\SmsService;
+use App\Sms\AppointmentSms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -16,10 +18,11 @@ use Inertia\Response;
 
 class DoctorAppointmentsController extends Controller
 {
+    use ResolvesCurrentDoctor;
+
     public function index(Request $request): Response
     {
-        $user = $request->user();
-        $doctor = Doctor::where('user_id', $user->id)->firstOrFail();
+        $doctor = $this->getDoctor($request);
 
         $query = Appointment::where('doctor_id', $doctor->id);
 
@@ -55,7 +58,8 @@ class DoctorAppointmentsController extends Controller
 
     public function updateStatus(Request $request, Appointment $appointment)
     {
-        $doctor = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        $this->assertPermission($request, 'appointments.manage');
+        $doctor = $this->getDoctor($request);
         abort_unless($appointment->doctor_id === $doctor->id, 403);
 
         $validated = $request->validate([
@@ -95,12 +99,34 @@ class DoctorAppointmentsController extends Controller
             }
         }
 
+        // SMS notification
+        if ($validated['status'] !== $previousStatus) {
+            try {
+                $body = match ($validated['status']) {
+                    'confirmed' => AppointmentSms::confirmed($appointment),
+                    'cancelled' => AppointmentSms::cancelled($appointment),
+                    'completed' => AppointmentSms::completed($appointment),
+                    default     => null,
+                };
+                if ($body) {
+                    app(SmsService::class)->send($appointment->patient_phone, $body);
+                }
+            } catch (\Exception $e) {
+                Log::error('Appointment status SMS failed', [
+                    'appointment_id' => $appointment->id,
+                    'status'         => $validated['status'],
+                    'error'          => $e->getMessage(),
+                ]);
+            }
+        }
+
         return back()->with('success', 'Appointment status updated.');
     }
 
     public function addPatient(Request $request, Appointment $appointment)
     {
-        $doctor = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        $this->assertPermission($request, 'patients.create');
+        $doctor = $this->getDoctor($request);
         abort_unless($appointment->doctor_id === $doctor->id, 403);
 
         Patient::firstOrCreate(

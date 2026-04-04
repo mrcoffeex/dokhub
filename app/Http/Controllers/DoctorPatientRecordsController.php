@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\PatientRecord;
@@ -12,13 +13,11 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class DoctorPatientRecordsController extends Controller
 {
-    private function getDoctor(Request $request): Doctor
-    {
-        return Doctor::where('user_id', $request->user()->id)->firstOrFail();
-    }
+    use ResolvesCurrentDoctor;
 
     public function store(Request $request, Patient $patient)
     {
+        $this->assertPermission($request, 'records.manage');
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
 
@@ -47,6 +46,7 @@ class DoctorPatientRecordsController extends Controller
 
     public function destroy(Request $request, Patient $patient, PatientRecord $record)
     {
+        $this->assertPermission($request, 'records.manage');
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
         abort_unless($record->patient_id === $patient->id, 403);
@@ -60,6 +60,7 @@ class DoctorPatientRecordsController extends Controller
 
     public function download(Request $request, Patient $patient, PatientRecord $record): BinaryFileResponse
     {
+        $this->assertPermission($request, 'records.manage');
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
         abort_unless($record->patient_id === $patient->id, 403);

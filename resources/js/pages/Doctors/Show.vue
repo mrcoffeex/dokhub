@@ -186,6 +186,13 @@ function submitBooking() {
         bookingCaptchaRef.value?.execute();
         return;
     }
+
+    // Validate phone: must be exactly 11 digits starting with 09
+    if (!/^09\d{9}$/.test(form.patient_phone.trim())) {
+        form.setError('patient_phone', 'Phone number must be an 11-digit mobile number (e.g. 09123456789).');
+        return;
+    }
+
     form.post(`/doctors/${props.doctor.slug}/book`, {
         onError: () => {
             bookingCaptchaRef.value?.reset();
@@ -638,7 +645,7 @@ function ratingBarWidth(star: number): string {
                                         <input
                                             v-model="form.patient_phone"
                                             type="tel"
-                                            placeholder="+1 555 000 0000"
+                                            placeholder="09123456789"
                                             required
                                             class="mt-1.5 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                                             :class="{ 'border-red-400': form.errors.patient_phone }"

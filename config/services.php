@@ -52,4 +52,11 @@ return [
         'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
+    'twilio' => [
+        'sid'     => env('TWILIO_SID'),
+        'token'   => env('TWILIO_TOKEN'),
+        'from'    => env('TWILIO_FROM'),
+        'enabled' => env('TWILIO_ENABLED', false),
+    ],
+
 ];

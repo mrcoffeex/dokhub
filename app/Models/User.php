@@ -45,8 +45,18 @@ class User extends Authenticatable
         return $this->role === 'doctor';
     }
 
+    public function isSubUser(): bool
+    {
+        return $this->role === 'sub_user';
+    }
+
     public function doctor(): HasOne
     {
         return $this->hasOne(Doctor::class);
+    }
+
+    public function subUserProfile(): HasOne
+    {
+        return $this->hasOne(DoctorSubUser::class);
     }
 }

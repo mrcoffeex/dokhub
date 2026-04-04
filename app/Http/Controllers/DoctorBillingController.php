@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Doctor;
 use App\Models\PaymentLog;
 use App\Models\PricingSetting;
@@ -16,9 +17,12 @@ use Inertia\Response;
 
 class DoctorBillingController extends Controller
 {
+    use ResolvesCurrentDoctor;
+
     public function index(Request $request): Response
     {
-        $doctor  = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        $this->assertOwner($request);
+        $doctor  = $this->getDoctor($request);
         $pricing = PricingSetting::current();
 
         return Inertia::render('Doctor/Billing', [
@@ -43,11 +47,12 @@ class DoctorBillingController extends Controller
      */
     public function checkout(Request $request): \Symfony\Component\HttpFoundation\Response
     {
+        $this->assertOwner($request);
         $validated = $request->validate([
             'billing_period' => ['required', 'in:monthly,yearly'],
         ]);
 
-        $doctor = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        $doctor = $this->getDoctor($request);
 
         $pricing  = PricingSetting::current();
         $isYearly = $validated['billing_period'] === 'yearly';
@@ -118,7 +123,8 @@ class DoctorBillingController extends Controller
      */
     public function checkoutReturn(Request $request): RedirectResponse
     {
-        $doctor = Doctor::where('user_id', $request->user()->id)->firstOrFail();
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         // Prefer the server-stored ID; fall back to the normalised URL param.
         $sessionId = $doctor->pending_checkout_session_id;

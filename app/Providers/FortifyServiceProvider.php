@@ -72,6 +72,20 @@ class FortifyServiceProvider extends ServiceProvider
                 return null;
             }
 
+            if ($user->isSubUser()) {
+                $subUser = \App\Models\DoctorSubUser::where('user_id', $user->id)
+                    ->where('is_active', true)
+                    ->with('doctor')
+                    ->first();
+
+                if ($subUser && $subUser->doctor?->isApproved()) {
+                    return $user;
+                }
+
+                $request->session()->flash('login_error', 'Your sub-user account is inactive or the associated doctor is not approved.');
+                return null;
+            }
+
             // Deny other roles by default
             $request->session()->flash('login_error', 'Only approved doctors and admins may sign in.');
             return null;

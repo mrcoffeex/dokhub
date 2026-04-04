@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Mail\AppointmentReceived;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Services\SmsService;
+use App\Sms\AppointmentSms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -26,11 +28,13 @@ class AppointmentController extends Controller
             'appointment_type' => ['required', 'in:in_person,online'],
             'patient_name'     => ['required', 'string', 'max:100'],
             'patient_email'    => ['required', 'email', 'max:150'],
-            'patient_phone'    => ['required', 'string', 'max:25'],
+            'patient_phone'    => ['required', 'string', 'regex:/^09\d{9}$/'],
             'appointment_date' => ['required', 'date', 'after_or_equal:today'],
             'appointment_time' => ['required', 'date_format:H:i'],
             'reason'           => ['nullable', 'string', 'max:500'],
             'hcaptcha_token'   => $captchaConfigured ? ['required', 'string'] : ['nullable', 'string'],
+        ], [
+            'patient_phone.regex' => 'Phone number must be an 11-digit mobile number (e.g. 09123456789).',
         ]);
 
         if ($captchaConfigured) {
@@ -102,6 +106,19 @@ class AppointmentController extends Controller
                     'error' => $e->getMessage(),
                 ]);
             }
+        }
+
+        // SMS notification
+        try {
+            app(SmsService::class)->send(
+                $appointment->patient_phone,
+                AppointmentSms::received($appointment)
+            );
+        } catch (\Exception $e) {
+            Log::error('Appointment received SMS failed', [
+                'appointment_id' => $appointment->id,
+                'error'          => $e->getMessage(),
+            ]);
         }
 
         return Inertia::render('Booking/Success', [

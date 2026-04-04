@@ -220,8 +220,68 @@ export type DoctorPlan = {
     trialDays: number;
 };
 
+export type InventoryCategory = 'medicine' | 'equipment' | 'supplies' | 'consumables' | 'other';
+export type InventoryMovementType = 'restock' | 'usage' | 'adjustment' | 'expired';
+
+export type InventoryItem = {
+    id: number;
+    doctor_id: number;
+    name: string;
+    category: InventoryCategory;
+    sku: string | null;
+    unit: string;
+    description: string | null;
+    current_stock: number;
+    min_stock: number;
+    cost_price: string | null;
+    selling_price: string | null;
+    expiry_date: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
+export type InventoryMovement = {
+    id: number;
+    inventory_item_id: number;
+    doctor_id: number;
+    type: InventoryMovementType;
+    quantity: number;
+    note: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
+export type InventoryStats = {
+    total: number;
+    out_of_stock: number;
+    low_stock: number;
+    expiring_soon: number;
+    expired: number;
+    total_cost_value: number | string;
+};
+
+export type SubUserRole = 'secretary' | 'nurse';
+
+export type DoctorSubUser = {
+    id: number;
+    doctor_id: number;
+    user_id: number;
+    role: SubUserRole;
+    is_active: boolean;
+    user?: {
+        id: number;
+        name: string;
+        email: string;
+        created_at: string;
+    };
+    created_at: string;
+    updated_at: string;
+};
+
 export type PageProps = {
     flash: { success: string | null; error: string | null };
     doctor_plan: DoctorPlan | null;
+    /** null when user is the doctor owner; role string when user is a sub-user */
+    sub_user_context: SubUserRole | null;
     [key: string]: unknown;
 };

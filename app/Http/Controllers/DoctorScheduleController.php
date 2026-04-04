@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -9,11 +10,12 @@ use Inertia\Response;
 
 class DoctorScheduleController extends Controller
 {
+    use ResolvesCurrentDoctor;
+
     public function edit(Request $request): Response
     {
-        $doctor = $request->user()->doctor;
-
-        abort_unless($doctor, 403);
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         $doctor->load('schedules');
 
@@ -37,9 +39,8 @@ class DoctorScheduleController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $doctor = $request->user()->doctor;
-
-        abort_unless($doctor, 403);
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         $validated = $request->validate([
             'schedules'                             => ['required', 'array', 'size:7'],

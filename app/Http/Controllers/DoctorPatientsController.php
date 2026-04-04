@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
@@ -12,10 +13,7 @@ use Inertia\Response;
 
 class DoctorPatientsController extends Controller
 {
-    private function getDoctor(Request $request): Doctor
-    {
-        return Doctor::where('user_id', $request->user()->id)->firstOrFail();
-    }
+    use ResolvesCurrentDoctor;
 
     public function index(Request $request): Response
     {
@@ -58,15 +56,22 @@ class DoctorPatientsController extends Controller
             ->orderByDesc('appointment_date')
             ->get();
 
+        $approvedDoctors = Doctor::where('status', 'approved')
+            ->where('id', '!=', $doctor->id)
+            ->orderBy('name')
+            ->get(['id', 'name', 'specialization']);
+
         return Inertia::render('Doctor/Patients/Show', [
-            'patient'      => $patient->append('age'),
-            'appointments' => $appointments,
-            'doctor'       => $doctor->append('avatar_url'),
+            'patient'         => $patient->append('age'),
+            'appointments'    => $appointments,
+            'doctor'          => $doctor->append('avatar_url'),
+            'approvedDoctors' => $approvedDoctors,
         ]);
     }
 
     public function update(Request $request, Patient $patient)
     {
+        $this->assertPermission($request, 'patients.edit');
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
 
@@ -115,13 +120,15 @@ class DoctorPatientsController extends Controller
         return back()->with('success', 'Patient information updated.');
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $this->assertPermission($request, 'patients.create');
         return Inertia::render('Doctor/Patients/Create');
     }
 
     public function store(Request $request)
     {
+        $this->assertPermission($request, 'patients.create');
         $doctor = $this->getDoctor($request);
 
         $validated = $request->validate([

@@ -10,7 +10,7 @@ Generates a complete, passing Pest v3 test suite for a new feature or module in 
 
 ## Stack Conventions
 
-- **Framework**: Laravel 11, Pest v3, PostgreSQL (`dokhub_test` for tests)
+- **Framework**: Laravel 13, Pest v4, PostgreSQL (`dokhub_test` for tests)
 - **Test helpers**: `tests/Pest.php` — `createApprovedDoctor()`, `actingAsDoctor()`, `actingAsProDoctor()`, `validBookingPayload()`
 - **Pro middleware**: Routes under `pro` middleware require `actingAsProDoctor()` (sets `trial_ends_at` to bypass `EnsureProAccess`)
 - **Factories**: `database/factories/` — each model needs its own factory with relevant states

@@ -4,12 +4,18 @@ import { ref, computed } from 'vue';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Patient, Diagnosis, Appointment, Doctor, PatientVital, PatientRecord } from '@/types';
 import { toast } from 'vue-sonner';
+import { usePermissions } from '@/composables/usePermissions';
+
+type TransferDoctor = Pick<Doctor, 'id' | 'name' | 'specialization'>;
 
 const props = defineProps<{
     patient: Patient;
     appointments: Appointment[];
     doctor: Doctor;
+    approvedDoctors: TransferDoctor[];
 }>();
+
+const { can, isOwner } = usePermissions();
 
 // ---- Tabs ----
 type Tab = 'overview' | 'vitals' | 'diagnoses' | 'prescriptions' | 'appointments' | 'records';
@@ -330,6 +336,45 @@ function fileIcon(mime: string): string {
     if (mime.includes('word') || mime.includes('document')) return '📝';
     return '📎';
 }
+
+// ---- Patient transfer ----
+const showTransferModal = ref(false);
+const transferSearch = ref('');
+const transferForm = useForm({
+    target_doctor_id: null as number | null,
+});
+
+const filteredDoctors = computed(() => {
+    const q = transferSearch.value.trim().toLowerCase();
+    if (!q) return props.approvedDoctors;
+    return props.approvedDoctors.filter(d =>
+        d.name.toLowerCase().includes(q) ||
+        (d.specialization ?? []).some((s: string) => s.toLowerCase().includes(q))
+    );
+});
+
+function openTransferModal() {
+    transferForm.reset();
+    transferSearch.value = '';
+    showTransferModal.value = true;
+}
+
+function submitTransfer() {
+    if (!transferForm.target_doctor_id) return;
+    const target = props.approvedDoctors.find(d => d.id === transferForm.target_doctor_id);
+    if (!confirm(`Send a copy of ${props.patient.name}'s records to Dr. ${target?.name}?`)) return;
+    transferForm.post(`/doctor/patients/${props.patient.id}/transfer`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showTransferModal.value = false;
+            toast.success('Copy sent successfully', {
+                description: `A copy of the patient's records was sent to Dr. ${target?.name}.`,
+                duration: 5000,
+            });
+        },
+        onError: () => toast.error('Could not send copy. Please try again.', { duration: 5000 }),
+    });
+}
 </script>
 
 <template>
@@ -360,6 +405,7 @@ function fileIcon(mime: string): string {
                                 {{ initials(patient.name) }}
                             </div>
                             <button
+                                v-if="can('patients.edit')"
                                 @click="editingInfo = !editingInfo"
                                 class="flex items-center gap-1 rounded-lg bg-white/20 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/30"
                             >
@@ -531,6 +577,16 @@ function fileIcon(mime: string): string {
                         <p class="text-xs text-gray-400 dark:text-gray-600 pt-1 border-t border-gray-100 dark:border-gray-800">
                             Patient since {{ formatDate(patient.first_seen_at) }}
                         </p>
+                        <button
+                            v-if="isOwner"
+                            @click="openTransferModal"
+                            class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300"
+                        >
+                            <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                            Send a Copy
+                        </button>
                     </div>
                 </div>
             </div>
@@ -579,6 +635,7 @@ function fileIcon(mime: string): string {
                     <!-- Quick actions -->
                     <div class="sm:col-span-3 flex flex-wrap gap-3">
                         <button
+                            v-if="isOwner"
                             @click="openNewDiag(); activeTab = 'diagnoses'"
                             class="flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300"
                         >
@@ -588,6 +645,7 @@ function fileIcon(mime: string): string {
                             Add Diagnosis
                         </button>
                         <Link
+                            v-if="isOwner"
                             :href="`/doctor/patients/${patient.id}/prescriptions/create`"
                             class="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300"
                         >
@@ -632,7 +690,7 @@ function fileIcon(mime: string): string {
                     </div>
                     <div v-else class="sm:col-span-3 flex items-center justify-between rounded-2xl border border-dashed border-gray-200 bg-white px-5 py-4 dark:border-gray-700 dark:bg-gray-900">
                         <p class="text-sm text-gray-400 dark:text-gray-500">No vitals recorded yet.</p>
-                        <button @click="activeTab = 'vitals'; openNewVital()" class="text-xs font-semibold text-orange-600 hover:underline dark:text-orange-400">+ Record Vitals</button>
+                        <button v-if="can('vitals.manage')" @click="activeTab = 'vitals'; openNewVital()" class="text-xs font-semibold text-orange-600 hover:underline dark:text-orange-400">+ Record Vitals</button>
                     </div>
 
                     <!-- Recent diagnosis -->
@@ -698,7 +756,7 @@ function fileIcon(mime: string): string {
                     <!-- Header + Record button -->
                     <div class="mb-4 flex items-center justify-between">
                         <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Vitals History</p>
-                        <button @click="openNewVital" class="flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-orange-700">
+                        <button v-if="can('vitals.manage')" @click="openNewVital" class="flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-orange-700">
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -707,7 +765,7 @@ function fileIcon(mime: string): string {
                     </div>
 
                     <!-- Vitals form -->
-                    <form v-if="showVitalForm" @submit.prevent="submitVital" class="mb-5 rounded-2xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-900/20 space-y-4">
+                    <form v-if="showVitalForm && can('vitals.manage')" @submit.prevent="submitVital" class="mb-5 rounded-2xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-900/20 space-y-4">
                         <h3 class="text-sm font-semibold text-orange-800 dark:text-orange-200">{{ editingVitalId ? 'Edit Vitals Record' : 'New Vitals Entry' }}</h3>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Date &amp; Time <span class="text-red-500">*</span></label>
@@ -806,12 +864,12 @@ function fileIcon(mime: string): string {
                             <div class="flex items-start justify-between gap-3">
                                 <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ formatVitalDate(vital.recorded_at) }}</p>
                                 <div class="flex shrink-0 gap-1.5">
-                                    <button @click="openEditVital(vital)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 transition hover:border-orange-300 hover:text-orange-600 dark:border-gray-700">
+                                    <button v-if="can('vitals.manage')" @click="openEditVital(vital)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 transition hover:border-orange-300 hover:text-orange-600 dark:border-gray-700">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <button @click="deleteVital(vital)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 transition hover:border-red-300 hover:text-red-500 dark:border-gray-700">
+                                    <button v-if="can('vitals.manage')" @click="deleteVital(vital)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 transition hover:border-red-300 hover:text-red-500 dark:border-gray-700">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
@@ -854,7 +912,7 @@ function fileIcon(mime: string): string {
                 <div v-else-if="activeTab === 'diagnoses'">
                     <div class="mb-4 flex items-center justify-between">
                         <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Diagnosis History</p>
-                        <button @click="openNewDiag" class="flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-700 transition">
+                        <button v-if="isOwner" @click="openNewDiag" class="flex items-center gap-1.5 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-700 transition">
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -863,7 +921,7 @@ function fileIcon(mime: string): string {
                     </div>
 
                     <!-- Diagnosis form -->
-                    <form v-if="showDiagForm" @submit.prevent="submitDiag" class="mb-4 rounded-2xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-900/20 space-y-3">
+                    <form v-if="showDiagForm && isOwner" @submit.prevent="submitDiag" class="mb-4 rounded-2xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-900/20 space-y-3">
                         <h3 class="text-sm font-semibold text-orange-800 dark:text-orange-200">{{ editingDiagId ? 'Edit Diagnosis' : 'New Diagnosis' }}</h3>
                         <div>
                             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Diagnosis Title <span class="text-red-500">*</span></label>
@@ -988,6 +1046,7 @@ function fileIcon(mime: string): string {
                                 </div>
                                 <div class="flex shrink-0 gap-2">
                                     <Link
+                                        v-if="isOwner"
                                         :href="`/doctor/patients/${patient.id}/prescriptions/create?diagnosis_id=${diag.id}`"
                                         class="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-100 transition dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300"
                                     >
@@ -996,12 +1055,12 @@ function fileIcon(mime: string): string {
                                         </svg>
                                         Rx
                                     </Link>
-                                    <button @click="openEditDiag(diag)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 hover:border-orange-300 hover:text-orange-600 transition dark:border-gray-700">
+                                    <button v-if="isOwner" @click="openEditDiag(diag)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 hover:border-orange-300 hover:text-orange-600 transition dark:border-gray-700">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <button @click="deleteDiag(diag)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 hover:border-red-300 hover:text-red-500 transition dark:border-gray-700">
+                                    <button v-if="isOwner" @click="deleteDiag(diag)" class="rounded-lg border border-gray-200 p-1.5 text-gray-400 hover:border-red-300 hover:text-red-500 transition dark:border-gray-700">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
@@ -1032,6 +1091,7 @@ function fileIcon(mime: string): string {
                     <div class="mb-4 flex items-center justify-between">
                         <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Prescriptions</p>
                         <Link
+                            v-if="isOwner"
                             :href="`/doctor/patients/${patient.id}/prescriptions/create`"
                             class="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition"
                         >
@@ -1117,6 +1177,7 @@ function fileIcon(mime: string): string {
                     <div class="mb-4 flex items-center justify-between">
                         <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Patient Records</p>
                         <button
+                            v-if="can('records.manage')"
                             @click="showRecordForm = !showRecordForm"
                             class="flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-orange-700"
                         >
@@ -1129,7 +1190,7 @@ function fileIcon(mime: string): string {
 
                     <!-- Upload form -->
                     <form
-                        v-if="showRecordForm"
+                        v-if="showRecordForm && can('records.manage')"
                         @submit.prevent="submitRecord"
                         class="mb-4 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm dark:border-orange-900/30 dark:bg-gray-900 space-y-3"
                     >
@@ -1174,7 +1235,7 @@ function fileIcon(mime: string): string {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <p class="mt-3 text-sm text-gray-500">No records uploaded yet.</p>
-                        <button @click="showRecordForm = true" class="mt-2 text-xs font-semibold text-orange-600 hover:underline dark:text-orange-400">+ Upload first record</button>
+                        <button v-if="can('records.manage')" @click="showRecordForm = true" class="mt-2 text-xs font-semibold text-orange-600 hover:underline dark:text-orange-400">+ Upload first record</button>
                     </div>
                     <div v-else class="space-y-2">
                         <div
@@ -1198,6 +1259,7 @@ function fileIcon(mime: string): string {
                                     Download
                                 </a>
                                 <button
+                                    v-if="can('records.manage')"
                                     @click="deleteRecord(rec)"
                                     class="flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
                                 >
@@ -1213,4 +1275,88 @@ function fileIcon(mime: string): string {
             </div>
         </div>
     </DoctorLayout>
+
+    <!-- Transfer Patient Modal -->
+    <Teleport to="body">
+        <div
+            v-if="showTransferModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            @click.self="showTransferModal = false"
+        >
+            <div class="w-full max-w-md rounded-2xl bg-white shadow-xl dark:bg-gray-900">
+                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <div>
+                        <h2 class="text-base font-bold text-gray-900 dark:text-white">Send Patient Copy</h2>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Select a doctor to receive a copy of <span class="font-semibold text-gray-700 dark:text-gray-300">{{ patient.name }}</span>'s records</p>
+                    </div>
+                    <button @click="showTransferModal = false" class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="p-5 space-y-4">
+                    <!-- Search -->
+                    <div>
+                        <input
+                            v-model="transferSearch"
+                            type="text"
+                            placeholder="Search by name or specialization…"
+                            class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        />
+                    </div>
+
+                    <!-- Doctor list -->
+                    <div class="max-h-60 overflow-y-auto space-y-1.5 pr-1">
+                        <p v-if="filteredDoctors.length === 0" class="py-6 text-center text-sm text-gray-400 dark:text-gray-500">No doctors found.</p>
+                        <label
+                            v-for="doc in filteredDoctors"
+                            :key="doc.id"
+                            class="flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 transition"
+                            :class="transferForm.target_doctor_id === doc.id
+                                ? 'border-indigo-400 bg-indigo-50 dark:border-indigo-600 dark:bg-indigo-900/30'
+                                : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800'"
+                        >
+                            <input
+                                type="radio"
+                                :value="doc.id"
+                                v-model="transferForm.target_doctor_id"
+                                class="accent-indigo-600"
+                            />
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-800 truncate dark:text-gray-100">Dr. {{ doc.name }}</p>
+                                <p v-if="doc.specialization?.length" class="text-xs text-gray-400 truncate dark:text-gray-500">
+                                    {{ doc.specialization.join(', ') }}
+                                </p>
+                            </div>
+                            <svg v-if="transferForm.target_doctor_id === doc.id" class="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </label>
+                    </div>
+
+                    <p v-if="transferForm.errors.target_doctor_id" class="text-xs text-red-500">{{ transferForm.errors.target_doctor_id }}</p>
+
+                    <div class="flex gap-2 pt-1">
+                        <button
+                            type="button"
+                            @click="submitTransfer"
+                            :disabled="!transferForm.target_doctor_id || transferForm.processing"
+                            class="flex-1 rounded-xl bg-indigo-600 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
+                        >
+                            {{ transferForm.processing ? 'Sending…' : 'Send Copy' }}
+                        </button>
+                        <button
+                            type="button"
+                            @click="showTransferModal = false"
+                            class="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Teleport>
 </template>

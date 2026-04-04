@@ -50,6 +50,11 @@ class HandleInertiaRequests extends Middleware
                 'isPaidPro'    => $request->user()->doctor->isPaidPro(),
                 'trialDays'    => $request->user()->doctor->trialDaysRemaining(),
             ] : null,
+            'sub_user_context' => fn () => $request->user()?->isSubUser()
+                ? \App\Models\DoctorSubUser::where('user_id', $request->user()->id)
+                    ->where('is_active', true)
+                    ->value('role')
+                : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [
                 'success'        => $request->session()->get('success'),

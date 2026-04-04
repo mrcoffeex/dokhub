@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import DoctorLayout from '@/layouts/DoctorLayout.vue';
 import type { Patient, PaginatedData } from '@/types';
+import { usePermissions } from '@/composables/usePermissions';
 
 const props = defineProps<{
     patients: PaginatedData<Patient>;
@@ -10,6 +11,8 @@ const props = defineProps<{
 }>();
 
 const search = ref(props.filters.search ?? '');
+
+const { can } = usePermissions();
 
 let searchTimer: ReturnType<typeof setTimeout>;
 watch(search, (val) => {
@@ -61,6 +64,7 @@ const genderColors: Record<string, string> = {
                 />
             </div>
             <Link
+                v-if="can('patients.create')"
                 href="/doctor/patients/create"
                 class="flex shrink-0 items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700"
             >
@@ -83,7 +87,7 @@ const genderColors: Record<string, string> = {
                 {{ search ? 'No patients match your search.' : 'Patients appear here after you confirm an appointment, or register a walk-in.' }}
             </p>
             <Link
-                v-if="!search"
+                v-if="!search && can('patients.create')"
                 href="/doctor/patients/create"
                 class="mt-5 flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700"
             >

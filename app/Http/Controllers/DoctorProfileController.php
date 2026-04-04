@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Doctor;
 use App\Models\Insurance;
 use App\Models\Specialization;
@@ -14,11 +15,12 @@ use Inertia\Response;
 
 class DoctorProfileController extends Controller
 {
+    use ResolvesCurrentDoctor;
+
     public function edit(Request $request): Response
     {
-        $doctor = $request->user()->doctor;
-
-        abort_unless($doctor, 403);
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         return Inertia::render('Doctor/Profile', [
             'doctor'          => $doctor,
@@ -29,9 +31,8 @@ class DoctorProfileController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $doctor = $request->user()->doctor;
-
-        abort_unless($doctor, 403);
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         $validated = $request->validate([
             'name'              => ['required', 'string', 'max:255'],
@@ -66,8 +67,8 @@ class DoctorProfileController extends Controller
 
     public function uploadAvatar(Request $request): RedirectResponse
     {
-        $doctor = $request->user()->doctor;
-        abort_unless($doctor, 403);
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         $request->validate([
             'avatar' => ['required', 'image', 'max:2048', 'mimes:jpg,jpeg,png,webp'],
@@ -87,8 +88,8 @@ class DoctorProfileController extends Controller
 
     public function deleteAvatar(Request $request): RedirectResponse
     {
-        $doctor = $request->user()->doctor;
-        abort_unless($doctor, 403);
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         if ($doctor->avatar) {
             Storage::disk(config('filesystems.avatar_disk'))->delete($doctor->avatar);
@@ -100,8 +101,8 @@ class DoctorProfileController extends Controller
 
     public function updateCredentials(Request $request): RedirectResponse
     {
-        $doctor = $request->user()->doctor;
-        abort_unless($doctor, 403);
+        $this->assertOwner($request);
+        $doctor = $this->getDoctor($request);
 
         $year = (int) date('Y');
 

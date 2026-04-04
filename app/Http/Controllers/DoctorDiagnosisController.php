@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesCurrentDoctor;
 use App\Models\Diagnosis;
 use App\Models\Doctor;
 use App\Models\Patient;
@@ -9,13 +10,11 @@ use Illuminate\Http\Request;
 
 class DoctorDiagnosisController extends Controller
 {
-    private function getDoctor(Request $request): Doctor
-    {
-        return Doctor::where('user_id', $request->user()->id)->firstOrFail();
-    }
+    use ResolvesCurrentDoctor;
 
     public function store(Request $request, Patient $patient)
     {
+        $this->assertOwner($request);
         $doctor = $this->getDoctor($request);
         abort_unless($patient->doctor_id === $doctor->id, 403);
 
@@ -39,6 +38,7 @@ class DoctorDiagnosisController extends Controller
 
     public function update(Request $request, Patient $patient, Diagnosis $diagnosis)
     {
+        $this->assertOwner($request);
         $doctor = $this->getDoctor($request);
         abort_unless(
             $patient->doctor_id === $doctor->id && $diagnosis->patient_id === $patient->id,
@@ -60,6 +60,7 @@ class DoctorDiagnosisController extends Controller
 
     public function destroy(Request $request, Patient $patient, Diagnosis $diagnosis)
     {
+        $this->assertOwner($request);
         $doctor = $this->getDoctor($request);
         abort_unless(
             $patient->doctor_id === $doctor->id && $diagnosis->patient_id === $patient->id,

@@ -8,11 +8,16 @@ use App\Http\Controllers\DoctorDashboardController;
 use App\Http\Controllers\DoctorDiagnosisController;
 use App\Http\Controllers\DoctorPatientsController;
 use App\Http\Controllers\DoctorPatientVitalsController;
+use App\Http\Controllers\DoctorInventoryController;
+use App\Http\Controllers\DoctorInventoryMovementsController;
 use App\Http\Controllers\DoctorPatientRecordsController;
+use App\Http\Controllers\DoctorPatientTransferController;
 use App\Http\Controllers\DoctorPrescriptionsController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\DoctorScheduleController;
+use App\Http\Controllers\DoctorSubUsersController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Admin\InsuranceController;
 use App\Http\Controllers\Admin\PaymentLogsController;
 use App\Http\Controllers\Admin\SystemLogsController;
@@ -21,6 +26,7 @@ use App\Http\Controllers\Admin\SpecializationController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\DoctorBillingController;
 use App\Http\Controllers\DoctorPosterController;
+use App\Http\Controllers\DoctorAnalyticsController;
 use App\Http\Controllers\PayMongoWebhookController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
@@ -83,6 +89,7 @@ Route::prefix('doctors')->name('doctors.')->group(function () {
     Route::get('/', [DoctorController::class, 'index'])->name('index');
     Route::get('/{doctor}', [DoctorController::class, 'show'])->name('show');
     Route::post('/{doctor}/book', [AppointmentController::class, 'store'])->name('book');
+    Route::get('/{doctor}/book', fn($doctor) => redirect()->route('doctors.show', $doctor))->name('book.get');
     Route::post('/{doctor}/reviews', [DoctorReviewController::class, 'store'])->name('reviews.store');
 });
 
@@ -98,6 +105,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('admin.dashboard');
         }
         if ($user->role === 'doctor') {
+            return redirect()->route('doctor.dashboard');
+        }
+        if ($user->role === 'sub_user') {
             return redirect()->route('doctor.dashboard');
         }
         return inertia('Dashboard');
@@ -121,6 +131,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('doctor/billing/return', [DoctorBillingController::class, 'checkoutReturn'])->name('doctor.billing.return');
     Route::get('doctor/poster', [DoctorPosterController::class, 'show'])->name('doctor.poster');
 
+    // Analytics
+    Route::get('doctor/analytics', [DoctorAnalyticsController::class, 'index'])->name('doctor.analytics');
+    Route::get('doctor/analytics/export', [DoctorAnalyticsController::class, 'export'])->name('doctor.analytics.export');
+
+    // Sub-users (owner only, enforced in controller)
+    Route::get('doctor/sub-users', [DoctorSubUsersController::class, 'index'])->name('doctor.sub-users');
+    Route::post('doctor/sub-users', [DoctorSubUsersController::class, 'store'])->name('doctor.sub-users.store');
+    Route::patch('doctor/sub-users/{subUser}', [DoctorSubUsersController::class, 'update'])->name('doctor.sub-users.update');
+    Route::patch('doctor/sub-users/{subUser}/toggle', [DoctorSubUsersController::class, 'toggleActive'])->name('doctor.sub-users.toggle');
+    Route::delete('doctor/sub-users/{subUser}', [DoctorSubUsersController::class, 'destroy'])->name('doctor.sub-users.destroy');
+
+    // Inventory
+    Route::get('doctor/inventory', [DoctorInventoryController::class, 'index'])->name('doctor.inventory');
+    Route::post('doctor/inventory', [DoctorInventoryController::class, 'store'])->name('doctor.inventory.store');
+    Route::put('doctor/inventory/{inventory}', [DoctorInventoryController::class, 'update'])->name('doctor.inventory.update');
+    Route::delete('doctor/inventory/{inventory}', [DoctorInventoryController::class, 'destroy'])->name('doctor.inventory.destroy');
+    Route::post('doctor/inventory/{inventory}/movements', [DoctorInventoryMovementsController::class, 'store'])->name('doctor.inventory.movements.store');
+
     // Patients (Pro only)
     Route::middleware('pro')->group(function () {
         Route::get('doctor/patients', [DoctorPatientsController::class, 'index'])->name('doctor.patients');
@@ -143,6 +171,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('doctor/patients/{patient}/prescriptions/create', [DoctorPrescriptionsController::class, 'create'])->name('doctor.prescriptions.create');
         Route::post('doctor/patients/{patient}/prescriptions', [DoctorPrescriptionsController::class, 'store'])->name('doctor.prescriptions.store');
         Route::get('doctor/prescriptions/{prescription}', [DoctorPrescriptionsController::class, 'show'])->name('doctor.prescriptions.show');
+
+        // Patient transfer
+        Route::post('doctor/patients/{patient}/transfer', [DoctorPatientTransferController::class, 'store'])->name('doctor.patients.transfer');
 
         // Patient records
         Route::post('doctor/patients/{patient}/records', [DoctorPatientRecordsController::class, 'store'])->name('doctor.records.store');
@@ -194,6 +225,10 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureUserIsAdmin::c
 
         Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.index');
         Route::put('/pricing', [PricingController::class, 'update'])->name('pricing.update');
+
+        // Analytics
+        Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/export', [AdminAnalyticsController::class, 'export'])->name('analytics.export');
 
         Route::get('/profile', function (Request $request) {
             return Inertia::render('Admin/Profile', [

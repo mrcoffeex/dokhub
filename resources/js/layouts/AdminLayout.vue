@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
 import ThemeToggle from '@/components/ThemeToggle.vue';
+import ChatWidget from '@/components/ChatWidget.vue';
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION as string | undefined;
 
@@ -205,5 +206,8 @@ const sidebarOpen = ref(false);
                 <slot />
             </main>
         </div>
+
+        <!-- AI Chat Widget -->
+        <ChatWidget role="admin" />
     </div>
 </template>

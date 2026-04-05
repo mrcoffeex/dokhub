@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
 import ThemeToggle from '@/components/ThemeToggle.vue';
+import ChatWidget from '@/components/ChatWidget.vue';
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION as string | undefined;
 
@@ -264,5 +265,8 @@ function isActive(href: string): boolean {
                 <slot />
             </main>
         </div>
+
+        <!-- AI Chat Widget -->
+        <ChatWidget role="doctor" />
     </div>
 </template>

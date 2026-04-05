@@ -52,11 +52,15 @@ return [
         'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
-    'twilio' => [
-        'sid'     => env('TWILIO_SID'),
-        'token'   => env('TWILIO_TOKEN'),
-        'from'    => env('TWILIO_FROM'),
-        'enabled' => env('TWILIO_ENABLED', false),
+    'messagebird' => [
+        'api_key' => env('MESSAGEBIRD_API_KEY'),
+        'from'    => env('MESSAGEBIRD_FROM'),
+        'enabled' => env('MESSAGEBIRD_ENABLED', false),
+    ],
+
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model'   => env('GEMINI_MODEL', 'gemini-3.1-flash-lite-preview'),
     ],
 
 ];

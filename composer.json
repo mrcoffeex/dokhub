@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "google-gemini-php/client": "^2.7",
         "inertiajs/inertia-laravel": "^2.0",
         "jenssegers/agent": "^2.6",
         "laravel/fortify": "^1.34",
@@ -17,8 +18,8 @@
         "laravel/socialite": "^5.26",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
-        "spatie/laravel-activitylog": "^4.12",
-        "twilio/sdk": "^8.11"
+        "messagebird/php-rest-api": "^4.0",
+        "spatie/laravel-activitylog": "^4.12"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",

@@ -3,21 +3,20 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
-use Twilio\Rest\Client;
+use MessageBird\Client;
+use MessageBird\Objects\Message;
 
 class SmsService
 {
     private bool $enabled;
-    private ?string $sid;
-    private ?string $token;
+    private ?string $apiKey;
     private ?string $from;
 
     public function __construct()
     {
-        $this->enabled = (bool) config('services.twilio.enabled');
-        $this->sid     = config('services.twilio.sid');
-        $this->token   = config('services.twilio.token');
-        $this->from    = config('services.twilio.from');
+        $this->enabled = (bool) config('services.messagebird.enabled');
+        $this->apiKey  = config('services.messagebird.api_key');
+        $this->from    = config('services.messagebird.from');
     }
 
     /**
@@ -28,7 +27,7 @@ class SmsService
      */
     public function send(string $to, string $body): void
     {
-        if (! $this->enabled || blank($this->sid) || blank($this->token) || blank($this->from)) {
+        if (! $this->enabled || blank($this->apiKey) || blank($this->from)) {
             return;
         }
 
@@ -45,11 +44,14 @@ class SmsService
         }
 
         try {
-            $client = new Client($this->sid, $this->token);
-            $client->messages->create($to, [
-                'from' => $this->from,
-                'body' => $body,
-            ]);
+            $client = new Client($this->apiKey);
+
+            $message            = new Message();
+            $message->originator = $this->from;
+            $message->recipients = [ltrim($to, '+')];
+            $message->body       = $body;
+
+            $client->messages->create($message);
         } catch (\Throwable $e) {
             Log::error('SMS send failed', [
                 'to'    => $to,

@@ -28,6 +28,7 @@ use App\Http\Controllers\DoctorBillingController;
 use App\Http\Controllers\DoctorPosterController;
 use App\Http\Controllers\DoctorAnalyticsController;
 use App\Http\Controllers\PayMongoWebhookController;
+use App\Http\Controllers\AiChatController;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,29 @@ use Inertia\Inertia;
 // Public landing / home
 Route::get('/', function () {
     $avgRating = \App\Models\DoctorReview::approved()->avg('rating');
+
+    $topReviews = \App\Models\DoctorReview::approved()
+        ->with('doctor:id,name,slug,avatar,specialization')
+        ->whereNotNull('comment')
+        ->where('comment', '!=', '')
+        ->where('rating', '>=', 4)
+        ->orderByDesc('rating')
+        ->orderByDesc('created_at')
+        ->limit(6)
+        ->get()
+        ->map(fn ($r) => [
+            'id'           => $r->id,
+            'patient_name' => $r->patient_name,
+            'rating'       => $r->rating,
+            'comment'      => $r->comment,
+            'created_at'   => $r->created_at->diffForHumans(),
+            'doctor_name'  => $r->doctor?->name,
+            'doctor_slug'  => $r->doctor?->slug,
+            'doctor_avatar'=> $r->doctor?->avatar_url,
+            'doctor_spec'  => is_array($r->doctor?->specialization)
+                ? ($r->doctor->specialization[0] ?? null)
+                : $r->doctor?->specialization,
+        ]);
 
     return Inertia::render('Home', [
         'featuredSpecializations' => \App\Models\Specialization::active()
@@ -49,12 +73,14 @@ Route::get('/', function () {
             'specializations'  => \App\Models\Specialization::active()->count(),
             'avg_rating'       => $avgRating ? number_format((float) $avgRating, 1) : null,
         ],
+        'topReviews' => $topReviews,
     ]);
 })->name('home');
 
 // Legal pages
 Route::inertia('/terms-of-service', 'legal/TermsOfService')->name('legal.terms');
 Route::inertia('/privacy-policy', 'legal/PrivacyPolicy')->name('legal.privacy');
+Route::inertia('/docs', 'Docs')->name('docs');
 
 // Doctor registration routes
 Route::prefix('auth/signup')->name('auth.signup.')->group(function () {
@@ -96,6 +122,10 @@ Route::prefix('doctors')->name('doctors.')->group(function () {
 // Appointment lookup
 Route::get('/my-appointment', fn() => inertia('Booking/Lookup'))->name('appointments.lookup');
 Route::post('/my-appointment', [AppointmentController::class, 'lookup'])->name('appointments.lookup.search');
+
+// AI Chat — guest endpoint (no auth required), authenticated endpoints use session user for context
+Route::post('/ai/chat', [AiChatController::class, 'chat'])->name('ai.chat');
+Route::post('/ai/chat/clear', [AiChatController::class, 'clear'])->name('ai.chat.clear');
 
 // Authenticated user dashboard (redirects based on role)
 Route::middleware(['auth', 'verified'])->group(function () {

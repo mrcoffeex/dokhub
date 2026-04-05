@@ -2,7 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { FileText, ChevronLeft } from 'lucide-vue-next';
 
-const lastUpdated = 'March 26, 2026';
+const lastUpdated = 'April 5, 2026';
 const effectiveDate = 'March 26, 2026';
 </script>
 
@@ -56,6 +56,7 @@ const effectiveDate = 'March 26, 2026';
                         'Doctor Registration & Verification',
                         'Prohibited Conduct',
                         'Medical Disclaimer',
+                        'AI Assistant',
                         'Fees & Payments',
                         'Intellectual Property',
                         'Privacy',
@@ -85,14 +86,21 @@ const effectiveDate = 'March 26, 2026';
 
                 <section id="section-2">
                     <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">2. Description of Services</h2>
-                    <p class="leading-relaxed">DokHub is an online healthcare platform that connects patients with licensed medical professionals. The Service provides tools including, but not limited to:</p>
+                    <p class="leading-relaxed">DokHub is an online healthcare platform that connects patients with licensed medical professionals in the Philippines. The Service provides tools including, but not limited to:</p>
                     <ul class="mt-3 list-disc space-y-1.5 pl-6">
-                        <li>Doctor profiles and specialization discovery</li>
-                        <li>Online appointment booking and scheduling</li>
-                        <li>Patient management tools for registered doctors</li>
+                        <li>Doctor profiles, specialization discovery, and location-based search</li>
+                        <li>Online appointment booking for in-person and teleconsultation visits</li>
+                        <li>Appointment status tracking via unique reference codes</li>
+                        <li>Patient management portal for registered doctors (records, vitals, diagnoses, prescriptions)</li>
                         <li>Digital prescription and diagnosis record keeping</li>
-                        <li>Doctor schedule management</li>
-                        <li>Patient appointment lookup and history</li>
+                        <li>Doctor schedule configuration and slot management</li>
+                        <li>Inventory management for clinic medicines and supplies</li>
+                        <li>Sub-user (staff) account management for doctor clinics</li>
+                        <li>Billing and subscription management for doctor accounts</li>
+                        <li>Analytics dashboard for registered doctors (Pro plan)</li>
+                        <li>Promotional poster generation for registered doctors</li>
+                        <li>AI-powered chat assistant ("Dokie") — see Section 7</li>
+                        <li>Email and SMS appointment notifications</li>
                     </ul>
                     <p class="mt-3 leading-relaxed">DokHub is a technology intermediary only. We do not provide medical services, employ physicians, or practice medicine. All medical decisions remain the sole responsibility of the treating healthcare professional and the patient.</p>
                 </section>
@@ -149,36 +157,53 @@ const effectiveDate = 'March 26, 2026';
                 </section>
 
                 <section id="section-7">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">7. Fees &amp; Payments</h2>
-                    <p class="leading-relaxed">Consultation fees are set by individual doctors and displayed on their profiles. DokHub may charge a platform service fee on transactions processed through the Service. All fees are listed in US Dollars (USD) unless stated otherwise.</p>
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">7. AI Assistant</h2>
+                    <p class="leading-relaxed">DokHub provides an AI-powered chat assistant ("Dokie") on the platform, powered by Google Gemini. By using the AI assistant, you agree to the following:</p>
                     <ul class="mt-3 list-disc space-y-1.5 pl-6">
-                        <li>Payments are processed by third-party payment processors subject to their respective terms and privacy policies</li>
-                        <li>Refund and cancellation policies are subject to the individual doctor's stated policy and DokHub's dispute resolution procedures</li>
-                        <li>DokHub reserves the right to modify its fee structure with 30 days' notice to registered users</li>
+                        <li><strong>Not medical advice:</strong> Responses from the AI assistant do not constitute medical advice, diagnosis, or treatment. Always consult a licensed medical professional for clinical decisions.</li>
+                        <li><strong>Data transmitted to Google:</strong> Your chat messages and relevant contextual data (including appointment and patient summaries for doctor-role sessions) are sent to Google's Gemini API to generate responses. This transmission is subject to Google's applicable terms and privacy policies.</li>
+                        <li><strong>Patient data in doctor sessions:</strong> When a logged-in doctor uses the AI assistant, relevant appointment and patient summary data is included in the request context to provide relevant assistance. Doctors consent to this data being transmitted to Google's Gemini API by using the feature.</li>
+                        <li><strong>Session history:</strong> Conversation history is stored in your server session only and is not permanently recorded in DokHub's database. It is cleared when your session expires or you clear the chat.</li>
+                        <li><strong>Guest rate limits:</strong> Unauthenticated users are limited to 5 AI messages per IP address per hour to prevent abuse. Authenticated doctor and admin accounts are not subject to this cap.</li>
+                        <li><strong>Accuracy disclaimer:</strong> AI responses may be inaccurate, incomplete, or outdated. DokHub makes no warranties regarding the accuracy of AI-generated content.</li>
+                        <li><strong>Prohibited uses:</strong> You must not use the AI assistant for medical emergencies (call 911 or your local emergency number), to extract confidential information about other users, or to generate harmful, misleading, or illegal content.</li>
                     </ul>
                 </section>
 
                 <section id="section-8">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">8. Intellectual Property</h2>
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">8. Fees &amp; Payments</h2>
+                    <p class="leading-relaxed">Consultation fees are set by individual doctors and displayed in Philippine Peso (PHP) on their profiles. DokHub offers doctor subscription plans (Free and Pro) billed in PHP.</p>
+                    <ul class="mt-3 list-disc space-y-1.5 pl-6">
+                        <li>Payments are processed by <strong>PayMongo</strong>, a BSP-regulated payment processor. Accepted payment methods include credit/debit cards and GCash. All transactions are subject to PayMongo's terms and privacy policy.</li>
+                        <li>DokHub does not store full card numbers or GCash credentials. Payment tokenization is handled entirely by PayMongo.</li>
+                        <li>Doctor Pro subscriptions are billed on a recurring basis. You may cancel at any time; access continues until the end of the current billing period with no partial refunds.</li>
+                        <li>Refund and cancellation policies for consultation fees are subject to the individual doctor's stated policy. DokHub is not liable for disputes between patients and doctors over consultation charges.</li>
+                        <li>DokHub reserves the right to modify its subscription pricing and fee structure with 30 days' advance notice to registered users.</li>
+                        <li>Doctors are solely responsible for applicable taxes (including VAT and income tax under Philippine law) on fees received through the platform.</li>
+                    </ul>
+                </section>
+
+                <section id="section-9">
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">9. Intellectual Property</h2>
                     <p class="leading-relaxed">All content, features, and functionality of the Service — including but not limited to text, graphics, logos, icons, software, and the DokHub name — are the exclusive property of DokHub or its licensors and are protected by applicable intellectual property laws.</p>
                     <p class="mt-3 leading-relaxed">You are granted a limited, non-exclusive, non-transferable license to use the Service for its intended purpose. You may not reproduce, distribute, modify, create derivative works from, or commercially exploit any portion of the Service without express prior written consent from DokHub.</p>
                     <p class="mt-3 leading-relaxed">Content you submit to DokHub (such as doctor bios, profile information, or reviews) remains yours, but you grant DokHub a worldwide, royalty-free license to display, reproduce, and distribute it in connection with operating the Service.</p>
                 </section>
 
-                <section id="section-9">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">9. Privacy</h2>
-                    <p class="leading-relaxed">Your use of the Service is also governed by our <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-orange-600 hover:underline dark:text-orange-400">Privacy Policy</Link>, which is incorporated into these Terms by reference. Please review our Privacy Policy to understand our data practices, including how we collect and handle health-related information.</p>
-                </section>
-
                 <section id="section-10">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">10. Disclaimers &amp; Limitation of Liability</h2>
-                    <p class="leading-relaxed">The Service is provided on an "as is" and "as available" basis without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
-                    <p class="mt-3 leading-relaxed">To the fullest extent permitted by law, DokHub and its officers, directors, employees, and agents shall not be liable for any indirect, incidental, special, consequential, or punitive damages — including loss of data, loss of revenue, or any harm arising from healthcare decisions made using the Service — even if DokHub has been advised of the possibility of such damages.</p>
-                    <p class="mt-3 leading-relaxed">DokHub's total liability to you for any claim arising from your use of the Service shall not exceed the greater of (a) $100 USD or (b) the total fees paid by you to DokHub in the 12 months preceding the claim.</p>
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">10. Privacy</h2>
+                    <p class="leading-relaxed">Your use of the Service is also governed by our <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-orange-600 hover:underline dark:text-orange-400">Privacy Policy</Link>, which is incorporated into these Terms by reference. Please review our Privacy Policy to understand our data practices, including how we collect and handle health-related information under Philippine law.</p>
                 </section>
 
                 <section id="section-11">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">11. Indemnification</h2>
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">11. Disclaimers &amp; Limitation of Liability</h2>
+                    <p class="leading-relaxed">The Service is provided on an "as is" and "as available" basis without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+                    <p class="mt-3 leading-relaxed">To the fullest extent permitted by law, DokHub and its officers, directors, employees, and agents shall not be liable for any indirect, incidental, special, consequential, or punitive damages — including loss of data, loss of revenue, or any harm arising from healthcare decisions made using the Service — even if DokHub has been advised of the possibility of such damages.</p>
+                    <p class="mt-3 leading-relaxed">DokHub's total liability to you for any claim arising from your use of the Service shall not exceed the greater of (a) ₱5,000 PHP or (b) the total fees paid by you to DokHub in the 12 months preceding the claim.</p>
+                </section>
+
+                <section id="section-12">
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">12. Indemnification</h2>
                     <p class="leading-relaxed">You agree to indemnify, defend, and hold harmless DokHub and its affiliates, officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of or in any way connected to:</p>
                     <ul class="mt-3 list-disc space-y-1.5 pl-6">
                         <li>Your access to or use of the Service</li>
@@ -188,31 +213,32 @@ const effectiveDate = 'March 26, 2026';
                     </ul>
                 </section>
 
-                <section id="section-12">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">12. Termination</h2>
+                <section id="section-13">
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">13. Termination</h2>
                     <p class="leading-relaxed">DokHub reserves the right to suspend or permanently terminate your account at any time, with or without notice, for any reason including violation of these Terms, fraudulent activity, or inactivity. Upon termination, your right to use the Service ceases immediately.</p>
                     <p class="mt-3 leading-relaxed">You may terminate your account at any time by contacting support. Termination does not relieve you of obligations incurred prior to the termination date, including any outstanding payment obligations.</p>
                 </section>
 
-                <section id="section-13">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">13. Governing Law &amp; Dispute Resolution</h2>
-                    <p class="leading-relaxed">These Terms are governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict-of-law provisions.</p>
-                    <p class="mt-3 leading-relaxed">Any dispute arising from or relating to these Terms or the Service shall first be attempted to be resolved through good-faith negotiation. If unresolved, disputes shall be submitted to binding arbitration administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules. Class action lawsuits and jury trials are waived to the extent permitted by law.</p>
-                </section>
-
                 <section id="section-14">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">14. Changes to These Terms</h2>
-                    <p class="leading-relaxed">DokHub reserves the right to update or modify these Terms at any time. When we make material changes, we will notify registered users by email or by posting a prominent notice on the Service at least 14 days before the changes take effect. Your continued use of the Service after the effective date of the revised Terms constitutes your acceptance of the changes.</p>
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">14. Governing Law &amp; Dispute Resolution</h2>
+                    <p class="leading-relaxed">These Terms are governed by and construed in accordance with the laws of the Republic of the Philippines, including but not limited to Republic Act No. 10173 (Data Privacy Act of 2012), Republic Act No. 8792 (Electronic Commerce Act), and other applicable Philippine statutes and regulations.</p>
+                    <p class="mt-3 leading-relaxed">Any dispute arising from or relating to these Terms or the Service shall first be attempted to be resolved through good-faith negotiation between the parties. If unresolved within thirty (30) days, disputes shall be submitted to the appropriate courts or governmental bodies of the Philippines with proper jurisdiction. For disputes involving data privacy, the National Privacy Commission (NPC) may have jurisdiction.</p>
+                    <p class="mt-3 leading-relaxed">Healthcare professionals using the Service are also subject to applicable Department of Health (DOH) and Professional Regulation Commission (PRC) regulations relevant to their practice.</p>
                 </section>
 
                 <section id="section-15">
-                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">15. Contact Us</h2>
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">15. Changes to These Terms</h2>
+                    <p class="leading-relaxed">DokHub reserves the right to update or modify these Terms at any time. When we make material changes, we will notify registered users by email or by posting a prominent notice on the Service at least 14 days before the changes take effect. Your continued use of the Service after the effective date of the revised Terms constitutes your acceptance of the changes.</p>
+                </section>
+
+                <section id="section-16">
+                    <h2 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">16. Contact Us</h2>
                     <p class="leading-relaxed">If you have any questions about these Terms, please contact us:</p>
                     <div class="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                         <div class="divide-y divide-gray-100 dark:divide-gray-700">
                             <div class="flex gap-3 px-5 py-3.5">
                                 <span class="w-28 shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">Company</span>
-                                <span class="text-sm text-gray-900 dark:text-gray-100">DokHub, Inc.</span>
+                                <span class="text-sm text-gray-900 dark:text-gray-100">DokHub</span>
                             </div>
                             <div class="flex gap-3 px-5 py-3.5">
                                 <span class="w-28 shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">Email</span>

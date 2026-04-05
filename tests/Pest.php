@@ -25,7 +25,8 @@ pest()->extend(TestCase::class)
 */
 
 expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
+    /** @var \Pest\Expectation $this */
+    expect($this->value)->toBe(1);
 });
 
 /*
@@ -76,7 +77,7 @@ function validBookingPayload(array $overrides = []): array
         'appointment_type' => 'in_person',
         'patient_name'     => 'Jane Doe',
         'patient_email'    => 'jane@example.com',
-        'patient_phone'    => '+639171234567',
+        'patient_phone'    => '09171234567',
         'appointment_date' => now()->addDays(3)->format('Y-m-d'),
         'appointment_time' => '10:00',
         'reason'           => 'Routine check-up',

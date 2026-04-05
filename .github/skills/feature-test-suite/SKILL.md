@@ -1,12 +1,12 @@
 ---
 name: feature-test-suite
-description: "Generates a complete Pest v3 test suite whenever a new feature or module is added to the codebase. Use when: adding a new feature, new module, new controller, new route group, new model, new API endpoint, writing tests for existing untested code, new booking flow, new registration flow, new middleware-protected section. Produces: factory, Unit model tests, Feature controller tests covering happy path + guards + validation + ownership + authorization."
+description: "Generates a complete Pest v4 test suite whenever a new feature or module is added to the codebase. Use when: adding a new feature, new module, new controller, new route group, new model, new API endpoint, writing tests for existing untested code, new booking flow, new registration flow, new middleware-protected section. Produces: factory, Unit model tests, Feature controller tests covering happy path + guards + validation + ownership + authorization."
 argument-hint: "Name or path of the new feature/module, e.g. 'appointments', 'app/Http/Controllers/Doctor/PrescriptionController.php'"
 ---
 
 # Feature Test Suite
 
-Generates a complete, passing Pest v3 test suite for a new feature or module in this Laravel 11 + Inertia + PostgreSQL codebase.
+Generates a complete, passing Pest v4 test suite for a new feature or module in this Laravel 13 + Inertia + PostgreSQL codebase.
 
 ## Stack Conventions
 
